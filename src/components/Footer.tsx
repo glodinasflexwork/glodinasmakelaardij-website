@@ -76,8 +76,8 @@ const Footer = () => {
             © 2024 Glodinas Makelaardij. All rights reserved.
           </p>
           <div className="flex space-x-6 mt-4 md:mt-0">
-            <a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Privacy Policy</a>
-            <a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Terms of Service</a>
+            <a href="/privacy" className="text-gray-400 hover:text-white transition-colors text-sm">Privacy Statement</a>
+            <a href="/terms" className="text-gray-400 hover:text-white transition-colors text-sm">Terms & Conditions</a>
             <a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">NVM Member</a>
           </div>
         </div>

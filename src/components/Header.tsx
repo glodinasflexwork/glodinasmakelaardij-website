@@ -35,7 +35,7 @@ const Header = () => {
             <a href="#properties" className="text-gray-700 hover:text-green-600 transition-colors font-medium">
               Properties
             </a>
-            <a href="#contact" className="text-gray-700 hover:text-green-600 transition-colors font-medium">
+            <a href="/contact" className="text-gray-700 hover:text-green-600 transition-colors font-medium">
               Contact
             </a>
           </nav>
@@ -51,7 +51,7 @@ const Header = () => {
             </a>
             <Button variant="green" size="sm" className="bg-green-600 hover:bg-green-700">
               <Calendar className="h-4 w-4 mr-2" />
-              Book Consultation
+              <a href="/schedule" className="text-white">Book Consultation</a>
             </Button>
           </div>
 
@@ -95,7 +95,7 @@ const Header = () => {
                 Properties
               </a>
               <a 
-                href="#contact" 
+                href="/contact" 
                 className="text-gray-700 hover:text-green-600 transition-colors font-medium py-2"
                 onClick={() => setIsMenuOpen(false)}
               >
@@ -111,7 +111,7 @@ const Header = () => {
                 </a>
                 <Button variant="green" size="sm" className="w-full bg-green-600 hover:bg-green-700">
                   <Calendar className="h-4 w-4 mr-2" />
-                  Book Consultation
+                  <a href="/schedule" className="text-white">Book Consultation</a>
                 </Button>
               </div>
             </nav>
