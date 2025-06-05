@@ -1,0 +1,14 @@
+{
+  "routes": [
+    {
+      "src": "/en",
+      "dest": "/en"
+    },
+    {
+      "src": "/en/(.*)",
+      "dest": "/en/$1"
+    }
+  ],
+  "trailingSlash": false
+}
+

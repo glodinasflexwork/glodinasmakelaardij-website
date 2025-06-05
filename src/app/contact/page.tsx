@@ -3,7 +3,6 @@ import Footer from '@/components/Footer';
 import ContactForm from '@/components/forms/ContactForm';
 import { Phone, Mail, MapPin, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import Link from 'next/link';
 
 export default function ContactPage() {
   return (

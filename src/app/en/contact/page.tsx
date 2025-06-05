@@ -3,7 +3,6 @@ import Footer from '@/components/Footer';
 import ContactForm from '@/components/forms/ContactForm';
 import { Phone, Mail, MapPin, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import Link from 'next/link';
 
 export default function EnglishContactPage() {
   return (
@@ -18,7 +17,7 @@ export default function EnglishContactPage() {
                 Get In Touch
               </h1>
               <p className="text-xl text-gray-600">
-                Ready to achieve your real estate goals? Let's talk.
+                Ready to achieve your real estate goals? Let&apos;s talk.
               </p>
             </div>
             
