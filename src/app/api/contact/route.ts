@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { 
           message: 'Email sent successfully',
-          messageId: result.messageId 
+          result: result.result 
         },
         { status: 200 }
       );

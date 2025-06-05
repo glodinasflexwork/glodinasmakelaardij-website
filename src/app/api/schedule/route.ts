@@ -42,8 +42,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { 
           message: 'Appointment scheduled successfully',
-          businessMessageId: businessResult.messageId,
-          clientMessageId: clientResult.messageId
+          businessResult: businessResult.result,
+          clientResult: clientResult.result
         },
         { status: 200 }
       );

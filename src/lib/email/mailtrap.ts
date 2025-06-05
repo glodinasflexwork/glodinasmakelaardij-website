@@ -1,14 +1,8 @@
-import nodemailer from 'nodemailer';
-
-// Create transporter using Mailtrap API
-const transporter = nodemailer.createTransport({
-  host: process.env.MAILTRAP_HOST,
-  port: 587,
-  auth: {
-    user: 'api',
-    pass: process.env.MAILTRAP_API_TOKEN,
-  },
-});
+// Mailtrap API configuration using HTTP requests
+const MAILTRAP_API_URL = 'https://send.api.mailtrap.io/api/send';
+const MAILTRAP_API_TOKEN = process.env.MAILTRAP_API_TOKEN;
+const FROM_EMAIL = process.env.FROM_EMAIL;
+const TO_EMAIL = process.env.TO_EMAIL;
 
 export interface ContactFormData {
   name: string;
@@ -32,10 +26,42 @@ export interface ScheduleFormData {
   message?: string;
 }
 
+async function sendMailtrapEmail(emailData: object) {
+  try {
+    const response = await fetch(MAILTRAP_API_URL, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${MAILTRAP_API_TOKEN}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(emailData),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Mailtrap API error: ${response.status} - ${errorText}`);
+    }
+
+    const result = await response.json();
+    return { success: true, result };
+  } catch (error) {
+    console.error('Error sending email via Mailtrap API:', error);
+    return { success: false, error };
+  }
+}
+
 export async function sendContactEmail(data: ContactFormData) {
-  const mailOptions = {
-    from: process.env.FROM_EMAIL,
-    to: process.env.TO_EMAIL,
+  const emailData = {
+    from: {
+      email: FROM_EMAIL,
+      name: "Glodinas Makelaardij"
+    },
+    to: [
+      {
+        email: TO_EMAIL,
+        name: "Glodinas Makelaardij"
+      }
+    ],
     subject: `New Contact Form Submission - ${data.subject}`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9;">
@@ -76,14 +102,13 @@ export async function sendContactEmail(data: ContactFormData) {
     `,
   };
 
-  try {
-    const result = await transporter.sendMail(mailOptions);
-    console.log('Contact email sent successfully:', result.messageId);
-    return { success: true, messageId: result.messageId };
-  } catch (error) {
-    console.error('Error sending contact email:', error);
-    return { success: false, error: error };
+  const result = await sendMailtrapEmail(emailData);
+  if (result.success) {
+    console.log('Contact email sent successfully');
+  } else {
+    console.error('Failed to send contact email:', result.error);
   }
+  return result;
 }
 
 export async function sendScheduleEmail(data: ScheduleFormData) {
@@ -97,9 +122,17 @@ export async function sendScheduleEmail(data: ScheduleFormData) {
     });
   };
 
-  const mailOptions = {
-    from: process.env.FROM_EMAIL,
-    to: process.env.TO_EMAIL,
+  const emailData = {
+    from: {
+      email: FROM_EMAIL,
+      name: "Glodinas Makelaardij"
+    },
+    to: [
+      {
+        email: TO_EMAIL,
+        name: "Glodinas Makelaardij"
+      }
+    ],
     subject: `New Appointment Booking - ${data.meetingType}`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9;">
@@ -150,14 +183,13 @@ export async function sendScheduleEmail(data: ScheduleFormData) {
     `,
   };
 
-  try {
-    const result = await transporter.sendMail(mailOptions);
-    console.log('Schedule email sent successfully:', result.messageId);
-    return { success: true, messageId: result.messageId };
-  } catch (error) {
-    console.error('Error sending schedule email:', error);
-    return { success: false, error: error };
+  const result = await sendMailtrapEmail(emailData);
+  if (result.success) {
+    console.log('Schedule email sent successfully');
+  } else {
+    console.error('Failed to send schedule email:', result.error);
   }
+  return result;
 }
 
 export async function sendClientConfirmationEmail(data: ScheduleFormData) {
@@ -171,9 +203,17 @@ export async function sendClientConfirmationEmail(data: ScheduleFormData) {
     });
   };
 
-  const mailOptions = {
-    from: process.env.FROM_EMAIL,
-    to: data.email,
+  const emailData = {
+    from: {
+      email: FROM_EMAIL,
+      name: "Glodinas Makelaardij"
+    },
+    to: [
+      {
+        email: data.email,
+        name: data.name
+      }
+    ],
     subject: `Appointment Confirmation - Glodinas Makelaardij`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9;">
@@ -221,13 +261,12 @@ export async function sendClientConfirmationEmail(data: ScheduleFormData) {
     `,
   };
 
-  try {
-    const result = await transporter.sendMail(mailOptions);
-    console.log('Client confirmation email sent successfully:', result.messageId);
-    return { success: true, messageId: result.messageId };
-  } catch (error) {
-    console.error('Error sending client confirmation email:', error);
-    return { success: false, error: error };
+  const result = await sendMailtrapEmail(emailData);
+  if (result.success) {
+    console.log('Client confirmation email sent successfully');
+  } else {
+    console.error('Failed to send client confirmation email:', result.error);
   }
+  return result;
 }
 
