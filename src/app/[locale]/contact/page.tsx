@@ -2,8 +2,12 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ContactForm from '@/components/forms/ContactForm';
 import { Phone, Mail, MapPin, Clock, Calendar, MessageCircle } from 'lucide-react';
+import {useTranslations} from 'next-intl';
+import {Link} from '@/i18n/routing';
 
 export default function ContactPage() {
+  const t = useTranslations('ContactPage');
+  
   return (
     <div className="min-h-screen bg-white">
       <Header />
@@ -14,12 +18,11 @@ export default function ContactPage() {
             {/* Header Section */}
             <div className="text-center mb-16">
               <h1 className="text-3xl font-light text-gray-900 mb-4">
-                Contact Glodinas Makelaardij
+                {t('title')}
               </h1>
               <div className="w-24 h-1 bg-green-600 mx-auto mb-6"></div>
               <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                Ready to find your dream property or sell your current one? Get in touch with our expert team. 
-                We&apos;re here to guide you through every step of your real estate journey.
+                {t('subtitle')}
               </p>
             </div>
 
@@ -27,7 +30,7 @@ export default function ContactPage() {
               {/* Contact Information */}
               <div className="lg:col-span-1">
                 <div className="bg-gray-50 rounded-lg p-8">
-                  <h2 className="text-2xl font-semibold text-gray-900 mb-6">Get In Touch</h2>
+                  <h2 className="text-2xl font-semibold text-gray-900 mb-6">{t('getInTouch')}</h2>
                   
                   {/* Contact Details */}
                   <div className="space-y-6">
@@ -36,11 +39,11 @@ export default function ContactPage() {
                         <Phone className="h-6 w-6 text-green-600" />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-gray-900 mb-1">Phone</h3>
+                        <h3 className="font-semibold text-gray-900 mb-1">{t('phone.title')}</h3>
                         <a href="tel:+31681348551" className="text-green-600 hover:text-green-700 font-medium">
                           (6) 81 34 85 51
                         </a>
-                        <p className="text-sm text-gray-600 mt-1">Available 9 AM - 6 PM</p>
+                        <p className="text-sm text-gray-600 mt-1">{t('phone.hours')}</p>
                       </div>
                     </div>
 
@@ -49,11 +52,11 @@ export default function ContactPage() {
                         <Mail className="h-6 w-6 text-green-600" />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-gray-900 mb-1">Email</h3>
+                        <h3 className="font-semibold text-gray-900 mb-1">{t('email.title')}</h3>
                         <a href="mailto:cihatkaya@glodinas.nl" className="text-green-600 hover:text-green-700 font-medium">
                           cihatkaya@glodinas.nl
                         </a>
-                        <p className="text-sm text-gray-600 mt-1">We respond within 24 hours</p>
+                        <p className="text-sm text-gray-600 mt-1">{t('email.response')}</p>
                       </div>
                     </div>
 
@@ -62,9 +65,9 @@ export default function ContactPage() {
                         <MapPin className="h-6 w-6 text-green-600" />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-gray-900 mb-1">Location</h3>
-                        <p className="text-gray-600">Den Haag, Netherlands</p>
-                        <p className="text-sm text-gray-600 mt-1">Serving all of Den Haag area</p>
+                        <h3 className="font-semibold text-gray-900 mb-1">{t('location.title')}</h3>
+                        <p className="text-gray-600">{t('location.address')}</p>
+                        <p className="text-sm text-gray-600 mt-1">{t('location.area')}</p>
                       </div>
                     </div>
 
@@ -73,11 +76,11 @@ export default function ContactPage() {
                         <Clock className="h-6 w-6 text-green-600" />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-gray-900 mb-1">Business Hours</h3>
+                        <h3 className="font-semibold text-gray-900 mb-1">{t('hours.title')}</h3>
                         <div className="text-gray-600 text-sm space-y-1">
-                          <p>Monday - Friday: 9:00 AM - 6:00 PM</p>
-                          <p>Saturday: 10:00 AM - 4:00 PM</p>
-                          <p>Sunday: By appointment only</p>
+                          <p>{t('hours.weekdays')}</p>
+                          <p>{t('hours.saturday')}</p>
+                          <p>{t('hours.sunday')}</p>
                         </div>
                       </div>
                     </div>
@@ -85,22 +88,22 @@ export default function ContactPage() {
 
                   {/* Quick Actions */}
                   <div className="mt-8 pt-8 border-t border-gray-200">
-                    <h3 className="font-semibold text-gray-900 mb-4">Quick Actions</h3>
+                    <h3 className="font-semibold text-gray-900 mb-4">{t('quickActions')}</h3>
                     <div className="space-y-3">
-                      <a 
+                      <Link 
                         href="/schedule"
                         className="inline-flex items-center justify-center w-full px-4 py-3 border-2 border-green-600 text-green-600 rounded-lg hover:bg-green-50 transition-colors font-medium"
                       >
                         <Calendar className="h-4 w-4 mr-2" />
-                        Schedule a Meeting
-                      </a>
+                        {t('scheduleMeeting')}
+                      </Link>
                       
                       <a 
                         href="tel:+31681348551"
                         className="inline-flex items-center justify-center w-full px-4 py-3 border-2 border-green-600 text-green-600 rounded-lg hover:bg-green-50 transition-colors font-medium"
                       >
                         <Phone className="h-4 w-4 mr-2" />
-                        Call Now
+                        {t('callNow')}
                       </a>
 
                       <a 
@@ -108,7 +111,7 @@ export default function ContactPage() {
                         className="inline-flex items-center justify-center w-full px-4 py-3 border-2 border-green-600 text-green-600 rounded-lg hover:bg-green-50 transition-colors font-medium"
                       >
                         <MessageCircle className="h-4 w-4 mr-2" />
-                        Send Email
+                        {t('sendEmail')}
                       </a>
                     </div>
                   </div>
@@ -118,7 +121,7 @@ export default function ContactPage() {
               {/* Contact Form */}
               <div className="lg:col-span-2">
                 <div className="bg-white border border-gray-200 rounded-lg p-8">
-                  <h2 className="text-2xl font-semibold text-gray-900 mb-6">Send Us a Message</h2>
+                  <h2 className="text-2xl font-semibold text-gray-900 mb-6">{t('sendMessage')}</h2>
                   <ContactForm />
                 </div>
               </div>

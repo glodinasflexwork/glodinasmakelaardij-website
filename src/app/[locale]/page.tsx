@@ -3,8 +3,12 @@ import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Phone, Mail, Calendar, Star, Home, Search, Handshake, Building, Calculator } from 'lucide-react';
 import Image from 'next/image';
+import {useTranslations} from 'next-intl';
+import {Link} from '@/i18n/routing';
 
 export default function HomePage() {
+  const t = useTranslations('HomePage');
+  
   return (
     <div className="min-h-screen bg-white">
       <Header />
@@ -27,42 +31,44 @@ export default function HomePage() {
                   />
                 </div>
                 <h1 className="text-2xl lg:text-3xl font-light text-gray-700 mb-6">
-                  Premium Real Estate Services in Den Haag
+                  {t('hero.title')}
                 </h1>
                 <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-                  Professional guidance for buying, selling, and investing in Den Haag&apos;s finest properties.
+                  {t('hero.subtitle')}
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                   <Button variant="green" size="lg" className="bg-green-600 hover:bg-green-700">
                     <Phone className="h-5 w-5 mr-2" />
                     (6) 81 34 85 51
                   </Button>
-                  <Button variant="outline" size="lg" className="border-green-600 text-green-600 hover:bg-green-50">
-                    <Calendar className="h-5 w-5 mr-2" />
-                    Schedule Consultation
-                  </Button>
+                  <Link href="/schedule">
+                    <Button variant="outline" size="lg" className="border-green-600 text-green-600 hover:bg-green-50">
+                      <Calendar className="h-5 w-5 mr-2" />
+                      {t('hero.scheduleButton')}
+                    </Button>
+                  </Link>
                 </div>
               </div>
               
               {/* Right side - Clean stats */}
               <div className="bg-gray-50 p-8 rounded-lg">
-                <h3 className="text-xl font-semibold text-gray-900 mb-6 text-center">Why Choose Glodinas Makelaardij</h3>
+                <h3 className="text-xl font-semibold text-gray-900 mb-6 text-center">{t('stats.title')}</h3>
                 <div className="grid grid-cols-2 gap-6">
                   <div className="text-center">
                     <div className="text-3xl font-bold text-green-600 mb-2">150+</div>
-                    <div className="text-sm text-gray-600">Properties Sold</div>
+                    <div className="text-sm text-gray-600">{t('stats.propertiesSold')}</div>
                   </div>
                   <div className="text-center">
                     <div className="text-3xl font-bold text-green-600 mb-2">5+</div>
-                    <div className="text-sm text-gray-600">Years Experience</div>
+                    <div className="text-sm text-gray-600">{t('stats.yearsExperience')}</div>
                   </div>
                   <div className="text-center">
                     <div className="text-3xl font-bold text-green-600 mb-2">98%</div>
-                    <div className="text-sm text-gray-600">Client Satisfaction</div>
+                    <div className="text-sm text-gray-600">{t('stats.clientSatisfaction')}</div>
                   </div>
                   <div className="text-center">
                     <div className="text-3xl font-bold text-green-600 mb-2">€50M+</div>
-                    <div className="text-sm text-gray-600">Sales Volume</div>
+                    <div className="text-sm text-gray-600">{t('stats.salesVolume')}</div>
                   </div>
                 </div>
               </div>
@@ -77,11 +83,11 @@ export default function HomePage() {
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
               <h2 className="text-3xl font-light text-gray-900 mb-4">
-                Current Properties
+                {t('properties.title')}
               </h2>
               <div className="w-24 h-1 bg-green-600 mx-auto mb-6"></div>
               <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                Handpicked selection of premium homes in Den Haag&apos;s most desirable neighborhoods.
+                {t('properties.subtitle')}
               </p>
             </div>
             
@@ -114,7 +120,7 @@ export default function HomePage() {
                     <span className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs">Parking</span>
                   </div>
                   <Button variant="outline" className="w-full border-green-600 text-green-600 hover:bg-green-50">
-                    View Details
+                    {t('properties.viewDetails')}
                   </Button>
                 </div>
               </div>
@@ -148,7 +154,7 @@ export default function HomePage() {
                     <span className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs">Central</span>
                   </div>
                   <Button variant="outline" className="w-full border-green-600 text-green-600 hover:bg-green-50">
-                    View Details
+                    {t('properties.viewDetails')}
                   </Button>
                 </div>
               </div>
@@ -183,7 +189,7 @@ export default function HomePage() {
                     <span className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs">Investment</span>
                   </div>
                   <Button variant="outline" className="w-full border-green-600 text-green-600 hover:bg-green-50">
-                    View Details
+                    {t('properties.viewDetails')}
                   </Button>
                 </div>
               </div>
@@ -197,14 +203,14 @@ export default function HomePage() {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-3xl font-light text-gray-900 mb-4">
-              Meet Cihat Kaya
+              {t('about.title')}
             </h2>
             <div className="w-24 h-1 bg-green-600 mx-auto mb-8"></div>
             <p className="text-lg text-gray-600 mb-8 leading-relaxed max-w-2xl mx-auto">
-              Your trusted real estate expert at Glodinas Makelaardij, dedicated to helping you find the perfect property or achieve the best value for your investment in Den Haag and surrounding areas.
+              {t('about.description')}
             </p>
             <p className="text-gray-600 mb-12 max-w-2xl mx-auto">
-              Founder of Glodinas Makelaardij, specializing in premium properties throughout Den Haag with a focus on exceptional client service and market expertise.
+              {t('about.expertise')}
             </p>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
@@ -212,34 +218,36 @@ export default function HomePage() {
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Calculator className="h-8 w-8 text-green-600" />
                 </div>
-                <h3 className="font-semibold text-gray-900 mb-2">Property Valuation</h3>
-                <p className="text-sm text-gray-600">Accurate market analysis and valuations</p>
+                <h3 className="font-semibold text-gray-900 mb-2">{t('about.services.valuation.title')}</h3>
+                <p className="text-sm text-gray-600">{t('about.services.valuation.description')}</p>
               </div>
               <div className="text-center">
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Search className="h-8 w-8 text-green-600" />
                 </div>
-                <h3 className="font-semibold text-gray-900 mb-2">Buyer Support</h3>
-                <p className="text-sm text-gray-600">Complete guidance from search to closing</p>
+                <h3 className="font-semibold text-gray-900 mb-2">{t('about.services.buyer.title')}</h3>
+                <p className="text-sm text-gray-600">{t('about.services.buyer.description')}</p>
               </div>
               <div className="text-center">
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Handshake className="h-8 w-8 text-green-600" />
                 </div>
-                <h3 className="font-semibold text-gray-900 mb-2">Expert Negotiation</h3>
-                <p className="text-sm text-gray-600">Securing the best terms for you</p>
+                <h3 className="font-semibold text-gray-900 mb-2">{t('about.services.negotiation.title')}</h3>
+                <p className="text-sm text-gray-600">{t('about.services.negotiation.description')}</p>
               </div>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button variant="green" size="lg" className="bg-green-600 hover:bg-green-700">
                 <Phone className="h-5 w-5 mr-2" />
-                Call (6) 81 34 85 51
+                {t('about.callButton')}
               </Button>
-              <Button variant="outline" size="lg" className="border-green-600 text-green-600 hover:bg-green-50">
-                <Mail className="h-5 w-5 mr-2" />
-                cihatkaya@glodinas.nl
-              </Button>
+              <Link href="/contact">
+                <Button variant="outline" size="lg" className="border-green-600 text-green-600 hover:bg-green-50">
+                  <Mail className="h-5 w-5 mr-2" />
+                  {t('about.emailButton')}
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
