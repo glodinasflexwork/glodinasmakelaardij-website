@@ -26,44 +26,19 @@ const ContactForm = () => {
       [name]: value
     }));
   };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (response.ok) {
-        setSubmitStatus('success');
-        // Reset form
-        setFormData({
-          name: '',
-          email: '',
-          phone: '',
-          subject: '',
-          propertyType: '',
-          budget: '',
-          message: '',
-          preferredContact: 'email'
-        });
-      } else {
-        const errorData = await response.json();
-        console.error('Form submission error:', errorData);
-        setSubmitStatus('error');
-      }
-    } catch (error) {
-      console.error('Network error:', error);
-      setSubmitStatus('error');
-    } finally {
-      setIsSubmitting(false);
-    }
+    // For static site, we'll use a mailto link
+    const mailtoLink = `mailto:cihatkaya@glodinas.nl?subject=${encodeURIComponent(formData.subject || 'Contact Form Submission')}&body=${encodeURIComponent(
+      `Name: ${formData.name}\nEmail: ${formData.email}\nPhone: ${formData.phone}\nProperty Type: ${formData.propertyType}\nBudget: ${formData.budget}\nPreferred Contact: ${formData.preferredContact}\n\nMessage:\n${formData.message}`
+    )}`;
+    
+    window.location.href = mailtoLink;
+    
+    setIsSubmitting(false);
+    setSubmitStatus('Your email client should open with the message. If not, please email us directly at cihatkaya@glodinas.nl');
   };
 
   if (submitStatus === 'success') {
