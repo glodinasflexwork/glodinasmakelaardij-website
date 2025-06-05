@@ -69,13 +69,54 @@ const ScheduleForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!selectedDate || !selectedTime || !formData.meetingType) return;
+    
     setIsSubmitting(true);
     
-    // Simulate form submission
-    setTimeout(() => {
+    const scheduleData = {
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      meetingType: formData.meetingType,
+      date: selectedDate,
+      time: selectedTime,
+      location: formData.location,
+      message: formData.message
+    };
+
+    try {
+      const response = await fetch('/api/schedule', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(scheduleData),
+      });
+
+      if (response.ok) {
+        setSubmitStatus('success');
+        // Reset form
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          meetingType: '',
+          location: 'office',
+          message: ''
+        });
+        setSelectedDate('');
+        setSelectedTime('');
+      } else {
+        const errorData = await response.json();
+        console.error('Form submission error:', errorData);
+        setSubmitStatus('error');
+      }
+    } catch (error) {
+      console.error('Network error:', error);
+      setSubmitStatus('error');
+    } finally {
       setIsSubmitting(false);
-      setSubmitStatus('success');
-    }, 2000);
+    }
   };
 
   if (submitStatus === 'success') {
