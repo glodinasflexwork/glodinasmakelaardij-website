@@ -25,9 +25,10 @@ interface Property {
 
 interface PropertyGalleryProps {
   properties: Property[];
+  language?: 'nl' | 'en';
 }
 
-const PropertyGallery: React.FC<PropertyGalleryProps> = ({ properties }) => {
+const PropertyGallery: React.FC<PropertyGalleryProps> = ({ properties, language = 'nl' }) => {
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -87,7 +88,7 @@ const PropertyGallery: React.FC<PropertyGalleryProps> = ({ properties }) => {
         <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
           <Link href={`/property/${property.id}`}>
             <button className="bg-orange-500 text-white px-6 py-2 rounded-lg font-medium opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 hover:bg-orange-600">
-              Bekijk Details
+              {language === 'en' ? 'View Details' : 'Bekijk Details'}
             </button>
           </Link>
         </div>
@@ -135,10 +136,13 @@ const PropertyGallery: React.FC<PropertyGalleryProps> = ({ properties }) => {
         {/* Header */}
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            Onze Woningen
+            {language === 'en' ? 'Our Properties' : 'Onze Woningen'}
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Ontdek ons zorgvuldig geselecteerde aanbod van hoogwaardige woningen in Den Haag en omgeving.
+            {language === 'en' 
+              ? 'Discover our carefully selected offering of high-quality properties in The Hague and surrounding areas.'
+              : 'Ontdek ons zorgvuldig geselecteerde aanbod van hoogwaardige woningen in Den Haag en omgeving.'
+            }
           </p>
         </div>
 
@@ -147,23 +151,23 @@ const PropertyGallery: React.FC<PropertyGalleryProps> = ({ properties }) => {
           <div className="bg-white rounded-lg p-1 shadow-sm border border-gray-200">
             <button
               onClick={() => setViewMode('grid')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
                 viewMode === 'grid'
                   ? 'bg-orange-500 text-white shadow-sm'
-                  : 'text-gray-600 hover:text-orange-600'
+                  : 'text-gray-600 hover:text-gray-900'
               }`}
             >
-              Galerij
+              {language === 'en' ? 'Gallery' : 'Galerij'}
             </button>
             <button
               onClick={() => setViewMode('list')}
               className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
                 viewMode === 'list'
                   ? 'bg-orange-500 text-white shadow-sm'
-                  : 'text-gray-600 hover:text-orange-600'
+                  : 'text-gray-600 hover:text-gray-900'
               }`}
             >
-              Lijst
+              {language === 'en' ? 'List' : 'Lijst'}
             </button>
           </div>
         </div>
