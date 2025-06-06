@@ -2,7 +2,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import PropertyGallery from '@/components/PropertyGallery';
 import { Button } from '@/components/ui/button';
-import { Phone, Mail, Calendar, Star, Home, Search, Handshake, Building, Calculator } from 'lucide-react';
+import { Calendar, Star, Home, Search, Handshake, Building, Calculator } from 'lucide-react';
 import Link from 'next/link';
 
 export default function EnglishHomePage() {
