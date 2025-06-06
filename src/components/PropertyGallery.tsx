@@ -85,8 +85,8 @@ const PropertyGallery: React.FC<PropertyGalleryProps> = ({ properties, language 
         </div>
 
         {/* Hover Actions */}
-        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
-          <Link href={`/property/${property.id}`}>
+        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center pointer-events-none">
+          <Link href={`/property/${property.id}`} className="pointer-events-auto">
             <button className="bg-orange-500 text-white px-6 py-2 rounded-lg font-medium opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 hover:bg-orange-600">
               {language === 'en' ? 'View Details' : 'Bekijk Details'}
             </button>
