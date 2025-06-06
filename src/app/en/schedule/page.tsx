@@ -1,6 +1,6 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import ContactForm from '@/components/forms/ContactForm';
+import EnglishScheduleForm from '@/components/forms/EnglishScheduleForm';
 import { Phone, Mail, Clock, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -26,7 +26,7 @@ export default function EnglishSchedulePage() {
               <div>
                 <div className="bg-white rounded-xl shadow-lg p-8">
                   <h2 className="text-2xl font-semibold text-gray-900 mb-6">Choose Your Preferred Time</h2>
-                  <ContactForm />
+                  <EnglishScheduleForm />
                 </div>
               </div>
               
