@@ -78,24 +78,46 @@ export default function EnglishHomePage() {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {/* Property 1 */}
+              {/* Jacob Schorerlaan 201 - Featured Property */}
               <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-                <div className="h-48 bg-gray-200 relative">
+                <div className="h-48 bg-gray-200 relative overflow-hidden">
+                  <img 
+                    src="/images/properties/jacob-schorerlaan-201-living-room.jpg" 
+                    alt="Jacob Schorerlaan 201 - Living Room"
+                    className="w-full h-full object-cover"
+                  />
                   <div className="absolute top-4 left-4 bg-green-600 text-white px-3 py-1 rounded-full text-sm font-medium">
-                    New
+                    Available
+                  </div>
+                  <div className="absolute top-4 right-4 bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium">
+                    Energy Label A
                   </div>
                 </div>
                 <div className="p-6">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Modern City House</h3>
-                  <p className="text-gray-600 mb-4">Den Haag Center • 4 rooms • 120m²</p>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Jacob Schorerlaan 201</h3>
+                  <p className="text-gray-600 mb-4">Groente- en Fruitmarkt • 4 rooms • 107m²</p>
                   <div className="flex justify-between items-center mb-4">
-                    <span className="text-2xl font-bold text-green-600">€695,000</span>
+                    <span className="text-2xl font-bold text-green-600">€465,000</span>
                     <div className="flex items-center text-yellow-500">
                       <Star className="h-4 w-4 fill-current" />
                       <Star className="h-4 w-4 fill-current" />
                       <Star className="h-4 w-4 fill-current" />
                       <Star className="h-4 w-4 fill-current" />
                       <Star className="h-4 w-4 fill-current" />
+                    </div>
+                  </div>
+                  <div className="space-y-2 mb-4 text-sm text-gray-600">
+                    <div className="flex justify-between">
+                      <span>Built:</span>
+                      <span>1995</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Plot:</span>
+                      <span>102m²</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Garden:</span>
+                      <span>Sunny backyard</span>
                     </div>
                   </div>
                   <Button variant="outline" className="w-full border-green-600 text-green-600 hover:bg-green-50">
