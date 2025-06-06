@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, Phone, Globe } from 'lucide-react';
+import { Menu, X, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const Header = () => {
@@ -18,7 +18,6 @@ const Header = () => {
   };
 
   const isEnglish = pathname.startsWith('/en');
-  const currentLang = isEnglish ? 'en' : 'nl';
 
   const navigation = [
     { name: isEnglish ? 'Home' : 'Home', href: isEnglish ? '/en' : '/' },
