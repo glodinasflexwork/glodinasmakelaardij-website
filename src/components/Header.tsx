@@ -1,168 +1,161 @@
 'use client'
 
 import React, { useState } from 'react';
-import Image from 'next/image';
-import { usePathname } from 'next/navigation';
-import { Phone, Calendar, Menu, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { Menu, X, Phone, Globe } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
-  
-  // Determine if we're on English pages
-  const isEnglish = pathname.startsWith('/en');
-  
-  const navItems = isEnglish ? [
-    { href: '/en', label: 'Home', color: 'bg-purple-500 hover:bg-purple-600' },
-    { href: '/en#about', label: 'About', color: 'bg-teal-500 hover:bg-teal-600' },
-    { href: '/en#properties', label: 'Properties', color: 'bg-pink-500 hover:bg-pink-600' },
-    { href: '/en/contact', label: 'Contact', color: 'bg-green-500 hover:bg-green-600' },
-  ] : [
-    { href: '/', label: 'Home', color: 'bg-purple-500 hover:bg-purple-600' },
-    { href: '/#about', label: 'Over Ons', color: 'bg-teal-500 hover:bg-teal-600' },
-    { href: '/#properties', label: 'Woningen', color: 'bg-pink-500 hover:bg-pink-600' },
-    { href: '/contact', label: 'Contact', color: 'bg-green-500 hover:bg-green-600' },
-  ];
 
   const isActive = (path: string) => {
-    if (path === '/' || path === '/en') {
-      return pathname === path;
+    if (path === '/') {
+      return pathname === '/' || pathname === '/nl';
     }
-    return pathname === path || pathname.startsWith(path + '/');
+    return pathname.includes(path);
   };
 
-  return (
-    <header className="bg-white shadow-md sticky top-0 z-50">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-20">
-          {/* Logo */}
-          <Link href={isEnglish ? '/en' : '/'} className="flex-shrink-0">
-            <Image 
-              src="/logo.png" 
-              alt="Glodinas Makelaardij" 
-              width={200}
-              height={60}
-              className="h-12 w-auto"
-              priority
-            />
-          </Link>
+  const isEnglish = pathname.startsWith('/en');
+  const currentLang = isEnglish ? 'en' : 'nl';
 
-          {/* Desktop Navigation - Rentastone Style */}
-          <nav className="hidden md:flex items-center space-x-2">
-            {navItems.map((item) => (
+  const navigation = [
+    { name: isEnglish ? 'Home' : 'Home', href: isEnglish ? '/en' : '/' },
+    { name: isEnglish ? 'About' : 'Over Ons', href: isEnglish ? '/en/about' : '/about' },
+    { name: isEnglish ? 'Properties' : 'Woningen', href: isEnglish ? '/en/properties' : '/properties' },
+    { name: isEnglish ? 'Contact' : 'Contact', href: isEnglish ? '/en/contact' : '/contact' },
+  ];
+
+  return (
+    <header className="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
+          {/* Logo */}
+          <div className="flex-shrink-0">
+            <Link href={isEnglish ? '/en' : '/'} className="flex items-center">
+              <img
+                className="h-10 w-auto"
+                src="/logo.png"
+                alt="Glodinas Makelaardij"
+              />
+            </Link>
+          </div>
+
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex space-x-1">
+            {navigation.map((item) => (
               <Link
-                key={item.href}
+                key={item.name}
                 href={item.href}
-                className={`transition-all px-4 py-2 rounded-md text-white font-medium ${
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                   isActive(item.href)
-                    ? `${item.color} shadow-md`
-                    : `${item.color} opacity-90 hover:opacity-100 hover:shadow-md`
+                    ? 'bg-orange-500 text-white shadow-md'
+                    : 'text-gray-700 hover:bg-orange-50 hover:text-orange-600'
                 }`}
               >
-                {item.label}
+                {item.name}
               </Link>
             ))}
           </nav>
 
-          {/* Desktop Contact Button & Language Switcher */}
-          <div className="hidden md:flex items-center space-x-3">
-            {/* Language Switcher - Rentastone Style */}
-            <div className="flex items-center border border-gray-200 rounded-md overflow-hidden">
-              <Link 
-                href="/" 
-                className={`px-3 py-1.5 text-sm font-medium transition-colors ${
-                  !isEnglish 
-                    ? 'bg-amber-500 text-white' 
-                    : 'bg-white text-gray-700 hover:bg-gray-100'
+          {/* Right side - Language switcher and CTA */}
+          <div className="hidden md:flex items-center space-x-4">
+            {/* Language Switcher */}
+            <div className="flex items-center bg-gray-50 rounded-lg p-1">
+              <Link
+                href="/"
+                className={`px-3 py-1 rounded-md text-sm font-medium transition-all duration-200 ${
+                  !isEnglish
+                    ? 'bg-orange-500 text-white shadow-sm'
+                    : 'text-gray-600 hover:text-orange-600'
                 }`}
               >
                 NL
               </Link>
-              <Link 
-                href="/en" 
-                className={`px-3 py-1.5 text-sm font-medium transition-colors ${
-                  isEnglish 
-                    ? 'bg-amber-500 text-white' 
-                    : 'bg-white text-gray-700 hover:bg-gray-100'
+              <Link
+                href="/en"
+                className={`px-3 py-1 rounded-md text-sm font-medium transition-all duration-200 ${
+                  isEnglish
+                    ? 'bg-orange-500 text-white shadow-sm'
+                    : 'text-gray-600 hover:text-orange-600'
                 }`}
               >
                 EN
               </Link>
             </div>
-            
-            {/* Call Button - Rentastone Style */}
-            <a 
-              href="tel:+31681348551" 
-              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md font-medium flex items-center transition-colors"
+
+            {/* Phone */}
+            <a
+              href="tel:+31681348551"
+              className="flex items-center text-gray-600 hover:text-orange-600 transition-colors duration-200"
             >
               <Phone className="h-4 w-4 mr-2" />
-              (6) 81 34 85 51
+              <span className="text-sm font-medium">(6) 81 34 85 51</span>
             </a>
-            
-            {/* Schedule Button - Rentastone Style */}
+
+            {/* CTA Button */}
             <Link href={isEnglish ? '/en/schedule' : '/schedule'}>
-              <Button 
-                size="sm" 
-                className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-md font-medium transition-colors"
-              >
-                <Calendar className="h-4 w-4 mr-2" />
+              <Button className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg">
                 {isEnglish ? 'Book Consultation' : 'Afspraak Maken'}
               </Button>
             </Link>
           </div>
 
-          {/* Mobile menu button - Rentastone Style */}
-          <button
-            className="md:hidden p-2 bg-amber-500 text-white rounded-md"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            aria-label="Toggle menu"
-          >
-            {isMenuOpen ? (
-              <X className="h-6 w-6" />
-            ) : (
-              <Menu className="h-6 w-6" />
-            )}
-          </button>
+          {/* Mobile menu button */}
+          <div className="md:hidden">
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="text-gray-600 hover:text-orange-600 transition-colors duration-200"
+            >
+              {isMenuOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
+            </button>
+          </div>
         </div>
 
-        {/* Mobile Navigation - Rentastone Style */}
+        {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-gray-100 bg-white shadow-lg rounded-b-lg">
-            <nav className="flex flex-col space-y-2 px-2">
-              {navItems.map((item) => (
+          <div className="md:hidden border-t border-gray-100 bg-white">
+            <div className="px-2 pt-2 pb-3 space-y-1">
+              {navigation.map((item) => (
                 <Link
-                  key={item.href}
+                  key={item.name}
                   href={item.href}
-                  className={`transition-all px-4 py-3 rounded-md text-white font-medium ${item.color}`}
+                  className={`block px-3 py-2 rounded-lg text-base font-medium transition-all duration-200 ${
+                    isActive(item.href)
+                      ? 'bg-orange-500 text-white'
+                      : 'text-gray-700 hover:bg-orange-50 hover:text-orange-600'
+                  }`}
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  {item.label}
+                  {item.name}
                 </Link>
               ))}
               
               {/* Mobile Language Switcher */}
-              <div className="flex items-center space-x-2 py-3 px-4">
-                <span className="text-sm text-gray-600 mr-2">{isEnglish ? 'Language:' : 'Taal:'}</span>
-                <div className="flex items-center border border-gray-200 rounded-md overflow-hidden">
-                  <Link 
-                    href="/" 
-                    className={`px-3 py-1.5 text-sm font-medium transition-colors ${
-                      !isEnglish 
-                        ? 'bg-amber-500 text-white' 
-                        : 'bg-white text-gray-700 hover:bg-gray-100'
+              <div className="flex items-center justify-between pt-4 border-t border-gray-100 mt-4">
+                <div className="flex items-center bg-gray-50 rounded-lg p-1">
+                  <Link
+                    href="/"
+                    className={`px-3 py-1 rounded-md text-sm font-medium transition-all duration-200 ${
+                      !isEnglish
+                        ? 'bg-orange-500 text-white'
+                        : 'text-gray-600'
                     }`}
                     onClick={() => setIsMenuOpen(false)}
                   >
                     NL
                   </Link>
-                  <Link 
-                    href="/en" 
-                    className={`px-3 py-1.5 text-sm font-medium transition-colors ${
-                      isEnglish 
-                        ? 'bg-amber-500 text-white' 
-                        : 'bg-white text-gray-700 hover:bg-gray-100'
+                  <Link
+                    href="/en"
+                    className={`px-3 py-1 rounded-md text-sm font-medium transition-all duration-200 ${
+                      isEnglish
+                        ? 'bg-orange-500 text-white'
+                        : 'text-gray-600'
                     }`}
                     onClick={() => setIsMenuOpen(false)}
                   >
@@ -170,25 +163,26 @@ const Header = () => {
                   </Link>
                 </div>
               </div>
-              
-              <div className="pt-4 border-t border-gray-100 px-2 space-y-3">
-                <a 
-                  href="tel:+31681348551" 
-                  className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-3 rounded-md font-medium flex items-center transition-colors w-full"
-                >
-                  <Phone className="h-4 w-4 mr-2" />
-                  (6) 81 34 85 51
-                </a>
-                <Link 
-                  href={isEnglish ? '/en/schedule' : '/schedule'}
-                  onClick={() => setIsMenuOpen(false)}
-                  className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-3 rounded-md font-medium flex items-center justify-center transition-colors w-full"
-                >
-                  <Calendar className="h-4 w-4 mr-2" />
+
+              {/* Mobile Phone */}
+              <a
+                href="tel:+31681348551"
+                className="flex items-center px-3 py-2 text-gray-600 hover:text-orange-600 transition-colors duration-200"
+              >
+                <Phone className="h-4 w-4 mr-2" />
+                <span className="text-sm font-medium">(6) 81 34 85 51</span>
+              </a>
+
+              {/* Mobile CTA */}
+              <Link
+                href={isEnglish ? '/en/schedule' : '/schedule'}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white py-2 rounded-lg font-medium transition-all duration-200 mt-2">
                   {isEnglish ? 'Book Consultation' : 'Afspraak Maken'}
-                </Link>
-              </div>
-            </nav>
+                </Button>
+              </Link>
+            </div>
           </div>
         )}
       </div>

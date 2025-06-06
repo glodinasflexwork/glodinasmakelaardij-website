@@ -82,7 +82,7 @@ export default function HomePage() {
     <div className="min-h-screen bg-white">
       <Header />
       
-      {/* Hero Section - Rentastone Style */}
+      {/* Hero Section - Clean Orange & White */}
       <section id="home" className="relative h-screen flex items-center justify-center overflow-hidden">
         {/* Background Image */}
         <div 
@@ -92,28 +92,35 @@ export default function HomePage() {
           }}
         />
         
-        {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-black/30" />
+        {/* Clean Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-transparent" />
         
         {/* Content */}
         <div className="relative z-10 container mx-auto px-4 text-center text-white">
           <div className="max-w-4xl mx-auto">
-            <p className="text-lg md:text-xl font-medium mb-4 text-orange-300 tracking-wide uppercase">
-              UW WONING ZO VERKOCHT!
+            <p className="text-lg md:text-xl font-medium mb-4 text-orange-400 tracking-wide">
+              PROFESSIONELE MAKELAARSDIENSTEN
             </p>
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight mb-8">
-              Wilt u uw woning<br />
-              verkopen in <span className="text-orange-400">Den Haag</span>?
+              Uw woning verkopen<br />
+              in <span className="text-orange-400">Den Haag</span>?
             </h1>
+            <p className="text-xl md:text-2xl text-white/90 mb-12 max-w-2xl mx-auto">
+              Wij zorgen voor een snelle en succesvolle verkoop tegen de beste prijs
+            </p>
             
-            {/* CTA Button - Rentastone Style */}
-            <div className="mb-12">
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
               <Link href="/contact">
-                <Button 
-                  size="lg" 
-                  className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 text-lg font-semibold rounded-none uppercase tracking-wide shadow-2xl transform hover:scale-105 transition-all duration-300"
-                >
-                  KLIK HIER VOOR MEER INFORMATIE
+                <Button size="lg" className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 text-lg font-semibold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300">
+                  <Mail className="mr-2 h-5 w-5" />
+                  Neem Contact Op
+                </Button>
+              </Link>
+              <Link href="/schedule">
+                <Button variant="outline" size="lg" className="border-2 border-white text-white hover:bg-white hover:text-gray-900 px-8 py-4 text-lg font-semibold backdrop-blur-sm">
+                  <Calendar className="mr-2 h-5 w-5" />
+                  Plan Afspraak
                 </Button>
               </Link>
             </div>
@@ -136,15 +143,6 @@ export default function HomePage() {
                 <div className="text-3xl md:text-4xl font-bold text-orange-400">15+</div>
                 <div className="text-sm md:text-base text-white/90">Jaar Ervaring</div>
               </div>
-            </div>
-          </div>
-        </div>
-        
-        {/* Scroll Indicator */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <div className="w-12 h-12 rounded-full bg-orange-500/20 flex items-center justify-center">
-            <div className="w-6 h-6 border-2 border-white rounded-full flex items-center justify-center">
-              <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
             </div>
           </div>
         </div>
