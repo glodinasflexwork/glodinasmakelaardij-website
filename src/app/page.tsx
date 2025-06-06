@@ -11,7 +11,7 @@ export default function HomePage() {
       id: 'jacob-schorerlaan-201',
       title: 'Jacob Schorerlaan 201',
       location: 'Den Haag, Groente- en Fruitmarkt',
-      price: '€465.000',
+      price: '€465.000 k.k.',
       originalPrice: '€475.000',
       size: '107m²',
       bedrooms: 4,
@@ -26,12 +26,13 @@ export default function HomePage() {
         '/images/properties/jacob-schorerlaan-201-roof.jpg',
       ],
       rating: 5,
+      status: 'new' as const,
     },
     {
       id: 'groenewegje-76',
       title: 'Groenewegje 76',
       location: 'Den Haag, Centrum',
-      price: '€695.000',
+      price: '€695.000 k.k.',
       size: '120m²',
       bedrooms: 3,
       energyLabel: 'B',
@@ -41,12 +42,13 @@ export default function HomePage() {
         '/images/gallery/groenewegje-76.jpg',
       ],
       rating: 5,
+      status: 'under_offer' as const,
     },
     {
       id: 'westeinde-11',
       title: 'Westeinde 11-D',
       location: 'Den Haag, Centrum',
-      price: '€525.000',
+      price: '€525.000 k.k.',
       size: '95m²',
       bedrooms: 2,
       energyLabel: 'C',
@@ -56,12 +58,13 @@ export default function HomePage() {
         '/images/gallery/westeinde-11.jpg',
       ],
       rating: 4,
+      status: 'available' as const,
     },
     {
       id: 'rijslag-27',
       title: 'Rijslag 27',
       location: 'Den Haag, Benoordenhout',
-      price: '€1.250.000',
+      price: '€1.250.000 k.k.',
       size: '180m²',
       bedrooms: 5,
       energyLabel: 'A',
@@ -71,6 +74,7 @@ export default function HomePage() {
         '/images/gallery/rijslag-27.jpg',
       ],
       rating: 5,
+      status: 'under_offer' as const,
     },
   ];
 
@@ -78,56 +82,69 @@ export default function HomePage() {
     <div className="min-h-screen bg-white">
       <Header />
       
-      {/* Hero Section - Simplified and more elegant */}
-      <section id="home" className="relative bg-white py-20 lg:py-32">
-        <div className="container mx-auto px-4">
-          <div className="max-w-6xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-              <div className="space-y-8">
-                <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 leading-tight">
-                  Uw Vertrouwde <span className="text-green-600">Makelaar</span> in Den Haag
-                </h1>
-                <p className="text-xl text-gray-600 leading-relaxed">
-                  Deskundige begeleiding bij het kopen, verkopen en investeren in premium woningen in Den Haag en omgeving.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <Link href="/contact">
-                    <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 text-lg">
-                      <Calendar className="mr-2 h-5 w-5" />
-                      Gratis Consult
-                    </Button>
-                  </Link>
-                  <a href="tel:+31681348551">
-                    <Button variant="outline" size="lg" className="border-green-600 text-green-600 hover:bg-green-50 px-8 py-4 text-lg">
-                      <Phone className="mr-2 h-5 w-5" />
-                      Bel Nu
-                    </Button>
-                  </a>
-                </div>
+      {/* Hero Section - Rentastone Style */}
+      <section id="home" className="relative h-screen flex items-center justify-center overflow-hidden">
+        {/* Background Image */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: "url('https://images.unsplash.com/photo-1449824913935-59a10b8d2000?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80')"
+          }}
+        />
+        
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-black/30" />
+        
+        {/* Content */}
+        <div className="relative z-10 container mx-auto px-4 text-center text-white">
+          <div className="max-w-4xl mx-auto">
+            <p className="text-lg md:text-xl font-medium mb-4 text-orange-300 tracking-wide uppercase">
+              UW WONING ZO VERKOCHT!
+            </p>
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight mb-8">
+              Wilt u uw woning<br />
+              verkopen in <span className="text-orange-400">Den Haag</span>?
+            </h1>
+            
+            {/* CTA Button - Rentastone Style */}
+            <div className="mb-12">
+              <Link href="/contact">
+                <Button 
+                  size="lg" 
+                  className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 text-lg font-semibold rounded-none uppercase tracking-wide shadow-2xl transform hover:scale-105 transition-all duration-300"
+                >
+                  KLIK HIER VOOR MEER INFORMATIE
+                </Button>
+              </Link>
+            </div>
+            
+            {/* Stats Row */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-3xl mx-auto">
+              <div className="text-center">
+                <div className="text-3xl md:text-4xl font-bold text-orange-400">150+</div>
+                <div className="text-sm md:text-base text-white/90">Verkochte Woningen</div>
               </div>
-              
-              <div className="relative">
-                <div className="bg-green-50 rounded-2xl p-8">
-                  <div className="grid grid-cols-2 gap-6">
-                    <div className="text-center">
-                      <div className="text-3xl font-bold text-green-600">150+</div>
-                      <div className="text-gray-600">Verkochte Woningen</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-3xl font-bold text-green-600">98%</div>
-                      <div className="text-gray-600">Klanttevredenheid</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-3xl font-bold text-green-600">€50M+</div>
-                      <div className="text-gray-600">Verkoopvolume</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-3xl font-bold text-green-600">15+</div>
-                      <div className="text-gray-600">Jaar Ervaring</div>
-                    </div>
-                  </div>
-                </div>
+              <div className="text-center">
+                <div className="text-3xl md:text-4xl font-bold text-orange-400">98%</div>
+                <div className="text-sm md:text-base text-white/90">Klanttevredenheid</div>
               </div>
+              <div className="text-center">
+                <div className="text-3xl md:text-4xl font-bold text-orange-400">€50M+</div>
+                <div className="text-sm md:text-base text-white/90">Verkoopvolume</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl md:text-4xl font-bold text-orange-400">15+</div>
+                <div className="text-sm md:text-base text-white/90">Jaar Ervaring</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Scroll Indicator */}
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+          <div className="w-12 h-12 rounded-full bg-orange-500/20 flex items-center justify-center">
+            <div className="w-6 h-6 border-2 border-white rounded-full flex items-center justify-center">
+              <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
             </div>
           </div>
         </div>
