@@ -217,7 +217,7 @@ const PropertyCard: React.FC<{ property: Property; onGalleryClick: () => void }>
             size="sm"
             className="bg-white/20 border-white/30 text-white hover:bg-white/30 hover:border-white/50 transition-all"
           >
-            {property.images.length} foto's
+            {property.images.length} foto&apos;s
           </Button>
         </div>
       </div>
