@@ -15,6 +15,8 @@ export default function HomePage() {
       originalPrice: '€475.000',
       size: '107m²',
       bedrooms: 4,
+      bathrooms: 1,
+      area: 107,
       energyLabel: 'A',
       features: ['Tuin', 'Serre', 'Moderne Keuken', 'Parkeren'],
       mainImage: '/images/properties/jacob-schorerlaan-201-living-room.jpg',
@@ -35,6 +37,8 @@ export default function HomePage() {
       price: '€695.000 k.k.',
       size: '120m²',
       bedrooms: 3,
+      bathrooms: 2,
+      area: 120,
       energyLabel: 'B',
       features: ['Grachtzicht', 'Historisch', 'Centrale Ligging'],
       mainImage: '/images/gallery/groenewegje-76.jpg',
@@ -51,6 +55,8 @@ export default function HomePage() {
       price: '€525.000 k.k.',
       size: '95m²',
       bedrooms: 2,
+      bathrooms: 1,
+      area: 95,
       energyLabel: 'C',
       features: ['Stadscentrum', 'Gerenoveerd', 'Balkon'],
       mainImage: '/images/gallery/westeinde-11.jpg',
@@ -67,6 +73,8 @@ export default function HomePage() {
       price: '€1.250.000 k.k.',
       size: '180m²',
       bedrooms: 5,
+      bathrooms: 3,
+      area: 180,
       energyLabel: 'A',
       features: ['Zwembad', 'Grote Tuin', 'Moderne Villa'],
       mainImage: '/images/gallery/rijslag-27.jpg',
@@ -148,7 +156,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Featured Properties */}
+      {/* Property Gallery */}
       <section id="properties" className="py-20 bg-gray-50">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
@@ -160,113 +168,10 @@ export default function HomePage() {
                 Ontdek onze selectie van premium woningen in Den Haag
               </p>
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {/* Jacob Schorerlaan 201 - Featured Property */}
-              <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-                <div className="h-48 bg-gray-200 relative overflow-hidden">
-                  <img 
-                    src="/images/properties/jacob-schorerlaan-201-living-room.jpg" 
-                    alt="Jacob Schorerlaan 201 - Woonkamer"
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute top-4 left-4 bg-green-600 text-white px-3 py-1 rounded-full text-sm font-medium">
-                    Beschikbaar
-                  </div>
-                  <div className="absolute top-4 right-4 bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium">
-                    Energielabel A
-                  </div>
-                </div>
-                <div className="p-6">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Jacob Schorerlaan 201</h3>
-                  <p className="text-gray-600 mb-4">Groente- en Fruitmarkt • 4 kamers • 107m²</p>
-                  <div className="flex justify-between items-center mb-4">
-                    <span className="text-2xl font-bold text-green-600">€465.000</span>
-                    <div className="flex items-center text-yellow-500">
-                      <Star className="h-4 w-4 fill-current" />
-                      <Star className="h-4 w-4 fill-current" />
-                      <Star className="h-4 w-4 fill-current" />
-                      <Star className="h-4 w-4 fill-current" />
-                      <Star className="h-4 w-4 fill-current" />
-                    </div>
-                  </div>
-                  <div className="space-y-2 mb-4 text-sm text-gray-600">
-                    <div className="flex justify-between">
-                      <span>Bouwjaar:</span>
-                      <span>1995</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Perceel:</span>
-                      <span>102m²</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Tuin:</span>
-                      <span>Zonnige achtertuin</span>
-                    </div>
-                  </div>
-                  <Button variant="outline" className="w-full border-green-600 text-green-600 hover:bg-green-50">
-                    Bekijk Details
-                  </Button>
-                </div>
-              </div>
-
-              {/* Property 2 */}
-              <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-                <div className="h-48 bg-gray-200 relative">
-                  <div className="absolute top-4 left-4 bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium">
-                    Exclusief
-                  </div>
-                </div>
-                <div className="p-6">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Luxe Appartement</h3>
-                  <p className="text-gray-600 mb-4">Scheveningen • 3 kamers • 95m²</p>
-                  <div className="flex justify-between items-center mb-4">
-                    <span className="text-2xl font-bold text-green-600">€525.000</span>
-                    <div className="flex items-center text-yellow-500">
-                      <Star className="h-4 w-4 fill-current" />
-                      <Star className="h-4 w-4 fill-current" />
-                      <Star className="h-4 w-4 fill-current" />
-                      <Star className="h-4 w-4 fill-current" />
-                      <Star className="h-4 w-4" />
-                    </div>
-                  </div>
-                  <Button variant="outline" className="w-full border-green-600 text-green-600 hover:bg-green-50">
-                    Bekijk Details
-                  </Button>
-                </div>
-              </div>
-
-              {/* Property 3 */}
-              <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-                <div className="h-48 bg-gray-200 relative">
-                  <div className="absolute top-4 left-4 bg-orange-600 text-white px-3 py-1 rounded-full text-sm font-medium">
-                    Populair
-                  </div>
-                </div>
-                <div className="p-6">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Familie Villa</h3>
-                  <p className="text-gray-600 mb-4">Wassenaar • 6 kamers • 180m²</p>
-                  <div className="flex justify-between items-center mb-4">
-                    <span className="text-2xl font-bold text-green-600">€895.000</span>
-                    <div className="flex items-center text-yellow-500">
-                      <Star className="h-4 w-4 fill-current" />
-                      <Star className="h-4 w-4 fill-current" />
-                      <Star className="h-4 w-4 fill-current" />
-                      <Star className="h-4 w-4 fill-current" />
-                      <Star className="h-4 w-4 fill-current" />
-                    </div>
-                  </div>
-                  <Button variant="outline" className="w-full border-green-600 text-green-600 hover:bg-green-50">
-                    Bekijk Details
-                  </Button>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </section>
 
-      {/* Property Gallery */}
       <PropertyGallery properties={galleryProperties} />
 
       {/* About Section */}
