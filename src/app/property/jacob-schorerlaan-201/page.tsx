@@ -19,23 +19,23 @@ export default function JacobSchorerlaanProperty() {
     id: 'jacob-schorerlaan-201',
     title: 'Jacob Schorerlaan 201',
     address: 'Jacob Schorerlaan 201',
-    city: 'Den Haag',
-    price: '€465.000',
+    city: '2515 XS Den Haag',
+    price: '€475.000',
     priceType: 'k.k.',
-    bedrooms: 3,
+    bedrooms: 4,
     bathrooms: 1,
     area: 107,
-    plotSize: 150,
+    plotSize: 102,
     buildYear: 1995,
     energyLabel: 'A',
-    status: 'Beschikbaar',
-    description: `Deze prachtige woning aan de Jacob Schorerlaan 201 biedt een unieke kans om te wonen in het hart van Den Haag, nabij de bruisende Groente- en Fruitmarkt. De woning is volledig gerenoveerd en voorzien van moderne voorzieningen, terwijl de authentieke charme behouden is gebleven.
+    status: 'Te koop',
+    description: `Grote 3-laags eengezinswoning met zonnige achtertuin gelegen in de gewilde Groente- en Fruitmarkt buurt van Den Haag. Deze woning biedt veel ruimte en comfort voor een gezin.
 
-    Met een woonoppervlakte van 107m² biedt deze woning ruime leefruimtes, waaronder een lichte woonkamer met grote ramen die zorgen voor veel natuurlijk licht. De moderne keuken is volledig uitgerust met hoogwaardige apparatuur en biedt voldoende ruimte voor het bereiden van maaltijden.
+Met een woonoppervlakte van 107m² biedt deze woning ruime leefruimtes, waaronder een lichte woonkamer met grote ramen die zorgen voor veel natuurlijk licht. De moderne keuken is volledig uitgerust met hoogwaardige apparatuur en biedt voldoende ruimte voor het bereiden van maaltijden.
 
-    De woning beschikt over drie comfortabele slaapkamers en een moderne badkamer. De ligging is ideaal voor wie houdt van stedelijk leven met alle voorzieningen binnen handbereik, waaronder winkels, restaurants, openbaar vervoer en recreatiemogelijkheden.
+De woning beschikt over vier comfortabele slaapkamers en een moderne badkamer. De ligging is ideaal voor wie houdt van stedelijk leven met alle voorzieningen binnen handbereik, waaronder winkels, restaurants, openbaar vervoer en recreatiemogelijkheden.
 
-    De energielabel A zorgt voor lage energiekosten en een duurzame leefomgeving. Dit is een uitstekende kans voor zowel starters als investeerders die op zoek zijn naar een kwalitatief hoogwaardige woning in een gewilde buurt van Den Haag.`,
+De energielabel A zorgt voor lage energiekosten en een duurzame leefomgeving. Dit is een uitstekende kans voor zowel starters als investeerders die op zoek zijn naar een kwalitatief hoogwaardige woning in een gewilde buurt van Den Haag.`,
     
     features: [
       {
