@@ -1,10 +1,79 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import PropertyGallery from '@/components/PropertyGallery';
 import { Button } from '@/components/ui/button';
 import { Phone, Mail, Calendar, Star, Home, Search, Handshake, Building, Calculator } from 'lucide-react';
 import Link from 'next/link';
 
 export default function EnglishHomePage() {
+  const galleryProperties = [
+    {
+      id: 'jacob-schorerlaan-201',
+      title: 'Jacob Schorerlaan 201',
+      location: 'Den Haag, Groente- en Fruitmarkt',
+      price: '€465,000',
+      originalPrice: '€475,000',
+      size: '107m²',
+      bedrooms: 4,
+      energyLabel: 'A',
+      features: ['Garden', 'Conservatory', 'Modern Kitchen', 'Parking'],
+      mainImage: '/images/properties/jacob-schorerlaan-201-living-room.jpg',
+      images: [
+        '/images/properties/jacob-schorerlaan-201-living-room.jpg',
+        '/images/properties/jacob-schorerlaan-201-kitchen.jpg',
+        '/images/properties/jacob-schorerlaan-201-bathroom.jpg',
+        '/images/properties/jacob-schorerlaan-201-exterior.jpg',
+        '/images/properties/jacob-schorerlaan-201-roof.jpg',
+      ],
+      rating: 5,
+    },
+    {
+      id: 'groenewegje-76',
+      title: 'Groenewegje 76',
+      location: 'Den Haag, City Center',
+      price: '€695,000',
+      size: '120m²',
+      bedrooms: 3,
+      energyLabel: 'B',
+      features: ['Canal View', 'Historic', 'Central Location'],
+      mainImage: '/images/gallery/groenewegje-76.jpg',
+      images: [
+        '/images/gallery/groenewegje-76.jpg',
+      ],
+      rating: 5,
+    },
+    {
+      id: 'westeinde-11',
+      title: 'Westeinde 11-D',
+      location: 'Den Haag, City Center',
+      price: '€525,000',
+      size: '95m²',
+      bedrooms: 2,
+      energyLabel: 'C',
+      features: ['City Center', 'Renovated', 'Balcony'],
+      mainImage: '/images/gallery/westeinde-11.jpg',
+      images: [
+        '/images/gallery/westeinde-11.jpg',
+      ],
+      rating: 4,
+    },
+    {
+      id: 'rijslag-27',
+      title: 'Rijslag 27',
+      location: 'Den Haag, Benoordenhout',
+      price: '€1,250,000',
+      size: '180m²',
+      bedrooms: 5,
+      energyLabel: 'A',
+      features: ['Swimming Pool', 'Large Garden', 'Modern Villa'],
+      mainImage: '/images/gallery/rijslag-27.jpg',
+      images: [
+        '/images/gallery/rijslag-27.jpg',
+      ],
+      rating: 5,
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-white">
       <Header />
@@ -181,6 +250,9 @@ export default function EnglishHomePage() {
           </div>
         </div>
       </section>
+
+      {/* Property Gallery */}
+      <PropertyGallery properties={galleryProperties} />
 
       {/* About Section */}
       <section id="about" className="py-20 bg-white">
