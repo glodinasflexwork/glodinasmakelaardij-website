@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { ChevronLeft, ChevronRight, X, MapPin, Home, Bed, Bath, Square, Eye, Heart } from 'lucide-react';
+import { ChevronLeft, ChevronRight, X, MapPin, Bed, Bath, Square, Eye, Heart } from 'lucide-react';
 
 interface PropertyImage {
   src: string;
@@ -30,11 +30,6 @@ const PropertyGallery: React.FC<PropertyGalleryProps> = ({ properties }) => {
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-
-  const openModal = (property: Property) => {
-    setSelectedProperty(property);
-    setCurrentImageIndex(0);
-  };
 
   const closeModal = () => {
     setSelectedProperty(null);

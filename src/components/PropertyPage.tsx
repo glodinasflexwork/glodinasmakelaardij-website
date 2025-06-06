@@ -14,14 +14,7 @@ import {
   ChevronLeft,
   ChevronRight,
   X,
-  Home,
-  Car,
-  Zap,
-  Thermometer,
-  Wifi,
-  Shield,
-  TreePine,
-  Building
+  Zap
 } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
