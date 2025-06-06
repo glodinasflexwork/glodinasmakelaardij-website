@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { X, ChevronLeft, ChevronRight, Star } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, MapPin, Home, Ruler } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface Property {
@@ -17,6 +17,7 @@ interface Property {
   mainImage: string;
   images: string[];
   rating: number;
+  status?: 'available' | 'under_offer' | 'new' | 'sold';
 }
 
 interface PropertyGalleryProps {
@@ -121,6 +122,37 @@ const PropertyCard: React.FC<{ property: Property; onGalleryClick: () => void }>
   property,
   onGalleryClick,
 }) => {
+  const getStatusBadge = (status?: string) => {
+    switch (status) {
+      case 'new':
+        return (
+          <div className="absolute top-4 left-4 z-10">
+            <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium shadow-lg">
+              Nieuw in verkoop
+            </span>
+          </div>
+        );
+      case 'under_offer':
+        return (
+          <div className="absolute top-4 left-4 z-10">
+            <span className="bg-orange-500 text-white px-3 py-1 rounded-full text-sm font-medium shadow-lg">
+              Onder bod
+            </span>
+          </div>
+        );
+      case 'sold':
+        return (
+          <div className="absolute top-4 left-4 z-10">
+            <span className="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-medium shadow-lg">
+              Verkocht
+            </span>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
   const getEnergyLabelColor = (label: string) => {
     switch (label) {
       case 'A': return 'bg-green-600';
@@ -132,59 +164,62 @@ const PropertyCard: React.FC<{ property: Property; onGalleryClick: () => void }>
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-      <div className="relative h-64 overflow-hidden">
+    <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 group">
+      <div className="relative h-80 overflow-hidden">
         <img
           src={property.mainImage}
           alt={property.title}
-          className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
-        <div className="absolute top-4 left-4">
-          <span className={`${getEnergyLabelColor(property.energyLabel)} text-white px-3 py-1 rounded-full text-sm font-medium`}>
-            Energy {property.energyLabel}
+        
+        {/* Status Badge */}
+        {getStatusBadge(property.status)}
+        
+        {/* Energy Label */}
+        <div className="absolute top-4 right-4">
+          <span className={`${getEnergyLabelColor(property.energyLabel)} text-white px-2 py-1 rounded text-xs font-medium shadow-lg`}>
+            {property.energyLabel}
           </span>
         </div>
-        <div className="absolute top-4 right-4 flex items-center text-yellow-400">
-          {[...Array(5)].map((_, i) => (
-            <Star
-              key={i}
-              size={16}
-              className={i < property.rating ? 'fill-current' : ''}
-            />
-          ))}
+
+        {/* Property Info Overlay */}
+        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-6">
+          <h3 className="text-xl font-bold text-white mb-1">{property.title}</h3>
+          <div className="flex items-center text-white/90 text-sm mb-2">
+            <MapPin size={14} className="mr-1" />
+            <span>{property.location}</span>
+          </div>
+          <div className="flex items-center space-x-4 text-white/80 text-sm">
+            <div className="flex items-center">
+              <Home size={14} className="mr-1" />
+              <span>{property.bedrooms} kamers</span>
+            </div>
+            <div className="flex items-center">
+              <Ruler size={14} className="mr-1" />
+              <span>{property.size}</span>
+            </div>
+          </div>
         </div>
       </div>
       
-      <div className="p-6">
-        <h3 className="text-xl font-semibold text-gray-900 mb-2">{property.title}</h3>
-        <p className="text-gray-600 mb-4">{property.location} • {property.bedrooms} bedrooms • {property.size}</p>
-        
-        <div className="flex justify-between items-center mb-4">
+      {/* Price Bar - Rentastone Style */}
+      <div className="bg-gradient-to-r from-amber-500 to-orange-500 p-4">
+        <div className="flex justify-between items-center">
           <div>
-            <span className="text-2xl font-bold text-purple-600">{property.price}</span>
+            <span className="text-2xl font-bold text-white">{property.price}</span>
             {property.originalPrice && (
-              <span className="text-gray-400 line-through ml-2">{property.originalPrice}</span>
+              <span className="text-white/80 line-through ml-2 text-sm">{property.originalPrice}</span>
             )}
           </div>
+          <Button
+            onClick={onGalleryClick}
+            variant="outline"
+            size="sm"
+            className="bg-white/20 border-white/30 text-white hover:bg-white/30 hover:border-white/50 transition-all"
+          >
+            {property.images.length} foto's
+          </Button>
         </div>
-
-        <div className="flex flex-wrap gap-2 mb-4">
-          {property.features.slice(0, 4).map((feature, index) => (
-            <span
-              key={index}
-              className="bg-purple-100 text-purple-700 px-2 py-1 rounded text-xs"
-            >
-              {feature}
-            </span>
-          ))}
-        </div>
-
-        <Button
-          onClick={onGalleryClick}
-          className="w-full bg-purple-600 hover:bg-purple-700 text-white"
-        >
-          View Gallery ({property.images.length} photos)
-        </Button>
       </div>
     </div>
   );
@@ -193,6 +228,7 @@ const PropertyCard: React.FC<{ property: Property; onGalleryClick: () => void }>
 const PropertyGallery: React.FC<PropertyGalleryProps> = ({ properties }) => {
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [viewMode, setViewMode] = useState<'gallery' | 'list'>('gallery');
 
   const openGallery = (property: Property) => {
     setSelectedProperty(property);
@@ -205,19 +241,51 @@ const PropertyGallery: React.FC<PropertyGalleryProps> = ({ properties }) => {
   };
 
   return (
-    <div className="py-20 bg-gradient-to-br from-purple-900 via-purple-800 to-purple-900">
+    <div className="py-20 bg-gray-50">
       <div className="container mx-auto px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
-              Premium Properties
+        <div className="max-w-7xl mx-auto">
+          {/* Header Section */}
+          <div className="text-center mb-12">
+            <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
+              Bekijk onze <span className="text-orange-500">toppers</span>
             </h2>
-            <p className="text-xl text-purple-200 max-w-3xl mx-auto">
-              Discover exceptional homes in the heart of Den Haag
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
+              Ontdek onze uitgelichte woningen in Den Haag
             </p>
+            
+            {/* View Toggle - Rentastone Style */}
+            <div className="flex justify-center space-x-2 mb-8">
+              <Button
+                onClick={() => setViewMode('gallery')}
+                variant={viewMode === 'gallery' ? 'default' : 'outline'}
+                className={`${
+                  viewMode === 'gallery' 
+                    ? 'bg-blue-500 hover:bg-blue-600 text-white' 
+                    : 'border-blue-500 text-blue-500 hover:bg-blue-50'
+                }`}
+              >
+                Galerij
+              </Button>
+              <Button
+                onClick={() => setViewMode('list')}
+                variant={viewMode === 'list' ? 'default' : 'outline'}
+                className={`${
+                  viewMode === 'list' 
+                    ? 'bg-amber-500 hover:bg-amber-600 text-white' 
+                    : 'border-amber-500 text-amber-500 hover:bg-amber-50'
+                }`}
+              >
+                Lijst
+              </Button>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Properties Grid */}
+          <div className={`grid gap-8 ${
+            viewMode === 'gallery' 
+              ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' 
+              : 'grid-cols-1 md:grid-cols-2'
+          }`}>
             {properties.map((property) => (
               <PropertyCard
                 key={property.id}
@@ -225,6 +293,16 @@ const PropertyGallery: React.FC<PropertyGalleryProps> = ({ properties }) => {
                 onGalleryClick={() => openGallery(property)}
               />
             ))}
+          </div>
+
+          {/* Call to Action */}
+          <div className="text-center mt-16">
+            <Button 
+              size="lg"
+              className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all"
+            >
+              Bekijk alle woningen
+            </Button>
           </div>
         </div>
       </div>
