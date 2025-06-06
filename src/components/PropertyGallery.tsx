@@ -20,6 +20,7 @@ interface Property {
   images: string[];
   rating: number;
   status: 'new' | 'under_offer' | 'available';
+  description?: string;
 }
 
 interface PropertyGalleryProps {
