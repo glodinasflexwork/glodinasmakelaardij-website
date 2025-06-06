@@ -1,3 +1,5 @@
+'use client';
+
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -213,22 +215,8 @@ export default function PropertyPage({ property }: PropertyPageProps) {
                 <span className="text-gray-700">{property.address}, {property.city}</span>
               </div>
               
-              {/* Google Maps Embed */}
-              <div className="w-full h-64 rounded-lg overflow-hidden">
-                <iframe
-                  src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dw901SwHSR3g-0&q=${encodeURIComponent(property.address + ', ' + property.city)}&zoom=15`}
-                  width="100%"
-                  height="100%"
-                  style={{ border: 0 }}
-                  allowFullScreen
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  title={`Map of ${property.address}`}
-                />
-              </div>
-              
               {/* Neighborhood Info */}
-              <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+              <div className="p-4 bg-gray-50 rounded-lg">
                 <h3 className="font-semibold text-gray-900 mb-2">Buurtinformatie</h3>
                 <p className="text-sm text-gray-600">
                   Deze woning ligt in een gewilde buurt van {property.city} met goede voorzieningen 
