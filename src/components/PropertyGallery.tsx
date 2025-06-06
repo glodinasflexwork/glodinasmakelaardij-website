@@ -4,22 +4,22 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { ChevronLeft, ChevronRight, X, MapPin, Bed, Bath, Square, Eye, Heart } from 'lucide-react';
 
-interface PropertyImage {
-  src: string;
-  alt: string;
-}
-
 interface Property {
-  id: number;
+  id: string;
   title: string;
-  price: string;
   location: string;
+  price: string;
+  originalPrice?: string;
+  size: string;
   bedrooms: number;
   bathrooms: number;
   area: number;
-  images: PropertyImage[];
-  status?: string;
-  description?: string;
+  energyLabel: string;
+  features: string[];
+  mainImage: string;
+  images: string[];
+  rating: number;
+  status: 'new' | 'under_offer' | 'available';
 }
 
 interface PropertyGalleryProps {
@@ -56,21 +56,23 @@ const PropertyGallery: React.FC<PropertyGalleryProps> = ({ properties }) => {
     <div className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group">
       <div className="relative">
         <img
-          src={property.images[0]?.src || '/placeholder-property.jpg'}
-          alt={property.images[0]?.alt || property.title}
+          src={property.mainImage || property.images[0] || '/placeholder-property.jpg'}
+          alt={property.title}
           className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
         />
         
         {/* Status Badge */}
         {property.status && (
           <div className={`absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-semibold ${
-            property.status === 'Nieuw in verkoop' || property.status === 'New for sale'
+            property.status === 'new'
               ? 'bg-orange-500 text-white'
-              : property.status === 'Onder bod' || property.status === 'Under offer'
+              : property.status === 'under_offer'
               ? 'bg-orange-100 text-orange-800 border border-orange-300'
               : 'bg-gray-100 text-gray-800'
           }`}>
-            {property.status}
+            {property.status === 'new' ? 'Nieuw in verkoop' : 
+             property.status === 'under_offer' ? 'Onder bod' : 
+             'Beschikbaar'}
           </div>
         )}
 
@@ -192,8 +194,8 @@ const PropertyGallery: React.FC<PropertyGalleryProps> = ({ properties }) => {
                 {/* Image Carousel */}
                 <div className="relative h-96">
                   <img
-                    src={selectedProperty.images[currentImageIndex]?.src}
-                    alt={selectedProperty.images[currentImageIndex]?.alt}
+                    src={selectedProperty.images[currentImageIndex]}
+                    alt={selectedProperty.title}
                     className="w-full h-full object-cover"
                   />
                   
