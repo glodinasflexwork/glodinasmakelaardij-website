@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Heart, ArrowRight } from 'lucide-react';
@@ -36,6 +36,53 @@ interface PropertyCardProps {
 const PropertyCard: React.FC<PropertyCardProps> = ({ property, language = 'nl' }) => {
   const { selectedPropertyIds, addToComparison, removeFromComparison } = useComparison();
   const isSelected = selectedPropertyIds.includes(property.id);
+  const [isSaved, setIsSaved] = useState(false);
+
+  // Check if property is saved on component mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('savedProperties');
+      if (saved) {
+        try {
+          const properties = JSON.parse(saved);
+          setIsSaved(properties.some((p: Property) => p.id === property.id));
+        } catch (e) {
+          setIsSaved(false);
+        }
+      }
+    }
+  }, [property.id]);
+
+  // Handle saving/removing property from favorites
+  const handleSaveToggle = () => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('savedProperties');
+      let properties: Property[] = [];
+      
+      if (saved) {
+        try {
+          properties = JSON.parse(saved);
+        } catch (e) {
+          properties = [];
+        }
+      }
+
+      if (isSaved) {
+        // Remove from saved properties
+        properties = properties.filter(p => p.id !== property.id);
+        setIsSaved(false);
+      } else {
+        // Add to saved properties
+        properties.push(property);
+        setIsSaved(true);
+      }
+
+      localStorage.setItem('savedProperties', JSON.stringify(properties));
+      
+      // Dispatch custom event to update header counter
+      window.dispatchEvent(new Event('savedPropertiesUpdated'));
+    }
+  };
 
   // Translations
   const translations = {
@@ -88,20 +135,36 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, language = 'nl' }
           </span>
         )}
         
-        {/* Compare Checkbox */}
-        <div className="absolute top-2 right-2 z-10 flex items-center gap-2 bg-white/80 rounded-full p-1">
-          <Checkbox 
-            id={`compare-${property.id}`}
-            checked={isSelected}
-            onCheckedChange={handleCompareToggle}
-            className="data-[state=checked]:bg-orange-500 data-[state=checked]:text-white"
-          />
-          <label 
-            htmlFor={`compare-${property.id}`}
-            className="text-xs font-medium cursor-pointer"
+        {/* Compare Checkbox and Favorites Heart */}
+        <div className="absolute top-2 right-2 z-10 flex items-center gap-2">
+          {/* Favorites Heart */}
+          <button
+            onClick={handleSaveToggle}
+            className={`p-2 rounded-full transition-all duration-200 ${
+              isSaved 
+                ? 'bg-orange-500 text-white shadow-md' 
+                : 'bg-white/80 text-gray-600 hover:bg-orange-50 hover:text-orange-500'
+            }`}
+            aria-label={isSaved ? 'Remove from favorites' : 'Add to favorites'}
           >
-            {t.compare}
-          </label>
+            <Heart className={`h-4 w-4 ${isSaved ? 'fill-current' : ''}`} />
+          </button>
+          
+          {/* Compare Checkbox */}
+          <div className="flex items-center gap-1 bg-white/80 rounded-full px-2 py-1">
+            <Checkbox 
+              id={`compare-${property.id}`}
+              checked={isSelected}
+              onCheckedChange={handleCompareToggle}
+              className="data-[state=checked]:bg-orange-500 data-[state=checked]:text-white"
+            />
+            <label 
+              htmlFor={`compare-${property.id}`}
+              className="text-xs font-medium cursor-pointer"
+            >
+              {t.compare}
+            </label>
+          </div>
         </div>
       </div>
       

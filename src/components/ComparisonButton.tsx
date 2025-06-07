@@ -2,58 +2,59 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
+import { ArrowRight, BarChart3 } from 'lucide-react';
 import { useComparison } from '@/context/ComparisonContext';
-import { SlidersHorizontal, X } from 'lucide-react';
+import PropertyComparison from '@/components/PropertyComparison';
 
 interface ComparisonButtonProps {
   language?: 'nl' | 'en';
 }
 
 const ComparisonButton: React.FC<ComparisonButtonProps> = ({ language = 'nl' }) => {
-  const { selectedPropertyIds, openComparison, clearComparison } = useComparison();
-  
-  // Don't render if no properties are selected
-  if (selectedPropertyIds.length === 0) return null;
-  
-  // Translations
+  const { selectedPropertyIds, properties, isComparisonOpen, openComparison, closeComparison } = useComparison();
+
   const translations = {
     nl: {
-      compare: 'Vergelijk',
+      compare: 'Vergelijken',
+      compareSelected: 'Vergelijk Geselecteerde',
       properties: 'woningen',
-      clear: 'Wissen',
     },
     en: {
       compare: 'Compare',
+      compareSelected: 'Compare Selected',
       properties: 'properties',
-      clear: 'Clear',
     }
   };
-  
+
   const t = translations[language];
-  
+
+  if (selectedPropertyIds.length === 0) {
+    return null;
+  }
+
   return (
-    <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-2">
-      <div className="bg-white rounded-full shadow-lg p-1 flex items-center">
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          onClick={clearComparison}
-          className="rounded-full"
-        >
-          <X className="h-4 w-4 mr-1" />
-          {t.clear}
-        </Button>
-        
-        <Button 
-          variant="cta" 
+    <>
+      <div className="fixed bottom-4 right-4 z-40">
+        <Button
           onClick={openComparison}
-          className="rounded-full shadow-sm"
+          className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2"
         >
-          <SlidersHorizontal className="h-4 w-4 mr-2" />
-          {t.compare} ({selectedPropertyIds.length} {t.properties})
+          <BarChart3 className="h-5 w-5" />
+          <span className="font-medium">
+            {t.compareSelected} ({selectedPropertyIds.length})
+          </span>
+          <ArrowRight className="h-4 w-4" />
         </Button>
       </div>
-    </div>
+
+      {isComparisonOpen && (
+        <PropertyComparison
+          properties={properties}
+          onClose={closeComparison}
+          language={language}
+        />
+      )}
+    </>
   );
 };
 
