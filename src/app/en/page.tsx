@@ -157,7 +157,9 @@ export default function EnglishHomePage() {
       </section>
 
       {/* Property Gallery */}
-      <PropertyGallery properties={galleryProperties} language="en" />
+      <section id="properties">
+        <PropertyGallery properties={galleryProperties} language="en" />
+      </section>
 
       {/* About Section */}
       <section id="about" className="py-20 bg-white">
@@ -167,50 +169,50 @@ export default function EnglishHomePage() {
               Our Services
             </h2>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               <div className="text-center p-6">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Home className="h-8 w-8 text-green-600" />
+                <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Home className="h-8 w-8 text-orange-600" />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-3">Property Buying</h3>
-                <p className="text-gray-600">Find your dream home with expert guidance through the entire buying process.</p>
+                <p className="text-gray-600">Find your dream home with expert guidance throughout the entire purchase process.</p>
               </div>
               
               <div className="text-center p-6">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Building className="h-8 w-8 text-green-600" />
+                <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Building className="h-8 w-8 text-orange-600" />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-3">Property Selling</h3>
                 <p className="text-gray-600">Maximize your property value with our proven marketing strategies.</p>
               </div>
               
               <div className="text-center p-6">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Calculator className="h-8 w-8 text-green-600" />
+                <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Calculator className="h-8 w-8 text-orange-600" />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-3">Property Valuation</h3>
-                <p className="text-gray-600">Get accurate market valuations from certified real estate professionals.</p>
+                <p className="text-gray-600">Get accurate market valuations from certified real estate agents.</p>
               </div>
               
               <div className="text-center p-6">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Search className="h-8 w-8 text-green-600" />
+                <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Search className="h-8 w-8 text-orange-600" />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-3">Market Analysis</h3>
-                <p className="text-gray-600">Comprehensive market analysis to make the best decisions.</p>
+                <p className="text-gray-600">Comprehensive market analyses to make the best decisions.</p>
               </div>
               
               <div className="text-center p-6">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Handshake className="h-8 w-8 text-green-600" />
+                <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Handshake className="h-8 w-8 text-orange-600" />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-3">Negotiation</h3>
                 <p className="text-gray-600">Professional negotiation expertise for the best results.</p>
               </div>
               
               <div className="text-center p-6">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Star className="h-8 w-8 text-green-600" />
+                <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Star className="h-8 w-8 text-orange-600" />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-3">Premium Service</h3>
                 <p className="text-gray-600">Personal guidance and premium service for every client.</p>
@@ -219,13 +221,13 @@ export default function EnglishHomePage() {
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center mt-12">
               <Link href="/en/contact">
-                <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white px-8 py-4">
+                <Button size="lg" className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-4">
                   <Mail className="mr-2 h-5 w-5" />
-                  Get In Touch
+                  Contact Us
                 </Button>
               </Link>
               <Link href="/en/schedule">
-                <Button variant="outline" size="lg" className="border-green-600 text-green-600 hover:bg-green-50 px-8 py-4">
+                <Button variant="outline" size="lg" className="border-orange-600 text-orange-600 hover:bg-orange-50 px-8 py-4">
                   <Calendar className="mr-2 h-5 w-5" />
                   Schedule Meeting
                 </Button>

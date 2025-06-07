@@ -157,7 +157,9 @@ export default function HomePage() {
       </section>
 
       {/* Property Gallery */}
-      <PropertyGallery properties={galleryProperties} language="nl" />
+      <section id="properties">
+        <PropertyGallery properties={galleryProperties} language="nl" />
+      </section>
 
       {/* About Section */}
       <section id="about" className="py-20 bg-white">
@@ -169,48 +171,48 @@ export default function HomePage() {
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               <div className="text-center p-6">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Home className="h-8 w-8 text-green-600" />
+                <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Home className="h-8 w-8 text-orange-600" />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-3">Woning Kopen</h3>
                 <p className="text-gray-600">Vind uw droomhuis met deskundige begeleiding tijdens het gehele aankoopproces.</p>
               </div>
               
               <div className="text-center p-6">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Building className="h-8 w-8 text-green-600" />
+                <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Building className="h-8 w-8 text-orange-600" />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-3">Woning Verkopen</h3>
                 <p className="text-gray-600">Maximaliseer de waarde van uw woning met onze bewezen marketingstrategieën.</p>
               </div>
               
               <div className="text-center p-6">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Calculator className="h-8 w-8 text-green-600" />
+                <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Calculator className="h-8 w-8 text-orange-600" />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-3">Woningtaxatie</h3>
                 <p className="text-gray-600">Krijg nauwkeurige marktwaarderingen van gecertificeerde makelaars.</p>
               </div>
               
               <div className="text-center p-6">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Search className="h-8 w-8 text-green-600" />
+                <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Search className="h-8 w-8 text-orange-600" />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-3">Marktanalyse</h3>
                 <p className="text-gray-600">Uitgebreide marktanalyses om de beste beslissingen te nemen.</p>
               </div>
               
               <div className="text-center p-6">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Handshake className="h-8 w-8 text-green-600" />
+                <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Handshake className="h-8 w-8 text-orange-600" />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-3">Onderhandeling</h3>
                 <p className="text-gray-600">Professionele onderhandelingsexpertise voor de beste resultaten.</p>
               </div>
               
               <div className="text-center p-6">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Star className="h-8 w-8 text-green-600" />
+                <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Star className="h-8 w-8 text-orange-600" />
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-3">Premium Service</h3>
                 <p className="text-gray-600">Persoonlijke begeleiding en premium service voor elke klant.</p>
@@ -219,13 +221,13 @@ export default function HomePage() {
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center mt-12">
               <Link href="/contact">
-                <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white px-8 py-4">
+                <Button size="lg" className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-4">
                   <Mail className="mr-2 h-5 w-5" />
                   Neem Contact Op
                 </Button>
               </Link>
               <Link href="/schedule">
-                <Button variant="outline" size="lg" className="border-green-600 text-green-600 hover:bg-green-50 px-8 py-4">
+                <Button variant="outline" size="lg" className="border-orange-600 text-orange-600 hover:bg-orange-50 px-8 py-4">
                   <Calendar className="mr-2 h-5 w-5" />
                   Plan Afspraak
                 </Button>
