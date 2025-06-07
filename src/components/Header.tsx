@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, Phone, ChevronDown, Home, Users, Building, Mail, Calendar } from 'lucide-react';
+import { Menu, X, Phone, Home, Users, Building, Mail, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const Header = () => {
@@ -69,7 +69,7 @@ const Header = () => {
     },
     { 
       name: isEnglish ? 'Properties' : 'Woningen', 
-      href: isEnglish ? '/en#properties' : '/#properties',
+      href: isEnglish ? '/en/properties' : '/woningen',
       icon: <Building className="w-4 h-4 mr-2" />
     },
     { 
