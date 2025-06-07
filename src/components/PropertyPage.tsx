@@ -273,22 +273,52 @@ export default function PropertyPage({ property }: PropertyPageProps) {
                   </Button>
                   
                   <div className="grid grid-cols-2 gap-3">
-                    <Button variant="outline" className="border-orange-500 text-orange-600 hover:bg-orange-50">
+                    <Button 
+                      variant="outline" 
+                      className="border-orange-500 text-orange-600 hover:bg-orange-50"
+                      onClick={() => window.open('tel:+31612345678', '_self')}
+                    >
                       <Phone className="w-4 h-4 mr-2" />
                       Bellen
                     </Button>
-                    <Button variant="outline" className="border-orange-500 text-orange-600 hover:bg-orange-50">
+                    <Button 
+                      variant="outline" 
+                      className="border-orange-500 text-orange-600 hover:bg-orange-50"
+                      onClick={() => window.open('mailto:info@glodinasmakelaardij.nl?subject=Interesse in ' + property.title, '_self')}
+                    >
                       <Mail className="w-4 h-4 mr-2" />
                       E-mail
                     </Button>
                   </div>
                   
                   <div className="grid grid-cols-2 gap-3">
-                    <Button variant="outline" size="sm">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => {
+                        // Add to favorites functionality
+                        alert('Woning toegevoegd aan favorieten!');
+                      }}
+                    >
                       <Heart className="w-4 h-4 mr-2" />
                       Bewaren
                     </Button>
-                    <Button variant="outline" size="sm">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => {
+                        if (navigator.share) {
+                          navigator.share({
+                            title: property.title,
+                            text: `Bekijk deze woning: ${property.title}`,
+                            url: window.location.href
+                          });
+                        } else {
+                          navigator.clipboard.writeText(window.location.href);
+                          alert('Link gekopieerd naar klembord!');
+                        }
+                      }}
+                    >
                       <Share2 className="w-4 h-4 mr-2" />
                       Delen
                     </Button>

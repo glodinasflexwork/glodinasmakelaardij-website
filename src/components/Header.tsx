@@ -21,6 +21,7 @@ const Header = () => {
 
   const navigation = [
     { name: isEnglish ? 'Home' : 'Home', href: isEnglish ? '/en' : '/' },
+    { name: isEnglish ? 'About' : 'Over Ons', href: isEnglish ? '/en/about' : '/about' },
     { name: isEnglish ? 'Properties' : 'Woningen', href: isEnglish ? '/en#properties' : '/#properties' },
     { name: isEnglish ? 'Contact' : 'Contact', href: isEnglish ? '/en/contact' : '/contact' },
     { name: isEnglish ? 'Schedule' : 'Afspraak', href: isEnglish ? '/en/schedule' : '/schedule' },
