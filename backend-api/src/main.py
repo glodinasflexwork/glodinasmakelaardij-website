@@ -3,6 +3,8 @@ import sys
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from dotenv import load_dotenv
+import datetime
+import json
 
 # Load environment variables
 load_dotenv()
@@ -12,14 +14,22 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from flask import Flask, jsonify
 from flask_cors import CORS
+from flask_jwt_extended import JWTManager
 from routes.contact import contact_bp
 from routes.properties import properties_bp
+from routes.user import user_bp
 
 app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY', 'fallback-secret-key')
 
+# Configure JWT
+app.config['JWT_SECRET_KEY'] = os.getenv('SECRET_KEY', 'fallback-secret-key')
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = datetime.timedelta(hours=1)
+app.config['JWT_REFRESH_TOKEN_EXPIRES'] = datetime.timedelta(days=30)
+jwt = JWTManager(app)
+
 # Enable CORS for all routes
-CORS(app, origins=['http://localhost:3000', 'http://localhost:3001'])
+CORS(app, origins=['http://localhost:3000', 'http://localhost:3001'], supports_credentials=True)
 
 # Database connection
 def get_db_connection():
@@ -33,6 +43,15 @@ def get_db_connection():
     except Exception as e:
         print(f"Database connection error: {e}")
         return None
+
+# Custom JSON encoder for datetime objects
+class CustomJSONEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, datetime.datetime):
+            return obj.isoformat()
+        return super().default(obj)
+
+app.json_encoder = CustomJSONEncoder
 
 # Initialize database tables
 def init_db():
@@ -82,6 +101,67 @@ def init_db():
             )
         ''')
         
+        # Create users table
+        cur.execute('''
+            CREATE TABLE IF NOT EXISTS users (
+                id SERIAL PRIMARY KEY,
+                username VARCHAR(80) UNIQUE NOT NULL,
+                email VARCHAR(120) UNIQUE NOT NULL,
+                password_hash VARCHAR(256) NOT NULL,
+                first_name VARCHAR(50),
+                last_name VARCHAR(50),
+                phone VARCHAR(20),
+                profile_image VARCHAR(255),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                last_login TIMESTAMP,
+                is_active BOOLEAN DEFAULT TRUE,
+                is_verified BOOLEAN DEFAULT FALSE,
+                verification_token VARCHAR(100),
+                reset_token VARCHAR(100),
+                reset_token_expiry TIMESTAMP,
+                notification_preferences JSONB DEFAULT '{"email_alerts": true, "property_updates": true, "saved_search_alerts": true, "marketing": false}'
+            )
+        ''')
+        
+        # Create saved_properties table
+        cur.execute('''
+            CREATE TABLE IF NOT EXISTS saved_properties (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+                property_id INTEGER REFERENCES properties(id) ON DELETE CASCADE,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                notes TEXT,
+                UNIQUE(user_id, property_id)
+            )
+        ''')
+        
+        # Create saved_searches table
+        cur.execute('''
+            CREATE TABLE IF NOT EXISTS saved_searches (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+                name VARCHAR(100) NOT NULL,
+                search_criteria JSONB NOT NULL,
+                alert_frequency VARCHAR(20) DEFAULT 'daily',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                last_alert_sent TIMESTAMP
+            )
+        ''')
+        
+        # Create property_views table
+        cur.execute('''
+            CREATE TABLE IF NOT EXISTS property_views (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+                property_id INTEGER REFERENCES properties(id) ON DELETE CASCADE,
+                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                source VARCHAR(50),
+                session_id VARCHAR(100)
+            )
+        ''')
+        
         conn.commit()
         print("Database tables initialized successfully")
         
@@ -95,15 +175,17 @@ def init_db():
 # Register blueprints
 app.register_blueprint(contact_bp, url_prefix='/api/contact')
 app.register_blueprint(properties_bp, url_prefix='/api/properties')
+app.register_blueprint(user_bp, url_prefix='/api/users')
 
 @app.route('/')
 def home():
     return jsonify({
         'message': 'Glodinas Makelaardij API Server',
-        'version': '2.0',
+        'version': '3.0',
         'endpoints': {
             'contact': '/api/contact',
-            'properties': '/api/properties'
+            'properties': '/api/properties',
+            'users': '/api/users'
         },
         'database': 'Neon.tech PostgreSQL',
         'email': 'Mailtrap.io'

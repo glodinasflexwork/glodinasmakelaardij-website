@@ -3,16 +3,23 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, Phone, Home, Users, Building, Mail, Calendar, Heart, BookOpen } from 'lucide-react';
+import { Menu, X, Phone, Home, Users, Building, Mail, Calendar, Heart, BookOpen, User, LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import SavedProperties from '@/components/SavedProperties';
+import AuthModal from '@/components/AuthModal';
+import UserDashboard from '@/components/UserDashboard';
+import { useAuth } from '@/context/AuthContext';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [showSavedProperties, setShowSavedProperties] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showUserDashboard, setShowUserDashboard] = useState(false);
+  const [authView, setAuthView] = useState<'login' | 'register'>('login');
   const [savedPropertiesCount, setSavedPropertiesCount] = useState(0);
   const pathname = usePathname();
+  const { user, isAuthenticated } = useAuth();
 
   // Handle scroll effect for header
   useEffect(() => {
@@ -32,8 +39,24 @@ const Header = () => {
 
   // Load saved properties count
   useEffect(() => {
-    const updateSavedPropertiesCount = () => {
-      if (typeof window !== 'undefined') {
+    const updateSavedPropertiesCount = async () => {
+      if (isAuthenticated && user) {
+        try {
+          const token = localStorage.getItem('accessToken');
+          const response = await fetch('http://localhost:5000/api/users/saved-properties', {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+          
+          if (response.ok) {
+            const data = await response.json();
+            setSavedPropertiesCount(data.saved_properties?.length || 0);
+          }
+        } catch (err) {
+          console.error('Error fetching saved properties count:', err);
+        }
+      } else if (typeof window !== 'undefined') {
         const saved = localStorage.getItem('savedProperties');
         if (saved) {
           try {
@@ -64,7 +87,7 @@ const Header = () => {
       window.removeEventListener('storage', handleStorageChange);
       window.removeEventListener('savedPropertiesUpdated', handleStorageChange);
     };
-  }, []);
+  }, [isAuthenticated, user]);
 
   // Close mobile menu when clicking outside
   useEffect(() => {
@@ -123,6 +146,20 @@ const Header = () => {
     },
   ];
 
+  const handleLoginClick = () => {
+    setAuthView('login');
+    setShowAuthModal(true);
+  };
+
+  const handleRegisterClick = () => {
+    setAuthView('register');
+    setShowAuthModal(true);
+  };
+
+  const handleUserDashboardClick = () => {
+    setShowUserDashboard(true);
+  };
+
   return (
     <header 
       className={`bg-white border-b border-gray-100 sticky top-0 z-50 transition-all duration-300 ${
@@ -175,6 +212,7 @@ const Header = () => {
                 </span>
               )}
             </button>
+            
             {/* Language Switcher */}
             <div className="flex items-center bg-gray-50 rounded-lg p-1">
               <Link
@@ -208,6 +246,33 @@ const Header = () => {
               <span className="text-sm font-medium">(6) 81 34 85 51</span>
             </a>
 
+            {/* Auth Buttons or User Profile */}
+            {isAuthenticated ? (
+              <button
+                onClick={handleUserDashboardClick}
+                className="flex items-center bg-green-50 hover:bg-green-100 text-green-700 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200"
+              >
+                <User className="h-4 w-4 mr-2" />
+                {user?.username || (isEnglish ? 'My Account' : 'Mijn Account')}
+              </button>
+            ) : (
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={handleLoginClick}
+                  className="flex items-center text-gray-700 hover:text-green-600 px-3 py-1 rounded-md text-sm font-medium transition-all duration-200"
+                >
+                  <LogIn className="h-4 w-4 mr-1" />
+                  {isEnglish ? 'Login' : 'Inloggen'}
+                </button>
+                <button
+                  onClick={handleRegisterClick}
+                  className="flex items-center bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-sm font-medium transition-all duration-200"
+                >
+                  {isEnglish ? 'Register' : 'Registreren'}
+                </button>
+              </div>
+            )}
+
             {/* Primary CTA Button */}
             <Link href={isEnglish ? '/en/schedule' : '/schedule'}>
               <Button className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg flex items-center">
@@ -233,6 +298,26 @@ const Header = () => {
                   </span>
                 )}
               </button>
+              
+              {/* User Profile or Login Button */}
+              {isAuthenticated ? (
+                <button
+                  onClick={handleUserDashboardClick}
+                  className="flex items-center text-green-600 p-2 rounded-md"
+                  aria-label={isEnglish ? 'My Account' : 'Mijn Account'}
+                >
+                  <User className="h-5 w-5" />
+                </button>
+              ) : (
+                <button
+                  onClick={handleLoginClick}
+                  className="flex items-center text-gray-600 hover:text-green-600 p-2 rounded-md"
+                  aria-label={isEnglish ? 'Login' : 'Inloggen'}
+                >
+                  <LogIn className="h-5 w-5" />
+                </button>
+              )}
+              
               <a
                 href="tel:+31681348551"
                 className="flex items-center text-gray-600 hover:text-orange-600 transition-colors duration-200"
@@ -278,6 +363,43 @@ const Header = () => {
                 {item.name}
               </Link>
             ))}
+            
+            {/* Mobile Auth Buttons */}
+            {isAuthenticated ? (
+              <button
+                onClick={() => {
+                  setShowUserDashboard(true);
+                  setIsMenuOpen(false);
+                }}
+                className="flex items-center w-full px-3 py-2 bg-green-50 text-green-700 rounded-lg text-base font-medium transition-all duration-200"
+              >
+                <User className="h-5 w-5 mr-2" />
+                {isEnglish ? 'My Account' : 'Mijn Account'}
+              </button>
+            ) : (
+              <div className="space-y-2 pt-2 border-t border-gray-100">
+                <button
+                  onClick={() => {
+                    handleLoginClick();
+                    setIsMenuOpen(false);
+                  }}
+                  className="flex items-center w-full px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg text-base font-medium transition-all duration-200"
+                >
+                  <LogIn className="h-5 w-5 mr-2" />
+                  {isEnglish ? 'Login' : 'Inloggen'}
+                </button>
+                <button
+                  onClick={() => {
+                    handleRegisterClick();
+                    setIsMenuOpen(false);
+                  }}
+                  className="flex items-center w-full px-3 py-2 bg-green-600 text-white rounded-lg text-base font-medium transition-all duration-200"
+                >
+                  <User className="h-5 w-5 mr-2" />
+                  {isEnglish ? 'Register' : 'Registreren'}
+                </button>
+              </div>
+            )}
             
             {/* Mobile Language Switcher */}
             <div className="flex items-center justify-between pt-4 border-t border-gray-100 mt-4">
@@ -335,6 +457,23 @@ const Header = () => {
       {showSavedProperties && (
         <SavedProperties 
           onClose={() => setShowSavedProperties(false)}
+          language={isEnglish ? 'en' : 'nl'}
+        />
+      )}
+
+      {/* Auth Modal */}
+      {showAuthModal && (
+        <AuthModal 
+          initialView={authView}
+          onClose={() => setShowAuthModal(false)}
+          language={isEnglish ? 'en' : 'nl'}
+        />
+      )}
+
+      {/* User Dashboard */}
+      {showUserDashboard && (
+        <UserDashboard 
+          onClose={() => setShowUserDashboard(false)}
           language={isEnglish ? 'en' : 'nl'}
         />
       )}
