@@ -26,12 +26,18 @@ This repository contains the code for the Glodinas Makelaardij real estate agenc
 1. **Environment Setup**:
    - Ensure the following environment variables are set on the server:
      ```
-     NEON_DATABASE_URL=postgresql://glodinasmakelaardij-db_owner:npg_lCN2QkG8inWx@ep-red-lake-a2v5pu56-pooler.eu-central-1.aws.neon.tech/glodinasmakelaardij-db?sslmode=require
-     MAILTRAP_API_TOKEN=3efebd3f90c6849b625912750e839e2b
-     MAILTRAP_FROM_EMAIL=hello@transcontinentaltranslations.com
-     MAILTRAP_TO_EMAIL=angles.readier.7d@icloud.com
+     # Database connection (DO NOT include credentials in version control)
+     # Request the actual connection string from the system administrator
+     NEON_DATABASE_URL=postgresql://<username>:<password>@<host>/<database>?sslmode=require
+     
+     # Email configuration
+     MAILTRAP_API_TOKEN=<your_mailtrap_token>
+     MAILTRAP_FROM_EMAIL=<from_email>
+     MAILTRAP_TO_EMAIL=<to_email>
+     
+     # Flask configuration
      FLASK_ENV=production
-     SECRET_KEY=glodinas-makelaardij-secret-key-2025
+     SECRET_KEY=<your_secret_key>
      ```
 
 2. **Deploy the API**:
@@ -65,6 +71,7 @@ This repository contains the code for the Glodinas Makelaardij real estate agenc
      ```
      NEXT_PUBLIC_API_URL=http://localhost:5000
      ```
+   - Create a `.env` file in the backend-api directory with the necessary environment variables (see above)
 
 4. **Start the development server**:
    ```bash
@@ -95,6 +102,23 @@ If the login functionality is not working:
 
 3. **CORS Issues**:
    - If you see CORS errors in the browser console, check that the domain is included in the allowed origins list in `backend-api/src/main.py`
+
+## Security Best Practices
+
+1. **Environment Variables**:
+   - NEVER commit sensitive information like database credentials, API keys, or secrets to version control
+   - Use environment variables or secure secret management solutions
+   - For local development, use `.env` files that are listed in `.gitignore`
+
+2. **Database Credentials**:
+   - Regularly rotate database passwords
+   - Use strong, unique passwords
+   - Limit database user permissions to only what's necessary
+
+3. **API Keys and Tokens**:
+   - Treat API keys and tokens as sensitive information
+   - Use environment-specific keys (different keys for development and production)
+   - Implement proper token validation and expiration
 
 ## Contact
 
