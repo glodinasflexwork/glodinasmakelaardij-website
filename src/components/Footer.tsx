@@ -1,147 +1,121 @@
 'use client'
 
-import React from 'react';
-import Image from 'next/image';
-import { Phone, Mail, MapPin, ChevronDown } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { Facebook, Instagram, Twitter, Mail, Phone, MapPin } from 'lucide-react';
 
 const Footer = () => {
-  const pathname = usePathname();
-  const isEnglish = pathname.startsWith('/en');
-  const [expandedSection, setExpandedSection] = useState<string | null>(null);
-  const [isMobile, setIsMobile] = useState(false);
+  const [currentYear, setCurrentYear] = useState(2025);
 
-  // Check if we're on the client side and update the isMobile state
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    
-    return () => {
-      window.removeEventListener('resize', checkMobile);
-    };
+    setCurrentYear(new Date().getFullYear());
   }, []);
-
-  const toggleSection = (section: string) => {
-    if (expandedSection === section) {
-      setExpandedSection(null);
-    } else {
-      setExpandedSection(section);
-    }
-  };
 
   return (
     <footer className="bg-gray-900 text-white">
-      <div className="container mx-auto px-4 py-8 md:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-8">
-          {/* Company Info */}
-          <div className="md:col-span-2">
-            <Image 
-              src="/logo.png" 
-              alt="Glodinas Makelaardij" 
-              width={200}
-              height={60}
-              className="h-10 w-auto mb-4 brightness-0 invert"
-            />
-            <p className="text-gray-300 mb-6 max-w-md">
-              {isEnglish 
-                ? "Your trusted real estate partner in Den Haag. Expert guidance for buying, selling, and investing in premium properties."
-                : "Uw vertrouwde makelaar in Den Haag. Deskundige begeleiding bij het kopen, verkopen en investeren in premium woningen."
-              }
+      <div className="container mx-auto px-4 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div>
+            <h3 className="text-xl font-bold mb-4">Glodinas Makelaardij</h3>
+            <p className="mb-4">
+              Uw betrouwbare partner voor alle vastgoedzaken in Den Haag en omgeving.
             </p>
-            <div className="flex flex-wrap gap-2 md:gap-4">
-              <div className="bg-green-600 text-white px-3 py-1 rounded-full text-xs md:text-sm font-medium">
-                {isEnglish ? "€50M+ Sales Volume" : "€50M+ Verkoopvolume"}
-              </div>
-              <div className="bg-green-600 text-white px-3 py-1 rounded-full text-xs md:text-sm font-medium">
-                {isEnglish ? "150+ Properties Sold" : "150+ Verkochte Woningen"}
-              </div>
-              <div className="bg-green-600 text-white px-3 py-1 rounded-full text-xs md:text-sm font-medium">
-                {isEnglish ? "98% Client Satisfaction" : "98% Klanttevredenheid"}
-              </div>
+            <div className="flex space-x-4">
+              <a href="#" className="text-white hover:text-primary transition-colors">
+                <Facebook className="w-5 h-5" />
+              </a>
+              <a href="#" className="text-white hover:text-primary transition-colors">
+                <Instagram className="w-5 h-5" />
+              </a>
+              <a href="#" className="text-white hover:text-primary transition-colors">
+                <Twitter className="w-5 h-5" />
+              </a>
             </div>
           </div>
-          
-          {/* Contact - Mobile Collapsible, Desktop Always Visible */}
-          <div className="border-t md:border-t-0 border-gray-800 pt-4 md:pt-0">
-            <div 
-              className="flex justify-between items-center md:block mb-4 cursor-pointer md:cursor-default"
-              onClick={() => toggleSection('contact')}
-            >
-              <h3 className="text-lg font-semibold">{isEnglish ? "Contact" : "Contact"}</h3>
-              <ChevronDown className={`h-5 w-5 md:hidden transition-transform duration-300 ${expandedSection === 'contact' ? 'rotate-180' : ''}`} />
-            </div>
-            <div className={`space-y-3 ${expandedSection === 'contact' || !isMobile ? 'block' : 'hidden md:block'}`}>
-              <div className="flex items-center space-x-3">
-                <Phone className="h-5 w-5 text-green-400 flex-shrink-0" />
-                <a href="tel:+31681348551" className="text-gray-300 hover:text-white">
-                  (6) 81 34 85 51
-                </a>
-              </div>
-              <div className="flex items-center space-x-3">
-                <Mail className="h-5 w-5 text-green-400 flex-shrink-0" />
-                <a href="mailto:cihatkaya@glodinas.nl" className="text-gray-300 hover:text-white break-all">
-                  cihatkaya@glodinas.nl
-                </a>
-              </div>
-              <div className="flex items-center space-x-3">
-                <MapPin className="h-5 w-5 text-green-400 flex-shrink-0" />
-                <span className="text-gray-300">{isEnglish ? "Den Haag, Netherlands" : "Den Haag, Nederland"}</span>
-              </div>
-            </div>
-          </div>
-          
-          {/* Services - Mobile Collapsible, Desktop Always Visible */}
-          <div className="border-t md:border-t-0 border-gray-800 pt-4 md:pt-0">
-            <div 
-              className="flex justify-between items-center md:block mb-4 cursor-pointer md:cursor-default"
-              onClick={() => toggleSection('services')}
-            >
-              <h3 className="text-lg font-semibold">{isEnglish ? "Services" : "Diensten"}</h3>
-              <ChevronDown className={`h-5 w-5 md:hidden transition-transform duration-300 ${expandedSection === 'services' ? 'rotate-180' : ''}`} />
-            </div>
-            <ul className={`space-y-2 ${expandedSection === 'services' || !isMobile ? 'block' : 'hidden md:block'}`}>
+
+          <div>
+            <h3 className="text-xl font-bold mb-4">Snelle Links</h3>
+            <ul className="space-y-2">
               <li>
-                <Link href={isEnglish ? "/en#about" : "/#about"} className="text-gray-300 hover:text-white">
-                  {isEnglish ? "Property Buying" : "Woning Kopen"}
+                <Link href="/" className="text-gray-300 hover:text-white transition-colors">
+                  Home
                 </Link>
               </li>
               <li>
-                <Link href={isEnglish ? "/en#about" : "/#about"} className="text-gray-300 hover:text-white">
-                  {isEnglish ? "Property Selling" : "Woning Verkopen"}
+                <Link href="/over-ons" className="text-gray-300 hover:text-white transition-colors">
+                  Over Ons
                 </Link>
               </li>
               <li>
-                <Link href={isEnglish ? "/en#about" : "/#about"} className="text-gray-300 hover:text-white">
-                  {isEnglish ? "Property Valuation" : "Woningtaxatie"}
+                <Link href="/woningen" className="text-gray-300 hover:text-white transition-colors">
+                  Woningen
                 </Link>
               </li>
               <li>
-                <Link href={isEnglish ? "/en/contact" : "/contact"} className="text-gray-300 hover:text-white">
-                  {isEnglish ? "Consultation" : "Advies"}
+                <Link href="/diensten" className="text-gray-300 hover:text-white transition-colors">
+                  Diensten
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact" className="text-gray-300 hover:text-white transition-colors">
+                  Contact
                 </Link>
               </li>
             </ul>
           </div>
-        </div>
-        
-        <div className="border-t border-gray-800 mt-8 md:mt-12 pt-6 md:pt-8 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-gray-400 text-xs md:text-sm text-center md:text-left">
-            © 2024 Glodinas Makelaardij. {isEnglish ? "All rights reserved." : "Alle rechten voorbehouden."}
-          </p>
-          <div className="flex space-x-4 md:space-x-6 mt-4 md:mt-0">
-            <Link href={isEnglish ? "/en/privacy" : "/privacy"} className="text-gray-400 hover:text-white text-xs md:text-sm">
-              {isEnglish ? "Privacy Policy" : "Privacyverklaring"}
-            </Link>
-            <Link href={isEnglish ? "/en/terms" : "/terms"} className="text-gray-400 hover:text-white text-xs md:text-sm">
-              {isEnglish ? "Terms & Conditions" : "Algemene Voorwaarden"}
-            </Link>
+
+          <div>
+            <h3 className="text-xl font-bold mb-4">Diensten</h3>
+            <ul className="space-y-2">
+              <li>
+                <Link href="/diensten/woning-kopen" className="text-gray-300 hover:text-white transition-colors">
+                  Woning Kopen
+                </Link>
+              </li>
+              <li>
+                <Link href="/diensten/woning-verkopen" className="text-gray-300 hover:text-white transition-colors">
+                  Woning Verkopen
+                </Link>
+              </li>
+              <li>
+                <Link href="/diensten/waardebepaling" className="text-gray-300 hover:text-white transition-colors">
+                  Waardebepaling
+                </Link>
+              </li>
+              <li>
+                <Link href="/diensten/marktanalyse" className="text-gray-300 hover:text-white transition-colors">
+                  Marktanalyse
+                </Link>
+              </li>
+              <li>
+                <Link href="/diensten/onderhandeling" className="text-gray-300 hover:text-white transition-colors">
+                  Onderhandeling
+                </Link>
+              </li>
+            </ul>
           </div>
+
+          <div>
+            <h3 className="text-xl font-bold mb-4">Contact</h3>
+            <ul className="space-y-4">
+              <li className="flex items-start">
+                <MapPin className="w-5 h-5 mr-3 mt-1 text-primary" />
+                <span>Laan van Meerdervoort 123<br />2517 AA Den Haag</span>
+              </li>
+              <li className="flex items-center">
+                <Phone className="w-5 h-5 mr-3 text-primary" />
+                <span>+31 70 123 4567</span>
+              </li>
+              <li className="flex items-center">
+                <Mail className="w-5 h-5 mr-3 text-primary" />
+                <span>info@glodinas.nl</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
+          <p>&copy; {currentYear} Glodinas Makelaardij. Alle rechten voorbehouden.</p>
         </div>
       </div>
     </footer>
