@@ -55,64 +55,57 @@ const PropertyGallery: React.FC<PropertyGalleryProps> = ({ properties, language 
   };
 
   const PropertyCard = ({ property }: { property: Property }) => (
-    <div className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group">
-      <div className="relative">
-        <img
-          src={property.mainImage || property.images[0] || '/placeholder-property.jpg'}
-          alt={property.title}
-          className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
-        />
-        
-        {/* Status Badge */}
-        {property.status && (
-          <div className={`absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-semibold ${
-            property.status === 'new'
-              ? 'bg-orange-500 text-white'
-              : property.status === 'under_offer'
-              ? 'bg-orange-100 text-orange-800 border border-orange-300'
-              : 'bg-gray-100 text-gray-800'
-          }`}>
-            {property.status === 'new' ? 'Nieuw in verkoop' : 
-             property.status === 'under_offer' ? 'Onder bod' : 
-             'Beschikbaar'}
+    <Link href={`/property/${property.id}`} className="block">
+      <div className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group cursor-pointer">
+        <div className="relative">
+          <img
+            src={property.mainImage || property.images[0] || '/placeholder-property.jpg'}
+            alt={property.title}
+            className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+          
+          {/* Status Badge */}
+          {property.status && (
+            <div className={`absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-semibold ${
+              property.status === 'new'
+                ? 'bg-orange-500 text-white'
+                : property.status === 'under_offer'
+                ? 'bg-orange-100 text-orange-800 border border-orange-300'
+                : 'bg-gray-100 text-gray-800'
+            }`}>
+              {property.status === 'new' ? 'Nieuw in verkoop' : 
+               property.status === 'under_offer' ? 'Onder bod' : 
+               'Beschikbaar'}
+            </div>
+          )}
+
+          {/* Image Count */}
+          <div className="absolute top-4 right-4 bg-black bg-opacity-60 text-white px-2 py-1 rounded-md text-xs flex items-center">
+            <Eye className="w-3 h-3 mr-1" />
+            {property.images.length} foto&apos;s
           </div>
-        )}
-
-        {/* Image Count */}
-        <div className="absolute top-4 right-4 bg-black bg-opacity-60 text-white px-2 py-1 rounded-md text-xs flex items-center">
-          <Eye className="w-3 h-3 mr-1" />
-          {property.images.length} foto&apos;s
         </div>
 
-        {/* Hover Actions */}
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
-          <Link href={`/property/${property.id}`}>
-            <button className="bg-orange-500 text-white px-6 py-2 rounded-lg font-medium opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 hover:bg-orange-600">
-              {language === 'en' ? 'View Details' : 'Bekijk Details'}
-            </button>
-          </Link>
-        </div>
-      </div>
-
-      <div className="p-6">
-        {/* Price */}
-        <div className="bg-orange-500 text-white px-4 py-2 rounded-lg inline-block mb-4">
-          <span className="text-lg font-bold">{property.price}</span>
+        <div className="p-6">
+          {/* Price */}
+          <div className="bg-orange-500 text-white px-4 py-2 rounded-lg inline-block mb-4">
+            <span className="text-lg font-bold">{property.price}</span>
+          </div>
         </div>
 
         {/* Title */}
-        <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-orange-600 transition-colors duration-200">
+        <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-orange-600 transition-colors duration-200 px-6">
           {property.title}
         </h3>
 
         {/* Location */}
-        <div className="flex items-center text-gray-600 mb-4">
+        <div className="flex items-center text-gray-600 mb-4 px-6">
           <MapPin className="w-4 h-4 mr-2 text-orange-500" />
           <span className="text-sm">{property.location}</span>
         </div>
 
         {/* Property Details */}
-        <div className="flex items-center justify-between text-sm text-gray-600 border-t border-gray-100 pt-4">
+        <div className="flex items-center justify-between text-sm text-gray-600 border-t border-gray-100 pt-4 px-6">
           <div className="flex items-center">
             <Bed className="w-4 h-4 mr-1 text-orange-500" />
             <span>{property.bedrooms}</span>
@@ -127,7 +120,7 @@ const PropertyGallery: React.FC<PropertyGalleryProps> = ({ properties, language 
           </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 
   return (
