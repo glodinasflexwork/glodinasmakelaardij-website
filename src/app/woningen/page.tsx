@@ -2,7 +2,9 @@
 
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import PropertyGallery from '@/components/PropertyGallery';
+import PropertyCard from '@/components/PropertyCard';
+import ComparisonButton from '@/components/ComparisonButton';
+import ComparisonModal from '@/components/ComparisonModal';
 import { Button } from '@/components/ui/button';
 import { 
   Search, 
@@ -295,7 +297,11 @@ export default function WoningenPage() {
           </div>
           
           {/* Property Gallery */}
-          <PropertyGallery properties={properties} language="nl" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {properties.map((property) => (
+              <PropertyCard key={property.id} property={property} language="nl" />
+            ))}
+          </div>
         </div>
       </section>
 
@@ -320,6 +326,10 @@ export default function WoningenPage() {
       </section>
 
       <Footer />
+      
+      {/* Comparison Components */}
+      <ComparisonButton language="nl" />
+      <ComparisonModal language="nl" />
     </div>
   );
 }
