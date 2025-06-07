@@ -32,8 +32,11 @@ interface AuthContextType {
   clearError: () => void;
 }
 
-// API URL
-const API_URL = 'https://5000-i4vuvsa1jufrqbkqp2qpt-4eba7cf5.manusvm.computer';
+// API URL - Updated for production using environment variable
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 
+  (process.env.NODE_ENV === 'production' 
+    ? 'https://api.glodinasmakelaardij.nl' 
+    : 'http://localhost:5000');
 
 // Create the context with default values
 export const AuthContext = createContext<AuthContextType>({

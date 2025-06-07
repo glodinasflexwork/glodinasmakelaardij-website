@@ -28,8 +28,14 @@ app.config['JWT_ACCESS_TOKEN_EXPIRES'] = datetime.timedelta(hours=1)
 app.config['JWT_REFRESH_TOKEN_EXPIRES'] = datetime.timedelta(days=30)
 jwt = JWTManager(app)
 
-# Enable CORS for all routes
-CORS(app, origins=['http://localhost:3000', 'http://localhost:3001'], supports_credentials=True)
+# Enable CORS for all routes - Updated for production
+CORS(app, origins=[
+    'http://localhost:3000', 
+    'http://localhost:3001',
+    'https://glodinasmakelaardij.nl',
+    'https://www.glodinasmakelaardij.nl',
+    'https://api.glodinasmakelaardij.nl'
+], supports_credentials=True)
 
 # Database connection
 def get_db_connection():
