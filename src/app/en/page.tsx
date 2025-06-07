@@ -49,7 +49,7 @@ export default function EnglishHomePage() {
       status: 'under_offer' as const,
     },
     {
-      id: 'westeinde-11',
+      id: 'westeinde-11-d',
       title: 'Westeinde 11-D',
       location: 'Den Haag, City Center',
       price: '€525,000 k.k.',
