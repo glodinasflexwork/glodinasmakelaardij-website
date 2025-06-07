@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import { Search, Heart, MapPin, Bed, Bath, Home, ArrowRight } from 'lucide-react';
 import { Button } from './ui/button';
-import { Input } from './ui/input';
 
 interface Property {
   id: number;
@@ -90,10 +89,10 @@ const PropertyGallery = () => {
         
         <div className="max-w-2xl mx-auto mb-10">
           <div className="relative">
-            <Input
+            <input
               type="text"
               placeholder="Zoek op locatie, prijs, of kenmerken..."
-              className="pl-10 py-3"
+              className="w-full pl-10 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
