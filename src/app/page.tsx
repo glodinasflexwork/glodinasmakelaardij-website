@@ -133,14 +133,14 @@ export default function HomePage() {
             {/* CTA Buttons - Stacked on Mobile, Side by Side on Desktop */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start mb-8 md:mb-12">
               <Link href="/contact" className="w-full sm:w-auto">
-                <Button size="lg" className="w-full sm:w-auto bg-orange-500 hover:bg-orange-600 text-white px-6 md:px-8 py-3 md:py-4 text-base md:text-lg font-semibold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 flex items-center justify-center">
+                <Button variant="cta" size="lg" className="w-full sm:w-auto px-6 md:px-8 py-3 md:py-4 text-base md:text-lg font-semibold flex items-center justify-center">
                   <Mail className="mr-2 h-5 w-5" />
                   Neem Contact Op
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
               <Link href="/schedule" className="w-full sm:w-auto">
-                <Button variant="outline" size="lg" className="w-full sm:w-auto border-2 border-white text-white hover:bg-white hover:text-gray-900 px-6 md:px-8 py-3 md:py-4 text-base md:text-lg font-semibold backdrop-blur-sm flex items-center justify-center">
+                <Button variant="cta" size="lg" className="w-full sm:w-auto px-6 md:px-8 py-3 md:py-4 text-base md:text-lg font-semibold flex items-center justify-center">
                   <Calendar className="mr-2 h-5 w-5" />
                   Plan Afspraak
                 </Button>
@@ -236,13 +236,13 @@ export default function HomePage() {
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8 md:mt-12">
               <Link href="/contact" className="w-full sm:w-auto">
-                <Button size="lg" className="w-full sm:w-auto bg-orange-600 hover:bg-orange-700 text-white px-6 md:px-8 py-3 md:py-4 flex items-center justify-center">
+                <Button variant="cta" size="lg" className="w-full sm:w-auto px-6 md:px-8 py-3 md:py-4 flex items-center justify-center">
                   <Mail className="mr-2 h-5 w-5" />
                   Neem Contact Op
                 </Button>
               </Link>
               <Link href="/schedule" className="w-full sm:w-auto">
-                <Button variant="outline" size="lg" className="w-full sm:w-auto border-orange-600 text-orange-600 hover:bg-orange-50 px-6 md:px-8 py-3 md:py-4 flex items-center justify-center">
+                <Button variant="ctaOutline" size="lg" className="w-full sm:w-auto px-6 md:px-8 py-3 md:py-4 flex items-center justify-center">
                   <Calendar className="mr-2 h-5 w-5" />
                   Plan Afspraak
                 </Button>
