@@ -3,12 +3,15 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, Phone, Home, Users, Building, Mail, Calendar } from 'lucide-react';
+import { Menu, X, Phone, Home, Users, Building, Mail, Calendar, Heart, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import SavedProperties from '@/components/SavedProperties';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [showSavedProperties, setShowSavedProperties] = useState(false);
+  const [savedPropertiesCount, setSavedPropertiesCount] = useState(0);
   const pathname = usePathname();
 
   // Handle scroll effect for header
@@ -24,6 +27,42 @@ const Header = () => {
     window.addEventListener('scroll', handleScroll);
     return () => {
       window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  // Load saved properties count
+  useEffect(() => {
+    const updateSavedPropertiesCount = () => {
+      if (typeof window !== 'undefined') {
+        const saved = localStorage.getItem('savedProperties');
+        if (saved) {
+          try {
+            const properties = JSON.parse(saved);
+            setSavedPropertiesCount(properties.length);
+          } catch (e) {
+            setSavedPropertiesCount(0);
+          }
+        } else {
+          setSavedPropertiesCount(0);
+        }
+      }
+    };
+
+    updateSavedPropertiesCount();
+
+    // Listen for storage changes to update count in real-time
+    const handleStorageChange = () => {
+      updateSavedPropertiesCount();
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Custom event for same-tab updates
+    window.addEventListener('savedPropertiesUpdated', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('savedPropertiesUpdated', handleStorageChange);
     };
   }, []);
 
@@ -73,6 +112,11 @@ const Header = () => {
       icon: <Building className="w-4 h-4 mr-2" />
     },
     { 
+      name: isEnglish ? 'Blog' : 'Blog', 
+      href: isEnglish ? '/en/blog' : '/blog',
+      icon: <BookOpen className="w-4 h-4 mr-2" />
+    },
+    { 
       name: isEnglish ? 'Contact' : 'Contact', 
       href: isEnglish ? '/en/contact' : '/contact',
       icon: <Mail className="w-4 h-4 mr-2" />
@@ -116,8 +160,21 @@ const Header = () => {
             ))}
           </nav>
 
-          {/* Right side - Language switcher and CTA */}
+          {/* Right side - Saved Properties, Language switcher and CTA */}
           <div className="hidden md:flex items-center space-x-4">
+            {/* Saved Properties Button */}
+            <button
+              onClick={() => setShowSavedProperties(true)}
+              className="relative flex items-center text-gray-600 hover:text-orange-600 transition-colors duration-200 p-2 rounded-lg hover:bg-orange-50"
+              aria-label={isEnglish ? 'View saved properties' : 'Bekijk opgeslagen woningen'}
+            >
+              <Heart className="h-5 w-5" />
+              {savedPropertiesCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
+                  {savedPropertiesCount}
+                </span>
+              )}
+            </button>
             {/* Language Switcher */}
             <div className="flex items-center bg-gray-50 rounded-lg p-1">
               <Link
@@ -162,13 +219,28 @@ const Header = () => {
 
           {/* Mobile menu button and phone */}
           <div className="md:hidden flex items-center">
-            <a
-              href="tel:+31681348551"
-              className="mr-4 flex items-center text-gray-600 hover:text-orange-600 transition-colors duration-200"
-              aria-label="Call us"
-            >
-              <Phone className="h-5 w-5" />
-            </a>
+            {/* Mobile Phone and Saved Properties */}
+            <div className="flex items-center space-x-2 mr-2">
+              <button
+                onClick={() => setShowSavedProperties(true)}
+                className="relative flex items-center text-gray-600 hover:text-orange-600 transition-colors duration-200 p-2 rounded-md"
+                aria-label={isEnglish ? 'View saved properties' : 'Bekijk opgeslagen woningen'}
+              >
+                <Heart className="h-5 w-5" />
+                {savedPropertiesCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center font-medium">
+                    {savedPropertiesCount}
+                  </span>
+                )}
+              </button>
+              <a
+                href="tel:+31681348551"
+                className="flex items-center text-gray-600 hover:text-orange-600 transition-colors duration-200"
+                aria-label="Call us"
+              >
+                <Phone className="h-5 w-5" />
+              </a>
+            </div>
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="mobile-menu-button text-gray-600 hover:text-orange-600 transition-colors duration-200 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50"
@@ -258,6 +330,14 @@ const Header = () => {
           </div>
         </div>
       </div>
+
+      {/* Saved Properties Modal */}
+      {showSavedProperties && (
+        <SavedProperties 
+          onClose={() => setShowSavedProperties(false)}
+          language={isEnglish ? 'en' : 'nl'}
+        />
+      )}
     </header>
   );
 };
