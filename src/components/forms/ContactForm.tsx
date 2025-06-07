@@ -29,17 +29,86 @@ const ContactForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setSubmitStatus('');
     
-    // For static site, we'll use a mailto link
-    const mailtoLink = `mailto:cihatkaya@glodinas.nl?subject=${encodeURIComponent(formData.subject || 'Contact Form Submission')}&body=${encodeURIComponent(
-      `Name: ${formData.name}\nEmail: ${formData.email}\nPhone: ${formData.phone}\nProperty Type: ${formData.propertyType}\nBudget: ${formData.budget}\nPreferred Contact: ${formData.preferredContact}\n\nMessage:\n${formData.message}`
-    )}`;
-    
-    window.location.href = mailtoLink;
-    
-    setIsSubmitting(false);
-    setSubmitStatus('Your email client should open with the message. If not, please email us directly at cihatkaya@glodinas.nl');
+    try {
+      // Prepare data for API
+      const apiData = {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        inquiryType: formData.subject,
+        propertyType: formData.propertyType,
+        budgetRange: formData.budget,
+        preferredContact: formData.preferredContact,
+        message: formData.message
+      };
+
+      // Send to backend API
+      const response = await fetch('http://localhost:5000/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(apiData)
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        setSubmitStatus('success');
+        // Reset form
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          subject: '',
+          propertyType: '',
+          budget: '',
+          message: '',
+          preferredContact: 'email'
+        });
+      } else {
+        setSubmitStatus('error');
+        console.error('Form submission error:', result.error);
+      }
+    } catch (error) {
+      console.error('Network error:', error);
+      setSubmitStatus('error');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+
+  if (submitStatus === 'error') {
+    return (
+      <div className="bg-red-50 border border-red-200 rounded-lg p-8 text-center">
+        <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <MessageSquare className="h-8 w-8 text-red-600" />
+        </div>
+        <h3 className="text-xl font-semibold text-red-900 mb-2">Er is een fout opgetreden</h3>
+        <p className="text-red-700 mb-4">
+          Het verzenden van uw bericht is mislukt. Probeer het opnieuw of neem direct contact met ons op.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <Button 
+            onClick={() => setSubmitStatus('')}
+            variant="outline"
+            className="border-red-600 text-red-600 hover:bg-red-50"
+          >
+            Opnieuw Proberen
+          </Button>
+          <Button 
+            onClick={() => window.location.href = 'tel:+31681348551'}
+            className="bg-green-600 hover:bg-green-700"
+          >
+            <Phone className="mr-2 h-4 w-4" />
+            Direct Bellen
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   if (submitStatus === 'success') {
     return (
@@ -47,16 +116,16 @@ const ContactForm = () => {
         <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
           <Send className="h-8 w-8 text-green-600" />
         </div>
-        <h3 className="text-xl font-semibold text-green-900 mb-2">Message Sent Successfully!</h3>
+        <h3 className="text-xl font-semibold text-green-900 mb-2">Bericht Succesvol Verzonden!</h3>
         <p className="text-green-700 mb-4">
-          Thank you for contacting Glodinas Makelaardij. We&apos;ll get back to you within 24 hours.
+          Bedankt voor uw bericht aan Glodinas Makelaardij. Wij nemen binnen 24 uur contact met u op.
         </p>
         <Button 
           onClick={() => setSubmitStatus('')}
           variant="outline"
           className="border-green-600 text-green-600 hover:bg-green-50"
         >
-          Send Another Message
+          Nog een Bericht Sturen
         </Button>
       </div>
     );
