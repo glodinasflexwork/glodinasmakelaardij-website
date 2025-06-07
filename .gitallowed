@@ -1,0 +1,4 @@
+postgresql://username:password@host/database
+your_secret_key
+your_mailtrap_token
+
