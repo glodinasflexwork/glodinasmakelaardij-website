@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ChevronLeft, ChevronRight, X, MapPin, Bed, Bath, Square, Eye, Heart, Filter, Search, SlidersHorizontal, Check } from 'lucide-react';
+import { ChevronLeft, ChevronRight, X, MapPin, Bed, Bath, Square, Eye, Heart, Search, SlidersHorizontal, Check } from 'lucide-react';
 
 interface Property {
   id: string;
