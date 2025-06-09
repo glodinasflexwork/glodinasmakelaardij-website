@@ -1,44 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
+import { verifyRefreshToken, generateToken, generateRefreshToken, prisma } from '../../../../../lib/auth';
 
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
   try {
-    // Get the authorization header
-    const authHeader = request.headers.get('authorization');
-    
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return NextResponse.json(
-        { error: 'Refresh token required' },
-        { status: 401 }
-      );
+    const { refreshToken } = await request.json();
+
+    if (!refreshToken) {
+      return NextResponse.json({ message: 'Refresh token is required' }, { status: 400 });
     }
 
-    const refreshToken = authHeader.substring(7); // Remove 'Bearer ' prefix
-
-    // For mock implementation, extract user ID from refresh token
-    // In real implementation, verify JWT refresh token
-    const tokenParts = refreshToken.split('_');
-    if (tokenParts.length < 4 || tokenParts[0] !== 'mock' || tokenParts[1] !== 'refresh' || tokenParts[2] !== 'token') {
-      return NextResponse.json(
-        { error: 'Invalid refresh token' },
-        { status: 401 }
-      );
+    let decodedRefreshToken;
+    try {
+      decodedRefreshToken = verifyRefreshToken(refreshToken);
+    } catch (error) {
+      return NextResponse.json({ message: 'Invalid or expired refresh token' }, { status: 401 });
     }
 
-    const userId = parseInt(tokenParts[3]);
+    const user = await prisma.user.findUnique({ where: { id: decodedRefreshToken.userId } });
+    if (!user) {
+      return NextResponse.json({ message: 'User not found' }, { status: 404 });
+    }
 
-    // Create new access token
-    const newAccessToken = `mock_access_token_${userId}_${Date.now()}`;
+    const newAccessToken = generateToken(user.id);
+    const newRefreshToken = generateRefreshToken(user.id);
 
-    return NextResponse.json({
-      access_token: newAccessToken
-    });
-
+    return NextResponse.json({ message: 'Tokens refreshed successfully', token: newAccessToken, refreshToken: newRefreshToken }, { status: 200 });
   } catch (error) {
-    console.error('Refresh token error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    console.error('Token refresh error:', error);
+    return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
   }
 }
 
