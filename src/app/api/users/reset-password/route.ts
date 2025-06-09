@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { hashPassword, prisma } from '../../../../../lib/auth';
+import { hashPassword, prisma } from '../../../lib/auth';
 import crypto from 'crypto';
 
 export async function POST(request: Request) {
@@ -10,11 +10,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: 'Token and new password are required' }, { status: 400 });
     }
 
-    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
-
     const user = await prisma.user.findFirst({
       where: {
-        resetPasswordToken: hashedToken,
+        resetPasswordToken: token,
         resetPasswordExpires: { gt: new Date() },
       },
     });
