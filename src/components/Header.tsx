@@ -173,7 +173,7 @@ const Header = () => {
             <Link href={isEnglish ? '/en' : '/'} className="flex items-center">
               <img
                 className="h-10 w-auto"
-                src="/logo.png"
+                src="/images/glodinas_logo_128x128.png"
                 alt="Glodinas Makelaardij"
               />
             </Link>
