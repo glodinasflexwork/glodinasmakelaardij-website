@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { verifyToken, prisma } from '../../../../../lib/auth';
+import { verifyToken, prisma } from '../../../lib/auth';
 
 export async function GET(request: Request) {
   try {
