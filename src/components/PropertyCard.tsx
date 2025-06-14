@@ -1,31 +1,28 @@
-
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Heart, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useComparison } from '@/context/ComparisonContext';
 import { Checkbox } from '@/components/ui/checkbox';
+import { useComparison } from '@/context/ComparisonContext';
+import { useSavedProperties } from '@/context/SavedPropertiesContext';
 import { useAuth } from '@/context/AuthContext';
 
-// Define the property type
 interface Property {
-  id: string;
+  id: number;
   title: string;
   location: string;
   price: string;
   originalPrice?: string;
-  size: string;
   bedrooms: number;
   bathrooms: number;
-  area: number;
-  energyLabel: string;
-  features: string[];
+  area: string;
+  size?: string;
   mainImage: string;
   images: string[];
-  rating: number;
-  status: 'new' | 'under_offer' | 'available';
-  description: string;
+  status: 'available' | 'new' | 'under_offer';
+  energyLabel: string;
+  description?: string;
 }
 
 interface PropertyCardProps {
@@ -34,97 +31,58 @@ interface PropertyCardProps {
 }
 
 const PropertyCard: React.FC<PropertyCardProps> = ({ property, language = 'nl' }) => {
-  const { selectedPropertyIds, addToComparison, removeFromComparison } = useComparison();
+  const { selectedProperties, addProperty, removeProperty } = useComparison();
+  const { isSaved, saveProperty, removeProperty: removeSavedProperty } = useSavedProperties();
   const { user } = useAuth();
-  const isSelected = selectedPropertyIds.includes(property.id);
-  const [isSaved, setIsSaved] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || 
-    (process.env.NODE_ENV === 'production' 
-      ? 'https://api.glodinasmakelaardij.nl' 
-      : 'http://localhost:5000');
-
-  // Check if property is saved on component mount
-  useEffect(() => {
-    const checkSavedStatus = async () => {
-      if (!user) return;
-      
-      const token = localStorage.getItem('accessToken');
-      if (!token) return;
-      
-      try {
-        const response = await fetch(`${API_URL}/api/saved-properties`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-        if (response.ok) {
-          const data = await response.json();
-          setIsSaved(data.saved_properties.some((p: any) => p.property_id === property.id));
-        }
-      } catch (error) {
-        console.error('Error checking saved status:', error);
-      }
-    };
-    checkSavedStatus();
-  }, [user, property.id, API_URL]);
+  const isSelected = selectedProperties.some(p => p.id === property.id);
+  const isPropertySaved = isSaved(property.id);
 
   // Handle saving/removing property from favorites
   const handleSaveToggle = async () => {
-    if (!user) {
-      alert('Please log in to save properties.');
-      return;
-    }
-
-    const token = localStorage.getItem('accessToken');
-    if (!token) {
-      alert('Please log in to save properties.');
-      return;
-    }
-
+    if (isLoading) return;
+    
+    setIsLoading(true);
     try {
-      if (isSaved) {
-        // Remove from saved properties
-        const response = await fetch(`${API_URL}/api/saved-properties/${property.id}`, {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-        if (response.ok) {
-          setIsSaved(false);
-        } else {
-          console.error('Failed to remove property:', response.status);
-        }
+      if (isPropertySaved) {
+        await removeSavedProperty(property.id);
       } else {
-        // Add to saved properties
-        const response = await fetch(`${API_URL}/api/saved-properties`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            property_id: property.id,
-            title: property.title,
-            location: property.location,
-            price: property.price,
-            bedrooms: property.bedrooms,
-            bathrooms: property.bathrooms,
-            area: property.area,
-            images: property.images,
-            notes: property.description, // Using description as notes for now
-          }),
-        });
-        if (response.ok) {
-          setIsSaved(true);
-        } else {
-          console.error('Failed to save property:', response.status);
-        }
+        await saveProperty(property);
       }
     } catch (error) {
       console.error('Error toggling saved status:', error);
+      // Show user-friendly error message
+      if (!user) {
+        alert('Please log in to save properties.');
+      } else {
+        alert('Failed to save property. Please try again.');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Handle comparison toggle
+  const handleCompareToggle = () => {
+    if (isSelected) {
+      removeProperty(property.id);
+    } else {
+      addProperty({
+        id: property.id,
+        title: property.title,
+        location: property.location,
+        price: property.price,
+        originalPrice: property.originalPrice,
+        bedrooms: property.bedrooms,
+        bathrooms: property.bathrooms,
+        size: property.area || property.size || '',
+        mainImage: property.mainImage,
+        status: property.status,
+        energyLabel: property.energyLabel,
+        features: [], // Add features if available
+        description: property.description || '',
+      });
     }
   };
 
@@ -141,57 +99,47 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, language = 'nl' }
       underOffer: 'Under Offer',
       viewProperty: 'View Property',
       compare: 'Compare',
-    }
+    },
   };
 
   const t = translations[language];
 
-  const handleCompareToggle = (checked: boolean) => {
-    if (checked) {
-      addToComparison(property);
-    } else {
-      removeFromComparison(property.id);
-    }
-  };
-
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden transition-transform hover:shadow-lg hover:-translate-y-1">
+    <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
       <div className="relative">
-        {/* Property Image */}
-        <div className="relative h-48 w-full">
-          <Image 
-            src={property.mainImage} 
-            alt={property.title}
-            fill
-            className="object-cover"
-          />
-        </div>
+        <Image 
+          src={property.mainImage} 
+          alt={property.title}
+          width={400}
+          height={250}
+          className="w-full h-64 object-cover"
+        />
         
         {/* Status Badge */}
         {property.status === 'new' && (
-          <span className="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+          <span className="absolute top-3 left-3 bg-green-500 text-white text-xs px-2 py-1 rounded-full font-semibold">
             {t.new}
           </span>
         )}
         {property.status === 'under_offer' && (
-          <span className="absolute top-2 left-2 bg-orange-500 text-white text-xs px-2 py-1 rounded-full">
+          <span className="absolute top-3 left-3 bg-orange-500 text-white text-xs px-2 py-1 rounded-full font-semibold">
             {t.underOffer}
           </span>
         )}
         
-        {/* Compare Checkbox and Favorites Heart */}
-        <div className="absolute top-2 right-2 z-10 flex items-center gap-2">
-          {/* Favorites Heart */}
+        {/* Action buttons */}
+        <div className="absolute top-3 right-3 flex flex-col gap-2">
+          {/* Heart button */}
           <button
             onClick={handleSaveToggle}
-            className={`p-2 rounded-full transition-all duration-200 ${
-              isSaved 
-                ? 'bg-orange-500 text-white shadow-md' 
-                : 'bg-white/80 text-gray-600 hover:bg-orange-50 hover:text-orange-500'
-            }`}
-            aria-label={isSaved ? 'Remove from favorites' : 'Add to favorites'}
+            disabled={isLoading}
+            className={`p-2 rounded-full transition-colors duration-200 ${
+              isPropertySaved 
+                ? 'bg-red-500 text-white' 
+                : 'bg-white/80 text-gray-600 hover:bg-white hover:text-red-500'
+            } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
-            <Heart className={`h-4 w-4 ${isSaved ? 'fill-current' : ''}`} />
+            <Heart className={`h-4 w-4 ${isPropertySaved ? 'fill-current' : ''}`} />
           </button>
           
           {/* Compare Checkbox */}
@@ -213,28 +161,24 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, language = 'nl' }
       </div>
       
       <div className="p-4">
-        {/* Property Title */}
-        <h3 className="font-semibold text-lg text-gray-900 mb-1">{property.title}</h3>
+        <h3 className="text-lg font-semibold mb-2 text-gray-900">{property.title}</h3>
+        <p className="text-gray-900 mb-3 font-medium">{property.location}</p>
         
-        {/* Location */}
-        <p className="text-gray-900 text-sm font-medium mb-2">{property.location}</p>
-        
-        {/* Price */}
-        <div className="mb-3">
-          <span className="font-semibold text-orange-600">{property.price}</span>
-          {property.originalPrice && (
-            <span className="text-sm text-gray-600 line-through ml-2">{property.originalPrice}</span>
-          )}
+        <div className="flex justify-between items-center mb-3">
+          <div>
+            <span className="text-xl font-bold text-orange-600">{property.price}</span>
+            {property.originalPrice && (
+              <span className="text-sm text-gray-600 line-through ml-2">{property.originalPrice}</span>
+            )}
+          </div>
         </div>
         
-        {/* Property Features */}
-        <div className="flex justify-between text-sm text-gray-900 font-medium mb-4">
-          <div>{property.bedrooms} slaapkamers</div>
-          <div>{property.bathrooms} badkamers</div>
-          <div>{property.size}</div>
+        <div className="flex justify-between text-sm text-gray-900 mb-4">
+          <span>{property.bedrooms} slaapkamers</span>
+          <span>{property.bathrooms} badkamers</span>
+          <span>{property.area}</span>
         </div>
         
-        {/* View Property Button */}
         <Link href={`/properties/${property.id}`}>
           <Button variant="ctaOutline" className="w-full">
             {t.viewProperty}
@@ -247,5 +191,3 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, language = 'nl' }
 };
 
 export default PropertyCard;
-
-
