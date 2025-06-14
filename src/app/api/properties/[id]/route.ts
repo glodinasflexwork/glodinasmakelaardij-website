@@ -20,7 +20,7 @@ export async function GET(
       );
     }
 
-    return NextResponse.json(property);
+    return NextResponse.json({ property });
   } catch (error) {
     console.error('Error fetching property:', error);
     return NextResponse.json(
