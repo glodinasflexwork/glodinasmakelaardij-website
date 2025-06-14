@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import GMLogo from '@/components/GMLogo';
 import { Button } from '@/components/ui/button';
 import { 
   Calendar, 
@@ -194,58 +195,131 @@ export default function PropertyDetailPage({ params }: Props) {
           </div>
         )}
         
-        {/* Property Images Gallery */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <div className="md:col-span-2 relative h-[400px] rounded-lg overflow-hidden">
-            <Image 
-              src={property.mainImage || property.images[0] || '/images/placeholder-property.jpg'} 
-              alt={property.title}
-              fill
-              className="object-cover"
-            />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            {property.images.slice(1, 5).map((image, index) => (
-              <div key={index} className="relative h-[190px] rounded-lg overflow-hidden">
-                <Image 
-                  src={image || '/images/placeholder-property.jpg'} 
-                  alt={`${property.title} - Image ${index + 2}`}
-                  fill
-                  className="object-cover"
-                />
-              </div>
-            ))}
+        {/* Property Images Gallery - Improved Layout */}
+        <div className="mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            {/* Main Image - Takes up more space */}
+            <div className="md:col-span-3 relative h-[400px] md:h-[500px] rounded-lg overflow-hidden group">
+              <Image 
+                src={property.mainImage || property.images[0] || '/images/placeholder-property.jpg'} 
+                alt={property.title}
+                fill
+                className="object-cover transition-transform duration-300 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300"></div>
+            </div>
+            
+            {/* Thumbnail Images */}
+            <div className="grid grid-cols-2 md:grid-cols-1 gap-4">
+              {property.images.slice(1, 5).map((image, index) => (
+                <div key={index} className="relative h-[120px] rounded-lg overflow-hidden group cursor-pointer">
+                  <Image 
+                    src={image || '/images/placeholder-property.jpg'} 
+                    alt={`${property.title} - Image ${index + 2}`}
+                    fill
+                    className="object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300"></div>
+                </div>
+              ))}
+              {property.images.length > 5 && (
+                <div className="relative h-[120px] rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center cursor-pointer hover:bg-gray-200 transition-colors">
+                  <div className="text-center">
+                    <div className="text-lg font-semibold text-gray-600">+{property.images.length - 5}</div>
+                    <div className="text-sm text-gray-500">meer foto's</div>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
         
-        {/* Action Buttons */}
-        <div className="flex flex-wrap gap-3 mb-8">
-          <Link href="/schedule">
-            <Button variant="cta" size="lg" className="flex-grow md:flex-grow-0">
+        {/* Action Buttons - Improved Layout */}
+        <div className="grid grid-cols-2 md:flex md:flex-wrap gap-3 mb-8">
+          <Link href="/schedule" className="md:flex-1 md:max-w-xs">
+            <Button variant="cta" size="lg" className="w-full">
               <Calendar className="mr-2 h-5 w-5" />
-              Plan een bezichtiging
+              Plan bezichtiging
             </Button>
           </Link>
-          <Link href="/contact">
-            <Button variant="ctaOutline" size="lg" className="flex-grow md:flex-grow-0">
+          <Link href="/contact" className="md:flex-1 md:max-w-xs">
+            <Button variant="ctaOutline" size="lg" className="w-full">
               <Mail className="mr-2 h-5 w-5" />
               Contact opnemen
             </Button>
           </Link>
-          <Button variant="outline" size="lg" className="flex-grow md:flex-grow-0">
+          <Button 
+            variant="outline" 
+            size="lg" 
+            className="w-full md:w-auto"
+            onClick={() => {
+              const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+              const isAlreadyFavorite = favorites.includes(property.id);
+              
+              if (isAlreadyFavorite) {
+                const updatedFavorites = favorites.filter((id: string) => id !== property.id);
+                localStorage.setItem('favorites', JSON.stringify(updatedFavorites));
+                alert('Woning verwijderd uit favorieten');
+              } else {
+                favorites.push(property.id);
+                localStorage.setItem('favorites', JSON.stringify(favorites));
+                alert('Woning toegevoegd aan favorieten');
+              }
+            }}
+          >
             <Heart className="mr-2 h-5 w-5" />
             Opslaan
           </Button>
-          <Button variant="outline" size="lg" className="flex-grow md:flex-grow-0">
+          <Button 
+            variant="outline" 
+            size="lg" 
+            className="w-full md:w-auto"
+            onClick={() => {
+              if (navigator.share) {
+                navigator.share({
+                  title: property.title,
+                  text: `Bekijk deze woning: ${property.title} in ${property.location}`,
+                  url: window.location.href,
+                });
+              } else {
+                navigator.clipboard.writeText(window.location.href);
+                alert('Link gekopieerd naar klembord!');
+              }
+            }}
+          >
             <Share2 className="mr-2 h-5 w-5" />
             Delen
           </Button>
         </div>
         
-        {/* Property Details Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+        {/* Property Details Grid - Enhanced Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
           {/* Left Column - Main Info */}
-          <div className="md:col-span-2">
+          <div className="lg:col-span-2 space-y-8">
+            
+            {/* Key Features Cards */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="bg-white rounded-lg border p-4 text-center">
+                <BedDouble className="h-6 w-6 text-orange-500 mx-auto mb-2" />
+                <div className="text-sm text-gray-900">Slaapkamers</div>
+                <div className="font-bold text-gray-900">{property.bedrooms}</div>
+              </div>
+              <div className="bg-white rounded-lg border p-4 text-center">
+                <Bath className="h-6 w-6 text-orange-500 mx-auto mb-2" />
+                <div className="text-sm text-gray-900">Badkamers</div>
+                <div className="font-bold text-gray-900">{property.bathrooms}</div>
+              </div>
+              <div className="bg-white rounded-lg border p-4 text-center">
+                <Ruler className="h-6 w-6 text-orange-500 mx-auto mb-2" />
+                <div className="text-sm text-gray-900">Woonoppervlak</div>
+                <div className="font-bold text-gray-900">{property.area}m²</div>
+              </div>
+              <div className="bg-white rounded-lg border p-4 text-center">
+                <Lightbulb className="h-6 w-6 text-orange-500 mx-auto mb-2" />
+                <div className="text-sm text-gray-900">Energielabel</div>
+                <div className="font-bold text-gray-900">{property.energyLabel}</div>
+              </div>
+            </div>
             <div className="bg-white rounded-lg border p-6 mb-8">
               <h2 className="text-xl font-bold text-gray-900 mb-4">Kenmerken</h2>
               <div className="grid grid-cols-2 gap-4">
@@ -361,22 +435,37 @@ export default function PropertyDetailPage({ params }: Props) {
             </div>
           </div>
           
-          {/* Right Column - Contact Info */}
-          <div className="md:col-span-1">
-            <div className="bg-white rounded-lg border p-6 sticky top-8">
-              <h3 className="text-lg font-bold text-gray-900 mb-4">Contact</h3>
+          {/* Right Column - Enhanced Contact Info */}
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-lg border p-6 sticky top-8 shadow-sm">
+              <h3 className="text-lg font-bold text-gray-900 mb-6">Contact</h3>
               
-              {/* Agent Info */}
-              <div className="mb-6">
+              {/* Agent Info - Enhanced */}
+              <div className="mb-6 p-4 bg-gray-50 rounded-lg">
                 <div className="flex items-center mb-3">
-                  <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold text-lg mr-3">
-                    GM
-                  </div>
+                  <GMLogo size="md" className="mr-3" />
                   <div>
                     <div className="font-semibold text-gray-900">Glodinas Makelaardij</div>
                     <div className="text-sm text-gray-900">Makelaar</div>
                   </div>
                 </div>
+                
+                {/* Property Rating */}
+                {property.rating && (
+                  <div className="mt-4 pt-4 border-t border-gray-200">
+                    <div className="text-sm text-gray-900 mb-2">Waardering</div>
+                    <div className="flex items-center">
+                      <div className="flex text-orange-500">
+                        {[...Array(5)].map((_, i) => (
+                          <span key={i} className={i < property.rating ? 'text-orange-500' : 'text-gray-300'}>
+                            ★
+                          </span>
+                        ))}
+                      </div>
+                      <span className="ml-2 text-sm text-gray-900">({property.rating}/5)</span>
+                    </div>
+                  </div>
+                )}
               </div>
               
               {/* Contact Buttons */}
@@ -398,23 +487,6 @@ export default function PropertyDetailPage({ params }: Props) {
                   </Button>
                 </Link>
               </div>
-              
-              {/* Property Rating */}
-              {property.rating && (
-                <div className="mt-6 pt-6 border-t">
-                  <div className="text-sm text-gray-900 mb-2">Waardering</div>
-                  <div className="flex items-center">
-                    <div className="flex text-orange-500">
-                      {[...Array(5)].map((_, i) => (
-                        <span key={i} className={i < property.rating ? 'text-orange-500' : 'text-gray-300'}>
-                          ★
-                        </span>
-                      ))}
-                    </div>
-                    <span className="ml-2 text-sm text-gray-900">({property.rating}/5)</span>
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         </div>
