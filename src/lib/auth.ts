@@ -52,34 +52,49 @@ export function verifyRefreshToken(token: string): { userId: string } | null {
   }
 }
 
-// Email sending function with Mailtrap integration
+// Email sending function with Mailtrap API integration
 export async function sendEmail(to: string, subject: string, html: string): Promise<boolean> {
   try {
-    const nodemailer = require('nodemailer');
+    const apiToken = process.env.MAILTRAP_API_TOKEN;
+    const fromEmail = process.env.MAILTRAP_FROM_EMAIL || 'noreply@glodinasmakelaardij.nl';
     
-    // Create transporter with Mailtrap SMTP settings
-    const transporter = nodemailer.createTransporter({
-      host: 'live.smtp.mailtrap.io',
-      port: 587,
-      secure: false, // true for 465, false for other ports
-      auth: {
-        user: 'api',
-        pass: process.env.MAILTRAP_API_TOKEN || ''
-      }
-    });
+    if (!apiToken) {
+      console.error('MAILTRAP_API_TOKEN is not set');
+      return false;
+    }
 
-    // Email options
-    const mailOptions = {
-      from: process.env.MAILTRAP_FROM_EMAIL || 'noreply@glodinasmakelaardij.nl',
-      to: to,
+    const emailData = {
+      from: {
+        email: fromEmail,
+        name: 'Glodinas Makelaardij'
+      },
+      to: [
+        {
+          email: to
+        }
+      ],
       subject: subject,
       html: html
     };
 
-    // Send email
-    const info = await transporter.sendMail(mailOptions);
-    console.log('Email sent successfully:', info.messageId);
-    return true;
+    const response = await fetch('https://send.api.mailtrap.io/api/send', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(emailData)
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      console.log('Email sent successfully via Mailtrap API:', result);
+      return true;
+    } else {
+      const error = await response.text();
+      console.error('Mailtrap API error:', response.status, error);
+      return false;
+    }
   } catch (error) {
     console.error('Email sending error:', error);
     return false;
