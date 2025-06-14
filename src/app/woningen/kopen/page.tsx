@@ -3,6 +3,8 @@ import { Metadata } from 'next';
 import { Search, MapPin, Heart, TrendingUp, CheckCircle, Users, Calculator, FileText, Phone, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 
 export const metadata: Metadata = {
   title: 'Woningen Kopen in Den Haag | Glodinas Makelaardij',

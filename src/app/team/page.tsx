@@ -3,6 +3,8 @@ import { Metadata } from 'next';
 import { Users, Award, Linkedin, Mail, Phone, MapPin, Star, TrendingUp, Heart, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 
 export const metadata: Metadata = {
   title: 'Ons Team | Glodinas Makelaardij - Ervaren Makelaars Den Haag',
@@ -98,6 +100,7 @@ const TeamPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Header />
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 text-white py-20">
         <div className="absolute inset-0 bg-black/20"></div>
@@ -292,6 +295,8 @@ const TeamPage = () => {
           </div>
         </div>
       </section>
+      
+      <Footer />
     </div>
   );
 };
