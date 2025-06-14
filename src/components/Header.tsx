@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import SavedProperties from '@/components/SavedProperties';
 import AuthModal from '@/components/AuthModal';
 import UserDashboard from '@/components/UserDashboard';
+import GMLogo from '@/components/GMLogo';
 import { useAuth } from '@/context/AuthContext';
 
 const Header = () => {
@@ -292,10 +293,9 @@ const Header = () => {
             {/* Logo */}
             <div className="flex-shrink-0">
               <Link href={isEnglish ? '/en' : '/'} className="flex items-center group">
-                <img
-                  className="h-10 w-auto transition-transform duration-200 group-hover:scale-105"
-                  src="/images/glodinas_logo_128x128.png"
-                  alt="Glodinas Makelaardij"
+                <GMLogo 
+                  size="lg" 
+                  className="transition-transform duration-200 group-hover:scale-105" 
                 />
               </Link>
             </div>
