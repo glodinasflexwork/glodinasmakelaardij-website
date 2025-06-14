@@ -3,7 +3,7 @@ import { hashPassword, prisma } from '@/lib/auth';
 
 export async function POST(request: Request) {
   try {
-    const { email, password, firstName, lastName, phone } = await request.json();
+    const { email, password, firstName, lastName, phone, username } = await request.json();
 
     if (!email || !password) {
       return NextResponse.json({ message: 'Email and password are required' }, { status: 400 });
@@ -20,9 +20,9 @@ export async function POST(request: Request) {
       data: {
         email,
         password: hashedPassword,
-        firstName,
-        lastName,
-        phone,
+        firstName: firstName || username || null,
+        lastName: lastName || null,
+        phone: phone || null,
       },
     });
 
