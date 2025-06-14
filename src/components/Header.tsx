@@ -216,7 +216,7 @@ const Header = () => {
       icon: <BookOpen className="w-4 h-4" />,
       submenu: [
         { name: isEnglish ? 'Blog' : 'Blog', href: isEnglish ? '/en/blog' : '/blog' },
-        { name: isEnglish ? 'Market Reports' : 'Marktrapportages', href: isEnglish ? '/en/reports' : '/rapporten' },
+        { name: isEnglish ? 'Market Reports' : 'Marktrapportages', href: isEnglish ? '/en/reports' : '/marktrapportages' },
         { name: isEnglish ? 'Buying Guide' : 'Koopgids', href: isEnglish ? '/en/buying-guide' : '/koopgids' },
       ]
     },
