@@ -29,18 +29,32 @@ export async function POST(request: Request) {
     });
 
     // Send verification email
-    const verificationUrl = `${process.env.NEXT_PUBLIC_API_URL || 'https://www.glodinasmakelaardij.nl'}/verify-email?token=${verificationToken}`;
+    const verificationUrl = `https://www.glodinasmakelaardij.nl/api/verify-email?token=${verificationToken}`;
     
     const emailHtml = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #2563eb;">Welkom bij Glodinas Makelaardij!</h2>
-        <p>Bedankt voor uw registratie. Klik op de onderstaande link om uw e-mailadres te verifiëren:</p>
-        <a href="${verificationUrl}" style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; display: inline-block; margin: 20px 0;">
-          E-mail Verifiëren
-        </a>
-        <p>Als de knop niet werkt, kopieer en plak deze link in uw browser:</p>
-        <p style="word-break: break-all; color: #666;">${verificationUrl}</p>
-        <p>Met vriendelijke groet,<br>Het Glodinas Makelaardij Team</p>
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="text-align: center; margin-bottom: 30px;">
+          <h1 style="color: #2563eb; margin-bottom: 10px;">Welkom bij Glodinas Makelaardij!</h1>
+          <p style="color: #666; font-size: 16px;">Bedankt voor uw registratie. Klik op de onderstaande link om uw e-mailadres te verifiëren:</p>
+        </div>
+        
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="${verificationUrl}" 
+             style="background-color: #2563eb; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">
+            E-mail Verifiëren
+          </a>
+        </div>
+        
+        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
+          <p style="color: #666; font-size: 14px;">Als de knop niet werkt, kopieer en plak deze link in uw browser:</p>
+          <p style="color: #2563eb; word-break: break-all; font-size: 14px;">
+            <a href="${verificationUrl}" style="color: #2563eb;">${verificationUrl}</a>
+          </p>
+        </div>
+        
+        <div style="margin-top: 30px; text-align: center; color: #666; font-size: 14px;">
+          <p>Met vriendelijke groet,<br>Het Glodinas Makelaardij Team</p>
+        </div>
       </div>
     `;
 

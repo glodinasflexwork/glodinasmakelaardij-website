@@ -14,8 +14,9 @@ model User {
   firstName         String?
   lastName          String?
   phone             String?
-  isEmailVerified   Boolean  @default(false)
+  emailVerified     Boolean  @default(false)
   emailVerifyToken  String?
+  emailVerifiedAt   DateTime?
   resetPasswordToken String?
   resetPasswordExpires DateTime?
   createdAt         DateTime @default(now())
