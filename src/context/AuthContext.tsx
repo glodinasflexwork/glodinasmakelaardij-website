@@ -34,10 +34,7 @@ interface AuthContextType {
 }
 
 // API URL - Use relative URLs for Next.js API routes
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 
-    (process.env.NODE_ENV === 'production' 
-      ? 'https://api.glodinasmakelaardij.nl' 
-      : 'http://localhost:5000');
+const API_URL = '';
 
 // Create the context with default values
 export const AuthContext = createContext<AuthContextType>({
@@ -70,7 +67,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
         
         // Fetch user profile
-        const response = await fetch(`${API_URL}/api/users/profile`, {
+        const response = await fetch('/api/users/profile', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -103,7 +100,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         return;
       }
       
-      const response = await fetch(`${API_URL}/api/users/refresh`, {
+      const response = await fetch('/api/users/refresh', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${refreshToken}`,
@@ -116,7 +113,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         localStorage.setItem('accessToken', data.access_token);
         
         // Fetch user profile with new token
-        const profileResponse = await fetch(`${API_URL}/api/users/profile`, {
+        const profileResponse = await fetch('/api/users/profile', {
           headers: {
             'Authorization': `Bearer ${data.access_token}`
           }
@@ -143,7 +140,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setIsLoading(true);
       setError(null);
       
-      const response = await fetch(`${API_URL}/api/users/login`, {
+      const response = await fetch('/api/users/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -162,7 +159,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       localStorage.setItem('refreshToken', data.refreshToken);
       
       // Fetch user profile after successful login
-      const profileResponse = await fetch(`${API_URL}/api/users/profile`, {
+      const profileResponse = await fetch('/api/users/profile', {
         headers: {
           'Authorization': `Bearer ${data.token}`
         }
@@ -198,7 +195,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setIsLoading(true);
       setError(null);
       
-      const response = await fetch(`${API_URL}/api/users/register`, {
+      const response = await fetch('/api/users/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -257,7 +254,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           // Migrate each property
           for (const property of savedProperties) {
             try {
-              await fetch(`${API_URL}/api/users/saved-properties`, {
+              await fetch('/api/saved-properties', {
                 method: 'POST',
                 headers: {
                   'Authorization': `Bearer ${token}`,
