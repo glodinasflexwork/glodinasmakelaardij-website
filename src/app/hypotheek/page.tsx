@@ -127,7 +127,7 @@ const HypotheekadviesPage = () => {
                 </Button>
               </Link>
               <Link href="/schedule">
-                <Button size="lg" className="bg-white text-green-700 hover:bg-gray-100 px-8 py-4 text-lg border-2 border-white">
+                <Button size="lg" className="bg-white text-green-700 hover:bg-gray-100 px-8 py-4 text-lg">
                   <Phone className="w-5 h-5 mr-2" />
                   Gratis Adviesgesprek
                 </Button>
@@ -296,7 +296,7 @@ const HypotheekadviesPage = () => {
               </Button>
             </Link>
             <Link href="/schedule">
-              <Button size="lg" className="bg-white text-green-700 hover:bg-gray-100 px-8 py-4 text-lg border-2 border-white">
+              <Button size="lg" className="bg-white text-green-700 hover:bg-gray-100 px-8 py-4 text-lg">
                 <Phone className="w-5 h-5 mr-2" />
                 Bel: (6) 81 34 85 51
               </Button>
