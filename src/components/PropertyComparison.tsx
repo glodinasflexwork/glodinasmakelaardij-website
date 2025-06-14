@@ -93,20 +93,23 @@ const PropertyComparison: React.FC<PropertyComparisonProps> = ({
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-lg shadow-xl max-w-6xl w-full max-h-[90vh] overflow-hidden flex flex-col">
-        <div className="p-4 border-b flex justify-between items-center">
-          <h2 className="text-xl font-bold">{t.title}</h2>
+        <div className="p-4 border-b flex justify-between items-center bg-white">
+          <h2 className="text-xl font-bold text-gray-900">{t.title}</h2>
           <Button variant="ghost" size="icon" onClick={onClose}>
             <X className="h-5 w-5" />
           </Button>
         </div>
         
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto overflow-y-auto max-h-[70vh]">
           <div className="min-w-max">
-            <div className="grid grid-cols-[200px_repeat(auto-fill,minmax(250px,1fr))]">
+            <div className={`grid gap-0 ${properties.length === 1 ? 'grid-cols-[200px_300px]' : 
+                                        properties.length === 2 ? 'grid-cols-[200px_repeat(2,300px)]' : 
+                                        properties.length === 3 ? 'grid-cols-[200px_repeat(3,280px)]' : 
+                                        'grid-cols-[200px_repeat(auto-fill,minmax(250px,1fr))]'}`}>
               {/* Header row with property images */}
-              <div className="p-4 border-b border-r bg-gray-50"></div>
+              <div className="p-4 border-b border-r bg-gray-50 font-semibold text-gray-900"></div>
               {properties.map((property) => (
-                <div key={property.id} className="p-4 border-b border-r flex flex-col items-center">
+                <div key={property.id} className="p-4 border-b border-r flex flex-col items-center bg-white">
                   <div className="relative w-full h-40 mb-3">
                     <Image 
                       src={property.mainImage} 
@@ -115,18 +118,18 @@ const PropertyComparison: React.FC<PropertyComparisonProps> = ({
                       className="object-cover rounded-md"
                     />
                     {property.status === 'new' && (
-                      <span className="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+                      <span className="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full font-semibold">
                         Nieuw
                       </span>
                     )}
                     {property.status === 'under_offer' && (
-                      <span className="absolute top-2 left-2 bg-orange-500 text-white text-xs px-2 py-1 rounded-full">
+                      <span className="absolute top-2 left-2 bg-orange-500 text-white text-xs px-2 py-1 rounded-full font-semibold">
                         Onder Bod
                       </span>
                     )}
                   </div>
-                  <h3 className="font-semibold text-center mb-1">{property.title}</h3>
-                  <p className="text-sm text-gray-600 text-center mb-3">{property.location}</p>
+                  <h3 className="font-semibold text-center mb-1 text-gray-900">{property.title}</h3>
+                  <p className="text-sm text-gray-700 text-center mb-3 font-medium">{property.location}</p>
                   <Link href={`/properties/${property.id}`}>
                     <Button variant="ctaOutline" size="sm" className="w-full">
                       {t.viewProperty}
@@ -137,52 +140,52 @@ const PropertyComparison: React.FC<PropertyComparisonProps> = ({
               ))}
 
               {/* Price row */}
-              <div className="p-4 border-b border-r bg-gray-50 font-semibold">{t.price}</div>
+              <div className="p-4 border-b border-r bg-gray-50 font-semibold text-gray-900">{t.price}</div>
               {properties.map((property) => (
-                <div key={`${property.id}-price`} className="p-4 border-b border-r">
+                <div key={`${property.id}-price`} className="p-4 border-b border-r bg-white">
                   <div className="font-semibold text-orange-600">{property.price}</div>
                   {property.originalPrice && (
-                    <div className="text-sm text-gray-500 line-through">{property.originalPrice}</div>
+                    <div className="text-sm text-gray-600 line-through">{property.originalPrice}</div>
                   )}
                 </div>
               ))}
 
               {/* Location row */}
-              <div className="p-4 border-b border-r bg-gray-50 font-semibold">{t.location}</div>
+              <div className="p-4 border-b border-r bg-gray-50 font-semibold text-gray-900">{t.location}</div>
               {properties.map((property) => (
-                <div key={`${property.id}-location`} className="p-4 border-b border-r">
+                <div key={`${property.id}-location`} className="p-4 border-b border-r bg-white text-gray-900 font-medium">
                   {property.location}
                 </div>
               ))}
 
               {/* Size row */}
-              <div className="p-4 border-b border-r bg-gray-50 font-semibold">{t.size}</div>
+              <div className="p-4 border-b border-r bg-gray-50 font-semibold text-gray-900">{t.size}</div>
               {properties.map((property) => (
-                <div key={`${property.id}-size`} className="p-4 border-b border-r">
+                <div key={`${property.id}-size`} className="p-4 border-b border-r bg-white text-gray-900 font-medium">
                   {property.size}
                 </div>
               ))}
 
               {/* Bedrooms row */}
-              <div className="p-4 border-b border-r bg-gray-50 font-semibold">{t.bedrooms}</div>
+              <div className="p-4 border-b border-r bg-gray-50 font-semibold text-gray-900">{t.bedrooms}</div>
               {properties.map((property) => (
-                <div key={`${property.id}-bedrooms`} className="p-4 border-b border-r">
+                <div key={`${property.id}-bedrooms`} className="p-4 border-b border-r bg-white text-gray-900 font-medium">
                   {property.bedrooms}
                 </div>
               ))}
 
               {/* Bathrooms row */}
-              <div className="p-4 border-b border-r bg-gray-50 font-semibold">{t.bathrooms}</div>
+              <div className="p-4 border-b border-r bg-gray-50 font-semibold text-gray-900">{t.bathrooms}</div>
               {properties.map((property) => (
-                <div key={`${property.id}-bathrooms`} className="p-4 border-b border-r">
+                <div key={`${property.id}-bathrooms`} className="p-4 border-b border-r bg-white text-gray-900 font-medium">
                   {property.bathrooms}
                 </div>
               ))}
 
               {/* Energy Label row */}
-              <div className="p-4 border-b border-r bg-gray-50 font-semibold">{t.energyLabel}</div>
+              <div className="p-4 border-b border-r bg-gray-50 font-semibold text-gray-900">{t.energyLabel}</div>
               {properties.map((property) => (
-                <div key={`${property.id}-energy`} className="p-4 border-b border-r">
+                <div key={`${property.id}-energy`} className="p-4 border-b border-r bg-white">
                   <span className={`inline-block px-2 py-1 rounded-md text-white text-xs font-semibold
                     ${property.energyLabel === 'A' ? 'bg-green-500' : 
                       property.energyLabel === 'B' ? 'bg-green-400' : 
@@ -197,30 +200,30 @@ const PropertyComparison: React.FC<PropertyComparisonProps> = ({
               ))}
 
               {/* Features row */}
-              <div className="p-4 border-b border-r bg-gray-50 font-semibold">{t.features}</div>
+              <div className="p-4 border-b border-r bg-gray-50 font-semibold text-gray-900">{t.features}</div>
               {properties.map((property) => (
-                <div key={`${property.id}-features`} className="p-4 border-b border-r">
+                <div key={`${property.id}-features`} className="p-4 border-b border-r bg-white">
                   <ul className="list-disc list-inside">
                     {property.features.map((feature, index) => (
-                      <li key={index} className="text-sm">{feature}</li>
+                      <li key={index} className="text-sm text-gray-900 font-medium">{feature}</li>
                     ))}
                   </ul>
                 </div>
               ))}
 
               {/* Description row */}
-              <div className="p-4 border-r bg-gray-50 font-semibold">Beschrijving</div>
+              <div className="p-4 border-r bg-gray-50 font-semibold text-gray-900">Beschrijving</div>
               {properties.map((property) => (
-                <div key={`${property.id}-description`} className="p-4 border-r">
-                  <p className="text-sm">{property.description}</p>
+                <div key={`${property.id}-description`} className="p-4 border-r bg-white">
+                  <p className="text-sm text-gray-900">{property.description}</p>
                 </div>
               ))}
             </div>
           </div>
         </div>
         
-        <div className="p-4 border-t mt-auto">
-          <Button variant="outline" onClick={onClose}>
+        <div className="p-4 border-t mt-auto bg-white">
+          <Button variant="outline" onClick={onClose} className="text-gray-900 border-gray-300 hover:bg-gray-50">
             {t.close}
           </Button>
         </div>

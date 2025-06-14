@@ -37,10 +37,10 @@ const ComparisonButton: React.FC<ComparisonButtonProps> = ({ language = 'nl' }) 
       <div className="fixed bottom-4 right-4 z-40">
         <Button
           onClick={openComparison}
-          className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2"
+          className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2 font-semibold"
         >
           <BarChart3 className="h-5 w-5" />
-          <span className="font-medium">
+          <span className="font-semibold text-white">
             {t.compareSelected} ({selectedPropertyIds.length})
           </span>
           <ArrowRight className="h-4 w-4" />
