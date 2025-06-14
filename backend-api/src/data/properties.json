@@ -1,0 +1,103 @@
+[
+  {
+    "id": "jacob-schorerlaan-201",
+    "title": "Jacob Schorerlaan 201",
+    "location": "Den Haag, Groente- en Fruitmarkt",
+    "price": "\u20ac465.000 k.k.",
+    "originalPrice": "\u20ac475.000",
+    "size": "107m\u00b2",
+    "bedrooms": 4,
+    "bathrooms": 1,
+    "area": 107,
+    "energyLabel": "A",
+    "features": [
+      "Tuin",
+      "Serre",
+      "Moderne Keuken",
+      "Parkeren"
+    ],
+    "mainImage": "/images/properties/living-room-1.jpg",
+    "images": [
+      "/images/properties/living-room-1.jpg",
+      "/images/properties/kitchen-1.jpg",
+      "/images/properties/bedroom-1.jpg"
+    ],
+    "rating": 5,
+    "status": "new",
+    "description": "Prachtig gerenoveerd appartement met moderne afwerking, ruime woonkamer en volledig uitgeruste keuken. Gelegen in een levendige buurt met alle voorzieningen binnen handbereik.",
+    "neighborhood": "Groente- en Fruitmarkt",
+    "yearBuilt": 1920,
+    "plotSize": 0,
+    "heating": "Centrale verwarming",
+    "parking": "Parkeerplaats",
+    "garden": "Achtertuin",
+    "created_at": "2025-06-14T15:01:07.982721",
+    "updated_at": "2025-06-14T15:01:07.983154"
+  },
+  {
+    "id": "groenewegje-76",
+    "title": "Groenewegje 76",
+    "location": "Den Haag, Centrum",
+    "price": "\u20ac695.000 k.k.",
+    "size": "120m\u00b2",
+    "bedrooms": 3,
+    "bathrooms": 2,
+    "area": 120,
+    "energyLabel": "B",
+    "features": [
+      "Grachtzicht",
+      "Historisch",
+      "Centrale Ligging"
+    ],
+    "mainImage": "/images/properties/living-room-2.jpg",
+    "images": [
+      "/images/properties/living-room-2.jpg",
+      "/images/properties/bedroom-1.jpg",
+      "/images/properties/kitchen-1.jpg"
+    ],
+    "rating": 5,
+    "status": "under_offer",
+    "description": "Karakteristiek appartement in het historische centrum van Den Haag met uitzicht op de gracht. Hoge plafonds, originele details en moderne voorzieningen maken dit een unieke woonkans.",
+    "neighborhood": "Centrum",
+    "yearBuilt": 1890,
+    "plotSize": 0,
+    "heating": "Centrale verwarming",
+    "parking": "Geen",
+    "garden": "Geen",
+    "created_at": "2025-06-14T15:01:07.983161",
+    "updated_at": "2025-06-14T15:01:07.983163"
+  },
+  {
+    "id": "westeinde-11-d",
+    "title": "Westeinde 11-D",
+    "location": "Den Haag, Centrum",
+    "price": "\u20ac525.000 k.k.",
+    "size": "95m\u00b2",
+    "bedrooms": 2,
+    "bathrooms": 1,
+    "area": 95,
+    "energyLabel": "C",
+    "features": [
+      "Stadscentrum",
+      "Gerenoveerd",
+      "Balkon"
+    ],
+    "mainImage": "/images/properties/living-room-3.jpg",
+    "images": [
+      "/images/properties/living-room-3.jpg",
+      "/images/properties/bedroom-2.jpg",
+      "/images/properties/kitchen-1.jpg"
+    ],
+    "rating": 4,
+    "status": "available",
+    "description": "Modern appartement in het bruisende centrum van Den Haag. Volledig gerenoveerd met hoogwaardige materialen en voorzien van een ruim balkon met uitzicht over de stad.",
+    "neighborhood": "Centrum",
+    "yearBuilt": 1960,
+    "plotSize": 0,
+    "heating": "Centrale verwarming",
+    "parking": "Geen",
+    "garden": "Balkon",
+    "created_at": "2025-06-14T15:01:07.983167",
+    "updated_at": "2025-06-14T15:01:07.983168"
+  }
+]
