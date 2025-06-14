@@ -687,7 +687,7 @@ export default function PropertyManagement() {
                             value={formData.title || ''}
                             onChange={(e) => handleInputChange('title', e.target.value)}
                             placeholder="e.g., Jacob Schorerlaan 201"
-                            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors ${
+                            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors text-gray-900 ${
                               errors.title ? 'border-red-500' : 'border-gray-300'
                             }`}
                           />
@@ -705,7 +705,7 @@ export default function PropertyManagement() {
                             value={formData.location || ''}
                             onChange={(e) => handleInputChange('location', e.target.value)}
                             placeholder="e.g., Den Haag, Centrum"
-                            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors ${
+                            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors text-gray-900 ${
                               errors.location ? 'border-red-500' : 'border-gray-300'
                             }`}
                           />
@@ -719,7 +719,7 @@ export default function PropertyManagement() {
                           <select
                             value={formData.neighborhood || ''}
                             onChange={(e) => handleInputChange('neighborhood', e.target.value)}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors text-gray-900"
                           >
                             <option value="">Select neighborhood</option>
                             {neighborhoods.map((neighborhood) => (
@@ -743,7 +743,7 @@ export default function PropertyManagement() {
                                 value={priceAmount}
                                 onChange={(e) => handlePriceAmountChange(e.target.value)}
                                 placeholder="465.000"
-                                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors ${
+                                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors text-gray-900 ${
                                   errors.price ? 'border-red-500' : 'border-gray-300'
                                 }`}
                               />
@@ -753,7 +753,7 @@ export default function PropertyManagement() {
                               <select
                                 value={priceType}
                                 onChange={(e) => setPriceType(e.target.value)}
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors text-gray-900"
                               >
                                 {priceTypes.map((type) => (
                                   <option key={type.value} value={type.value}>
@@ -783,7 +783,7 @@ export default function PropertyManagement() {
                                 value={originalPriceAmount}
                                 onChange={(e) => handleOriginalPriceAmountChange(e.target.value)}
                                 placeholder="475.000"
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors text-gray-900"
                               />
                               <p className="text-xs text-gray-500 mt-1">Amount (without €)</p>
                             </div>
@@ -794,7 +794,7 @@ export default function PropertyManagement() {
                                   setOriginalPriceType(e.target.value);
                                   setOriginalPriceTypeManuallySet(true);
                                 }}
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors text-gray-900"
                               >
                                 {priceTypes.map((type) => (
                                   <option key={type.value} value={type.value}>
@@ -824,7 +824,7 @@ export default function PropertyManagement() {
                             value={sizeNumber || ''}
                             onChange={(e) => handleSizeChange(parseInt(e.target.value) || 0)}
                             placeholder="107"
-                            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors ${
+                            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors text-gray-900 ${
                               errors.size ? 'border-red-500' : 'border-gray-300'
                             }`}
                           />
@@ -844,7 +844,7 @@ export default function PropertyManagement() {
                           <select
                             value={formData.status || 'available'}
                             onChange={(e) => handleInputChange('status', e.target.value)}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors text-gray-900"
                           >
                             <option value="available">Available</option>
                             <option value="under_offer">Under Offer</option>
@@ -861,7 +861,7 @@ export default function PropertyManagement() {
                           <select
                             value={formData.energyLabel || 'A'}
                             onChange={(e) => handleInputChange('energyLabel', e.target.value)}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors text-gray-900"
                           >
                             {['A', 'B', 'C', 'D', 'E', 'F', 'G'].map(label => (
                               <option key={label} value={label}>{label}</option>

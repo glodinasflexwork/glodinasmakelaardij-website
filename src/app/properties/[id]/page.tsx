@@ -247,7 +247,7 @@ export default function PropertyDetailPage({ params }: Props) {
           {/* Left Column - Main Info */}
           <div className="md:col-span-2">
             <div className="bg-white rounded-lg border p-6 mb-8">
-              <h2 className="text-xl font-bold mb-4">Kenmerken</h2>
+              <h2 className="text-xl font-bold text-gray-900 mb-4">Kenmerken</h2>
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex items-center">
                   <BedDouble className="h-5 w-5 text-orange-500 mr-2" />
@@ -300,7 +300,7 @@ export default function PropertyDetailPage({ params }: Props) {
             
             {/* Description */}
             <div className="bg-white rounded-lg border p-6 mb-8">
-              <h2 className="text-xl font-bold mb-4">Beschrijving</h2>
+              <h2 className="text-xl font-bold text-gray-900 mb-4">Beschrijving</h2>
               <div className="text-gray-900 leading-relaxed whitespace-pre-line">
                 {property.description}
               </div>
@@ -309,7 +309,7 @@ export default function PropertyDetailPage({ params }: Props) {
             {/* Features */}
             {property.features && property.features.length > 0 && (
               <div className="bg-white rounded-lg border p-6 mb-8">
-                <h2 className="text-xl font-bold mb-4">Kenmerken</h2>
+                <h2 className="text-xl font-bold text-gray-900 mb-4">Kenmerken</h2>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                   {property.features.map((feature, index) => (
                     <div key={index} className="flex items-center">
@@ -325,7 +325,7 @@ export default function PropertyDetailPage({ params }: Props) {
             
             {/* Additional Details */}
             <div className="bg-white rounded-lg border p-6">
-              <h2 className="text-xl font-bold mb-4">Aanvullende informatie</h2>
+              <h2 className="text-xl font-bold text-gray-900 mb-4">Aanvullende informatie</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {property.neighborhood && (
                   <div>
@@ -364,7 +364,7 @@ export default function PropertyDetailPage({ params }: Props) {
           {/* Right Column - Contact Info */}
           <div className="md:col-span-1">
             <div className="bg-white rounded-lg border p-6 sticky top-8">
-              <h3 className="text-lg font-bold mb-4">Contact</h3>
+              <h3 className="text-lg font-bold text-gray-900 mb-4">Contact</h3>
               
               {/* Agent Info */}
               <div className="mb-6">
@@ -373,8 +373,8 @@ export default function PropertyDetailPage({ params }: Props) {
                     GM
                   </div>
                   <div>
-                    <div className="font-semibold">Glodinas Makelaardij</div>
-                    <div className="text-sm text-gray-600">Makelaar</div>
+                    <div className="font-semibold text-gray-900">Glodinas Makelaardij</div>
+                    <div className="text-sm text-gray-900">Makelaar</div>
                   </div>
                 </div>
               </div>
@@ -402,7 +402,7 @@ export default function PropertyDetailPage({ params }: Props) {
               {/* Property Rating */}
               {property.rating && (
                 <div className="mt-6 pt-6 border-t">
-                  <div className="text-sm text-gray-600 mb-2">Waardering</div>
+                  <div className="text-sm text-gray-900 mb-2">Waardering</div>
                   <div className="flex items-center">
                     <div className="flex text-orange-500">
                       {[...Array(5)].map((_, i) => (
@@ -411,7 +411,7 @@ export default function PropertyDetailPage({ params }: Props) {
                         </span>
                       ))}
                     </div>
-                    <span className="ml-2 text-sm text-gray-600">({property.rating}/5)</span>
+                    <span className="ml-2 text-sm text-gray-900">({property.rating}/5)</span>
                   </div>
                 </div>
               )}
@@ -421,8 +421,8 @@ export default function PropertyDetailPage({ params }: Props) {
         
         {/* Similar Properties */}
         <div className="bg-white rounded-lg border p-6">
-          <h2 className="text-xl font-bold mb-4">Vergelijkbare woningen</h2>
-          <p className="text-gray-600">
+          <h2 className="text-xl font-bold text-gray-900 mb-4">Vergelijkbare woningen</h2>
+          <p className="text-gray-900">
             Bekijk andere woningen in {property.neighborhood || property.location} die mogelijk interessant voor u zijn.
           </p>
           <div className="mt-4">
