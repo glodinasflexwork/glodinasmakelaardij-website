@@ -1,4 +1,6 @@
-import React from 'react';
+'use client';
+
+import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -22,207 +24,97 @@ import {
 import Image from 'next/image';
 import Link from 'next/link';
 
-// Mock data for property details
-const properties = [
-  {
-    id: 'jacob-schorerlaan-201',
-    title: 'Jacob Schorerlaan 201',
-    location: 'Den Haag, Groente- en Fruitmarkt',
-    price: '€465.000 k.k.',
-    originalPrice: '€475.000',
-    size: '107m²',
-    bedrooms: 4,
-    bathrooms: 1,
-    area: 107,
-    energyLabel: 'A',
-    features: ['Tuin', 'Serre', 'Moderne Keuken', 'Parkeren'],
-    mainImage: '/images/properties/living-room-1.jpg',
-    images: [
-      '/images/properties/living-room-1.jpg',
-      '/images/properties/kitchen-1.jpg',
-      '/images/properties/bedroom-1.jpg',
-      '/images/properties/bathroom-1.jpg',
-      '/images/properties/exterior-1.jpg',
-    ],
-    rating: 5,
-    status: 'new' as const,
-    description: 'Prachtig gerenoveerd appartement met moderne afwerking, ruime woonkamer en volledig uitgeruste keuken. Gelegen in een levendige buurt met alle voorzieningen binnen handbereik.',
-    fullDescription: `
-      Dit prachtige appartement aan de Jacob Schorerlaan 201 is recent volledig gerenoveerd en biedt een perfecte combinatie van comfort, stijl en locatie. Met een woonoppervlakte van 107m² verdeeld over 4 slaapkamers, een ruime woonkamer en een moderne keuken, is dit appartement ideaal voor gezinnen of professionals die op zoek zijn naar ruimte en comfort in het hart van Den Haag.
-
-      De woning beschikt over hoogwaardige afwerkingen, waaronder een luxe keuken met inbouwapparatuur, een stijlvolle badkamer met regendouche, en een zonnige serre die uitkijkt op de goed onderhouden tuin. De grote ramen zorgen voor veel natuurlijk licht in het hele appartement.
-
-      De locatie is uitstekend, op loopafstand van winkels, restaurants, scholen en openbaar vervoer. Het centrum van Den Haag is slechts 10 minuten fietsen, en het strand van Scheveningen is gemakkelijk bereikbaar met de tram.
-
-      Kenmerken:
-      - 4 slaapkamers
-      - 1 moderne badkamer
-      - Ruime woonkamer met veel lichtinval
-      - Volledig uitgeruste keuken met inbouwapparatuur
-      - Zonnige serre
-      - Goed onderhouden tuin
-      - Energielabel A
-      - Parkeergelegenheid
-      - Nabij alle voorzieningen
-    `,
-    yearBuilt: 1998,
-    renovated: 2022,
-    constructionType: 'Appartement',
-    parkingType: 'Op straat',
-    heatingType: 'Centrale verwarming',
-    insulation: ['Dakisolatie', 'Muurisolatie', 'Vloerisolatie', 'Dubbel glas'],
-    neighborhood: 'Groente- en Fruitmarkt',
-    nearbyFacilities: ['Supermarkt', 'School', 'Park', 'Openbaar vervoer', 'Restaurants'],
-    agent: {
-      name: 'Martijn de Vries',
-      phone: '+31 70 123 4567',
-      email: 'martijn@glodinasmakelaardij.nl',
-      photo: '/images/team/agent-1.jpg'
-    },
-    viewings: [
-      { date: '2025-06-10', timeSlots: ['10:00', '14:00', '16:00'] },
-      { date: '2025-06-12', timeSlots: ['11:00', '15:00', '17:00'] },
-      { date: '2025-06-15', timeSlots: ['13:00', '15:00'] },
-    ]
-  },
-  {
-    id: 'groenewegje-76',
-    title: 'Groenewegje 76',
-    location: 'Den Haag, Centrum',
-    price: '€695.000 k.k.',
-    size: '120m²',
-    bedrooms: 3,
-    bathrooms: 2,
-    area: 120,
-    energyLabel: 'B',
-    features: ['Grachtzicht', 'Historisch', 'Centrale Ligging'],
-    mainImage: '/images/properties/living-room-2.jpg',
-    images: [
-      '/images/properties/living-room-2.jpg',
-      '/images/properties/bedroom-1.jpg',
-      '/images/properties/kitchen-1.jpg',
-      '/images/properties/bathroom-1.jpg',
-      '/images/properties/exterior-2.jpg',
-    ],
-    rating: 5,
-    status: 'under_offer' as const,
-    description: 'Karakteristiek appartement in het historische centrum van Den Haag met uitzicht op de gracht. Hoge plafonds, originele details en moderne voorzieningen maken dit een unieke woonkans.',
-    fullDescription: `
-      Dit karakteristieke appartement aan het Groenewegje 76 biedt een unieke kans om te wonen in een historisch pand in het centrum van Den Haag. Met een woonoppervlakte van 120m² verdeeld over 3 slaapkamers en 2 badkamers, combineert deze woning historische charme met modern comfort.
-
-      Het appartement beschikt over prachtige originele details zoals hoge plafonds met sierlijsten, authentieke houten vloeren en karakteristieke raampartijen. De ruime woonkamer biedt een adembenemend uitzicht op de gracht, terwijl de moderne keuken is uitgerust met hoogwaardige apparatuur.
-
-      De locatie is ongeëvenaard, in het hart van het historische centrum van Den Haag. Alle voorzieningen zoals winkels, restaurants, musea en openbaar vervoer bevinden zich op loopafstand. Het Binnenhof en het Mauritshuis zijn slechts enkele minuten wandelen.
-
-      Kenmerken:
-      - 3 ruime slaapkamers
-      - 2 moderne badkamers
-      - Authentieke details behouden
-      - Hoge plafonds met sierlijsten
-      - Uitzicht op de gracht
-      - Energielabel B
-      - Centrale locatie
-      - Nabij alle voorzieningen
-    `,
-    yearBuilt: 1885,
-    renovated: 2020,
-    constructionType: 'Herenhuis',
-    parkingType: 'Vergunninghouders',
-    heatingType: 'Centrale verwarming',
-    insulation: ['Dakisolatie', 'Dubbel glas'],
-    neighborhood: 'Centrum',
-    nearbyFacilities: ['Winkels', 'Restaurants', 'Musea', 'Openbaar vervoer', 'Parken'],
-    agent: {
-      name: 'Sophie Jansen',
-      phone: '+31 70 123 4568',
-      email: 'sophie@glodinasmakelaardij.nl',
-      photo: '/images/team/agent-2.jpg'
-    },
-    viewings: [
-      { date: '2025-06-11', timeSlots: ['10:00', '14:00'] },
-      { date: '2025-06-13', timeSlots: ['11:00', '15:00'] },
-      { date: '2025-06-16', timeSlots: ['13:00', '17:00'] },
-    ]
-  },
-  {
-    id: 'westeinde-11-d',
-    title: 'Westeinde 11-D',
-    location: 'Den Haag, Centrum',
-    price: '€525.000 k.k.',
-    size: '95m²',
-    bedrooms: 2,
-    bathrooms: 1,
-    area: 95,
-    energyLabel: 'C',
-    features: ['Stadscentrum', 'Gerenoveerd', 'Balkon'],
-    mainImage: '/images/properties/living-room-3.jpg',
-    images: [
-      '/images/properties/living-room-3.jpg',
-      '/images/properties/bedroom-2.jpg',
-      '/images/properties/kitchen-1.jpg',
-      '/images/properties/bathroom-1.jpg',
-      '/images/properties/balcony-1.jpg',
-    ],
-    rating: 4,
-    status: 'available' as const,
-    description: 'Modern appartement in het bruisende centrum van Den Haag. Volledig gerenoveerd met hoogwaardige materialen en voorzien van een ruim balkon met uitzicht over de stad.',
-    fullDescription: `
-      Dit moderne appartement aan het Westeinde 11-D is gelegen in het bruisende centrum van Den Haag. Met een woonoppervlakte van 95m² verdeeld over 2 slaapkamers en een ruime woonkamer, biedt deze woning comfort en stijl in het hart van de stad.
-
-      Het appartement is recent volledig gerenoveerd met hoogwaardige materialen en beschikt over een moderne keuken met inbouwapparatuur, een stijlvolle badkamer en een ruim balkon met uitzicht over de stad. De grote ramen zorgen voor veel natuurlijk licht in het hele appartement.
-
-      De locatie is perfect voor stadsliefhebbers, met alle voorzieningen zoals winkels, restaurants, theaters en openbaar vervoer op loopafstand. Het Centraal Station van Den Haag is slechts 10 minuten lopen, en het strand van Scheveningen is gemakkelijk bereikbaar met de tram.
-
-      Kenmerken:
-      - 2 ruime slaapkamers
-      - 1 moderne badkamer
-      - Ruime woonkamer met veel lichtinval
-      - Volledig uitgeruste keuken met inbouwapparatuur
-      - Ruim balkon met uitzicht over de stad
-      - Energielabel C
-      - Centrale locatie
-      - Nabij alle voorzieningen
-    `,
-    yearBuilt: 1975,
-    renovated: 2023,
-    constructionType: 'Appartement',
-    parkingType: 'Vergunninghouders',
-    heatingType: 'Centrale verwarming',
-    insulation: ['Dakisolatie', 'Dubbel glas'],
-    neighborhood: 'Centrum',
-    nearbyFacilities: ['Winkels', 'Restaurants', 'Theaters', 'Openbaar vervoer', 'Parken'],
-    agent: {
-      name: 'Thomas Bakker',
-      phone: '+31 70 123 4569',
-      email: 'thomas@glodinasmakelaardij.nl',
-      photo: '/images/team/agent-3.jpg'
-    },
-    viewings: [
-      { date: '2025-06-09', timeSlots: ['10:00', '14:00', '16:00'] },
-      { date: '2025-06-11', timeSlots: ['11:00', '15:00'] },
-      { date: '2025-06-14', timeSlots: ['13:00', '15:00', '17:00'] },
-    ]
-  },
-];
+interface Property {
+  id: string;
+  title: string;
+  location: string;
+  price: string;
+  originalPrice?: string;
+  size: string;
+  bedrooms: number;
+  bathrooms: number;
+  area: number;
+  energyLabel: string;
+  features: string[];
+  mainImage: string;
+  images: string[];
+  rating: number;
+  status: 'new' | 'under_offer' | 'available' | 'sold';
+  description: string;
+  neighborhood?: string;
+  yearBuilt?: number;
+  plotSize?: number;
+  heating?: string;
+  parking?: string;
+  garden?: string;
+}
 
 type Props = {
   params: { id: string }
 }
 
 export default function PropertyDetailPage({ params }: Props) {
-  // Find the property by ID
-  const property = properties.find(p => p.id === params.id);
-  
-  // If property not found, show error
-  if (!property) {
+  const [property, setProperty] = useState<Property | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchProperty = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(`/api/properties/${params.id}`);
+        
+        if (!response.ok) {
+          if (response.status === 404) {
+            setError('Property not found');
+          } else {
+            throw new Error('Failed to fetch property');
+          }
+          return;
+        }
+
+        const data = await response.json();
+        setProperty(data.property);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching property:', err);
+        setError('Failed to load property details');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProperty();
+  }, [params.id]);
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white">
+        <Header />
+        <div className="container mx-auto px-4 py-12">
+          <div className="max-w-4xl mx-auto text-center">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mb-4"></div>
+            <p className="text-gray-600">Woning details laden...</p>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  // Error state
+  if (error || !property) {
     return (
       <div className="min-h-screen bg-white">
         <Header />
         <div className="container mx-auto px-4 py-12">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-3xl font-bold mb-4">Woning niet gevonden</h1>
-            <p className="mb-8">De woning die u zoekt bestaat niet of is niet meer beschikbaar.</p>
-            <Link href="/properties">
+            <p className="mb-8 text-gray-600">
+              {error || 'De woning die u zoekt bestaat niet of is niet meer beschikbaar.'}
+            </p>
+            <Link href="/woningen">
               <Button variant="cta">
                 <ArrowLeft className="mr-2 h-5 w-5" />
                 Terug naar woningen
@@ -253,7 +145,7 @@ export default function PropertyDetailPage({ params }: Props) {
               <li>
                 <div className="flex items-center">
                   <span className="mx-2 text-gray-400">/</span>
-                  <Link href="/properties" className="text-gray-600 hover:text-orange-500">
+                  <Link href="/woningen" className="text-gray-600 hover:text-orange-500">
                     Woningen
                   </Link>
                 </div>
@@ -296,12 +188,17 @@ export default function PropertyDetailPage({ params }: Props) {
             Onder Bod
           </div>
         )}
+        {property.status === 'sold' && (
+          <div className="inline-block bg-red-500 text-white px-3 py-1 rounded-full text-sm font-semibold mb-6">
+            Verkocht
+          </div>
+        )}
         
         {/* Property Images Gallery */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <div className="md:col-span-2 relative h-[400px] rounded-lg overflow-hidden">
             <Image 
-              src={property.images[0]} 
+              src={property.mainImage || property.images[0] || '/images/placeholder-property.jpg'} 
               alt={property.title}
               fill
               className="object-cover"
@@ -311,7 +208,7 @@ export default function PropertyDetailPage({ params }: Props) {
             {property.images.slice(1, 5).map((image, index) => (
               <div key={index} className="relative h-[190px] rounded-lg overflow-hidden">
                 <Image 
-                  src={image} 
+                  src={image || '/images/placeholder-property.jpg'} 
                   alt={`${property.title} - Image ${index + 2}`}
                   fill
                   className="object-cover"
@@ -323,14 +220,18 @@ export default function PropertyDetailPage({ params }: Props) {
         
         {/* Action Buttons */}
         <div className="flex flex-wrap gap-3 mb-8">
-          <Button variant="cta" size="lg" className="flex-grow md:flex-grow-0">
-            <Calendar className="mr-2 h-5 w-5" />
-            Plan een bezichtiging
-          </Button>
-          <Button variant="ctaOutline" size="lg" className="flex-grow md:flex-grow-0">
-            <Mail className="mr-2 h-5 w-5" />
-            Contact opnemen
-          </Button>
+          <Link href="/schedule">
+            <Button variant="cta" size="lg" className="flex-grow md:flex-grow-0">
+              <Calendar className="mr-2 h-5 w-5" />
+              Plan een bezichtiging
+            </Button>
+          </Link>
+          <Link href="/contact">
+            <Button variant="ctaOutline" size="lg" className="flex-grow md:flex-grow-0">
+              <Mail className="mr-2 h-5 w-5" />
+              Contact opnemen
+            </Button>
+          </Link>
           <Button variant="outline" size="lg" className="flex-grow md:flex-grow-0">
             <Heart className="mr-2 h-5 w-5" />
             Opslaan
@@ -376,172 +277,158 @@ export default function PropertyDetailPage({ params }: Props) {
                     <div className="font-semibold">{property.energyLabel}</div>
                   </div>
                 </div>
-                <div className="flex items-center">
-                  <Building className="h-5 w-5 text-orange-500 mr-2" />
-                  <div>
-                    <div className="text-sm text-gray-600">Bouwjaar</div>
-                    <div className="font-semibold">{property.yearBuilt}</div>
+                {property.yearBuilt && (
+                  <div className="flex items-center">
+                    <Building className="h-5 w-5 text-orange-500 mr-2" />
+                    <div>
+                      <div className="text-sm text-gray-600">Bouwjaar</div>
+                      <div className="font-semibold">{property.yearBuilt}</div>
+                    </div>
                   </div>
-                </div>
-                <div className="flex items-center">
-                  <Info className="h-5 w-5 text-orange-500 mr-2" />
-                  <div>
-                    <div className="text-sm text-gray-600">Type</div>
-                    <div className="font-semibold">{property.constructionType}</div>
+                )}
+                {property.area && (
+                  <div className="flex items-center">
+                    <Info className="h-5 w-5 text-orange-500 mr-2" />
+                    <div>
+                      <div className="text-sm text-gray-600">Oppervlakte</div>
+                      <div className="font-semibold">{property.area}m²</div>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
             
+            {/* Description */}
             <div className="bg-white rounded-lg border p-6 mb-8">
-              <h2 className="text-xl font-bold mb-4">Omschrijving</h2>
-              <div className="prose max-w-none">
-                {property.fullDescription.split('\n\n').map((paragraph, index) => (
-                  <p key={index} className="mb-4">{paragraph}</p>
-                ))}
+              <h2 className="text-xl font-bold mb-4">Beschrijving</h2>
+              <div className="text-gray-700 leading-relaxed whitespace-pre-line">
+                {property.description}
               </div>
             </div>
             
-            <div className="bg-white rounded-lg border p-6 mb-8">
-              <h2 className="text-xl font-bold mb-4">Kenmerken en voorzieningen</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <h3 className="font-semibold mb-2">Algemeen</h3>
-                  <ul className="space-y-2">
-                    <li className="flex items-start">
-                      <span className="text-orange-500 mr-2">•</span>
-                      <span>Bouwjaar: {property.yearBuilt}</span>
-                    </li>
-                    {property.renovated && (
-                      <li className="flex items-start">
-                        <span className="text-orange-500 mr-2">•</span>
-                        <span>Gerenoveerd: {property.renovated}</span>
-                      </li>
-                    )}
-                    <li className="flex items-start">
-                      <span className="text-orange-500 mr-2">•</span>
-                      <span>Type: {property.constructionType}</span>
-                    </li>
-                    <li className="flex items-start">
-                      <span className="text-orange-500 mr-2">•</span>
-                      <span>Energielabel: {property.energyLabel}</span>
-                    </li>
-                  </ul>
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-2">Isolatie</h3>
-                  <ul className="space-y-2">
-                    {property.insulation.map((item, index) => (
-                      <li key={index} className="flex items-start">
-                        <span className="text-orange-500 mr-2">•</span>
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-2">Verwarming</h3>
-                  <ul className="space-y-2">
-                    <li className="flex items-start">
-                      <span className="text-orange-500 mr-2">•</span>
-                      <span>{property.heatingType}</span>
-                    </li>
-                  </ul>
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-2">Parkeren</h3>
-                  <ul className="space-y-2">
-                    <li className="flex items-start">
-                      <span className="text-orange-500 mr-2">•</span>
-                      <span>{property.parkingType}</span>
-                    </li>
-                  </ul>
+            {/* Features */}
+            {property.features && property.features.length > 0 && (
+              <div className="bg-white rounded-lg border p-6 mb-8">
+                <h2 className="text-xl font-bold mb-4">Kenmerken</h2>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  {property.features.map((feature, index) => (
+                    <div key={index} className="flex items-center">
+                      <Tag className="h-4 w-4 text-orange-500 mr-2" />
+                      <span className="text-sm">{feature}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
-            </div>
+            )}
             
-            <div className="bg-white rounded-lg border p-6 mb-8">
-              <h2 className="text-xl font-bold mb-4">Buurt</h2>
-              <p className="mb-4">Deze woning is gelegen in de buurt {property.neighborhood} in Den Haag.</p>
-              
-              <h3 className="font-semibold mb-2">Voorzieningen in de buurt</h3>
-              <ul className="grid grid-cols-2 gap-2">
-                {property.nearbyFacilities.map((facility, index) => (
-                  <li key={index} className="flex items-start">
-                    <span className="text-orange-500 mr-2">•</span>
-                    <span>{facility}</span>
-                  </li>
-                ))}
-              </ul>
+            {/* Additional Details */}
+            <div className="bg-white rounded-lg border p-6">
+              <h2 className="text-xl font-bold mb-4">Aanvullende informatie</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {property.neighborhood && (
+                  <div>
+                    <div className="text-sm text-gray-600">Buurt</div>
+                    <div className="font-semibold">{property.neighborhood}</div>
+                  </div>
+                )}
+                {property.heating && (
+                  <div>
+                    <div className="text-sm text-gray-600">Verwarming</div>
+                    <div className="font-semibold">{property.heating}</div>
+                  </div>
+                )}
+                {property.parking && (
+                  <div>
+                    <div className="text-sm text-gray-600">Parkeren</div>
+                    <div className="font-semibold">{property.parking}</div>
+                  </div>
+                )}
+                {property.garden && (
+                  <div>
+                    <div className="text-sm text-gray-600">Tuin</div>
+                    <div className="font-semibold">{property.garden}</div>
+                  </div>
+                )}
+                {property.plotSize && property.plotSize > 0 && (
+                  <div>
+                    <div className="text-sm text-gray-600">Perceeloppervlakte</div>
+                    <div className="font-semibold">{property.plotSize}m²</div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
           
-          {/* Right Column - Sidebar */}
-          <div>
-            {/* Agent Contact Card */}
-            <div className="bg-white rounded-lg border p-6 mb-8">
-              <h2 className="text-xl font-bold mb-4">Makelaar</h2>
-              <div className="flex items-center mb-4">
-                <div className="relative h-16 w-16 rounded-full overflow-hidden mr-4">
-                  <Image 
-                    src={property.agent.photo} 
-                    alt={property.agent.name}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                <div>
-                  <div className="font-semibold">{property.agent.name}</div>
-                  <div className="text-sm text-gray-600">Makelaar</div>
+          {/* Right Column - Contact Info */}
+          <div className="md:col-span-1">
+            <div className="bg-white rounded-lg border p-6 sticky top-8">
+              <h3 className="text-lg font-bold mb-4">Contact</h3>
+              
+              {/* Agent Info */}
+              <div className="mb-6">
+                <div className="flex items-center mb-3">
+                  <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold text-lg mr-3">
+                    GM
+                  </div>
+                  <div>
+                    <div className="font-semibold">Glodinas Makelaardij</div>
+                    <div className="text-sm text-gray-600">Makelaar</div>
+                  </div>
                 </div>
               </div>
+              
+              {/* Contact Buttons */}
               <div className="space-y-3">
-                <Button variant="cta" className="w-full">
+                <Link href="/contact" className="block">
+                  <Button variant="cta" className="w-full">
+                    <Mail className="mr-2 h-4 w-4" />
+                    E-mail versturen
+                  </Button>
+                </Link>
+                <Button variant="ctaOutline" className="w-full">
                   <Phone className="mr-2 h-4 w-4" />
-                  {property.agent.phone}
+                  Bel direct
                 </Button>
-                <Button variant="outline" className="w-full">
-                  <Mail className="mr-2 h-4 w-4" />
-                  E-mail
-                </Button>
+                <Link href="/schedule" className="block">
+                  <Button variant="outline" className="w-full">
+                    <Calendar className="mr-2 h-4 w-4" />
+                    Plan bezichtiging
+                  </Button>
+                </Link>
               </div>
-            </div>
-            
-            {/* Schedule Viewing Card */}
-            <div className="bg-white rounded-lg border p-6 mb-8">
-              <h2 className="text-xl font-bold mb-4">Plan een bezichtiging</h2>
-              <div className="space-y-4">
-                {property.viewings.map((viewing, index) => (
-                  <div key={index} className="border-b pb-4 last:border-0 last:pb-0">
-                    <div className="font-semibold mb-2">{viewing.date}</div>
-                    <div className="grid grid-cols-3 gap-2">
-                      {viewing.timeSlots.map((time, timeIndex) => (
-                        <Button key={timeIndex} variant="outline" size="sm" className="text-sm">
-                          {time}
-                        </Button>
+              
+              {/* Property Rating */}
+              {property.rating && (
+                <div className="mt-6 pt-6 border-t">
+                  <div className="text-sm text-gray-600 mb-2">Waardering</div>
+                  <div className="flex items-center">
+                    <div className="flex text-orange-500">
+                      {[...Array(5)].map((_, i) => (
+                        <span key={i} className={i < property.rating ? 'text-orange-500' : 'text-gray-300'}>
+                          ★
+                        </span>
                       ))}
                     </div>
+                    <span className="ml-2 text-sm text-gray-600">({property.rating}/5)</span>
                   </div>
-                ))}
-                <Button variant="cta" className="w-full">
-                  <Calendar className="mr-2 h-4 w-4" />
-                  Plan bezichtiging
-                </Button>
-              </div>
+                </div>
+              )}
             </div>
-            
-            {/* Features Card */}
-            <div className="bg-white rounded-lg border p-6">
-              <h2 className="text-xl font-bold mb-4">Kenmerken</h2>
-              <ul className="space-y-2">
-                {property.features.map((feature, index) => (
-                  <li key={index} className="flex items-center">
-                    <Tag className="h-4 w-4 text-orange-500 mr-2" />
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+          </div>
+        </div>
+        
+        {/* Similar Properties */}
+        <div className="bg-white rounded-lg border p-6">
+          <h2 className="text-xl font-bold mb-4">Vergelijkbare woningen</h2>
+          <p className="text-gray-600">
+            Bekijk andere woningen in {property.neighborhood || property.location} die mogelijk interessant voor u zijn.
+          </p>
+          <div className="mt-4">
+            <Link href="/woningen">
+              <Button variant="ctaOutline">
+                Meer woningen bekijken
+              </Button>
+            </Link>
           </div>
         </div>
       </div>
