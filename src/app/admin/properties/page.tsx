@@ -1,17 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Metadata } from 'next';
 import { Plus, Edit, Trash2, Eye, Upload, Save, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-
-export const metadata: Metadata = {
-  title: 'Property Management | Admin Dashboard | Glodinas Makelaardij',
-  description: 'Manage property listings, add new properties, and update existing listings.',
-  keywords: 'property management, admin, dashboard, real estate, Glodinas',
-};
 
 interface Property {
   id: string;
