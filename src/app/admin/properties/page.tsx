@@ -61,10 +61,156 @@ export default function PropertyManagement() {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isDirty, setIsDirty] = useState(false);
+  const [priceAmount, setPriceAmount] = useState('');
+  const [priceType, setPriceType] = useState('k.k.');
+
+  // Industry standard price types
+  const priceTypes = [
+    { value: 'k.k.', label: 'k.k. (kosten koper)' },
+    { value: 'v.o.n.', label: 'v.o.n. (vrij op naam)' },
+    { value: 'v.b.', label: 'v.b. (verkoop bij)' },
+    { value: 'bieden vanaf', label: 'Bieden vanaf' },
+    { value: 'in overleg', label: 'Prijs in overleg' }
+  ];
+
+  // Den Haag neighborhoods
+  const neighborhoods = [
+    'Centrum',
+    'Benoordenhout', 
+    'Scheveningen',
+    'Voorburg',
+    'Leidschenveen-Ypenburg',
+    'Haagse Hout',
+    'Bezuidenhout',
+    'Statenkwartier',
+    'Archipelbuurt',
+    'Groente- en Fruitmarkt',
+    'Zeeheldenkwartier',
+    'Duinoord',
+    'Marlot',
+    'Bouwlust',
+    'Vruchtenbuurt',
+    'Laakkwartier',
+    'Schilderswijk',
+    'Transvaal',
+    'Moerwijk',
+    'Morgenstond',
+    'Ypenburg',
+    'Wateringse Veld',
+    'Escamp',
+    'Segbroek'
+  ];
+
+  // Heating options - organized by type and frequency
+  const heatingOptions = [
+    // Most common residential
+    'Centrale verwarming',
+    'Stadsverwarming',
+    'Vloerverwarming',
+    'Radiatoren',
+    
+    // Heat pumps (growing popularity)
+    'Warmtepomp',
+    'Hybride warmtepomp',
+    'Airconditioning met warmtepomp',
+    
+    // Gas/Electric
+    'Gaskachels',
+    'Elektrische verwarming',
+    'Convectoren',
+    'Infraroodverwarming',
+    
+    // Sustainable/Alternative
+    'Zonneboiler',
+    'Geothermie',
+    'Warmte-terugwinning',
+    
+    // Solid fuel
+    'Houtkachel',
+    'Pelletkachel',
+    
+    // Industrial/Commercial
+    'Industriële ketel',
+    'Stoomverwarming',
+    'Olieketel',
+    'Biomassaketel',
+    
+    // None
+    'Geen verwarming'
+  ];
+
+  // Parking options - organized by type and frequency
+  const parkingOptions = [
+    // Most common private parking
+    'Eigen parkeerplaats',
+    'Garage',
+    'Carport',
+    'Parkeerplaats op eigen terrein',
+    
+    // Underground/Covered
+    'Ondergrondse garage',
+    'Parkeerkelder',
+    'Gemeenschappelijke parkeerplaats',
+    
+    // Location-based
+    'Parkeerplaats achter',
+    'Parkeerplaats voor',
+    'Parkeerplaats naast',
+    'Parkeergarage nabij',
+    
+    // Street parking
+    'Straatparkeren',
+    'Parkeervergunning',
+    'Betaald parkeren',
+    'Gratis parkeren',
+    
+    // Electric/Multiple vehicles
+    'Laadpaal aanwezig',
+    'Elektrisch laden mogelijk',
+    'Parkeerplaats voor meerdere auto\'s',
+    
+    // Commercial/Industrial
+    'Parkeerplaats voor vrachtwagen',
+    'Parkeerplaats voor bedrijfsvoertuigen',
+    
+    // None
+    'Geen parkeermogelijkheid'
+  ];
+
+  // Garden options
+  const gardenOptions = [
+    'Achtertuin',
+    'Voortuin', 
+    'Zijtuin',
+    'Daktuin',
+    'Balkon',
+    'Terras',
+    'Patio',
+    'Geen tuin'
+  ];
 
   useEffect(() => {
     fetchProperties();
   }, []);
+
+  // Initialize price fields when editing
+  useEffect(() => {
+    if (editingProperty && editingProperty.price) {
+      const priceMatch = editingProperty.price.match(/€([\d.]+)\s*(.+)/);
+      if (priceMatch) {
+        setPriceAmount(priceMatch[1]);
+        setPriceType(priceMatch[2].trim());
+      }
+    }
+  }, [editingProperty]);
+
+  // Update formData.price when amount or type changes
+  useEffect(() => {
+    if (priceAmount) {
+      const formattedPrice = `€${priceAmount} ${priceType}`;
+      setFormData(prev => ({ ...prev, price: formattedPrice }));
+    }
+  }, [priceAmount, priceType]);
 
   const fetchProperties = async () => {
     try {
@@ -221,6 +367,8 @@ export default function PropertyManagement() {
       parking: '',
       garden: ''
     });
+    setPriceAmount('');
+    setPriceType('k.k.');
     setEditingProperty(null);
     setShowAddForm(false);
     setCurrentStep(1);
@@ -265,13 +413,13 @@ export default function PropertyManagement() {
     if (!digits) return '';
     
     // Format with dots as thousands separators
-    const formatted = digits.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-    return `€${formatted}`;
+    return digits.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
   };
 
-  const handlePriceChange = (field: 'price' | 'originalPrice', value: string) => {
+  const handlePriceAmountChange = (value: string) => {
     const formatted = formatPrice(value);
-    handleInputChange(field, formatted + (field === 'price' ? ' k.k.' : ''));
+    setPriceAmount(formatted);
+    setIsDirty(true);
   };
 
   return (
@@ -515,31 +663,60 @@ export default function PropertyManagement() {
                           <label className="block text-sm font-medium text-gray-700 mb-2">
                             Neighborhood
                           </label>
-                          <input
-                            type="text"
+                          <select
                             value={formData.neighborhood || ''}
                             onChange={(e) => handleInputChange('neighborhood', e.target.value)}
-                            placeholder="e.g., Groente- en Fruitmarkt"
                             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
-                          />
+                          >
+                            <option value="">Select neighborhood</option>
+                            {neighborhoods.map((neighborhood) => (
+                              <option key={neighborhood} value={neighborhood}>
+                                {neighborhood}
+                              </option>
+                            ))}
+                          </select>
                         </div>
 
-                        <div>
+                        <div className="md:col-span-2">
                           <label className="block text-sm font-medium text-gray-700 mb-2">
                             <Euro className="w-4 h-4 inline mr-2" />
                             Price *
                           </label>
-                          <input
-                            type="text"
-                            required
-                            value={formData.price || ''}
-                            onChange={(e) => handlePriceChange('price', e.target.value)}
-                            placeholder="465000"
-                            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors ${
-                              errors.price ? 'border-red-500' : 'border-gray-300'
-                            }`}
-                          />
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>
+                              <input
+                                type="text"
+                                required
+                                value={priceAmount}
+                                onChange={(e) => handlePriceAmountChange(e.target.value)}
+                                placeholder="465.000"
+                                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors ${
+                                  errors.price ? 'border-red-500' : 'border-gray-300'
+                                }`}
+                              />
+                              <p className="text-xs text-gray-500 mt-1">Amount (without €)</p>
+                            </div>
+                            <div>
+                              <select
+                                value={priceType}
+                                onChange={(e) => setPriceType(e.target.value)}
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
+                              >
+                                {priceTypes.map((type) => (
+                                  <option key={type.value} value={type.value}>
+                                    {type.label}
+                                  </option>
+                                ))}
+                              </select>
+                              <p className="text-xs text-gray-500 mt-1">Price type</p>
+                            </div>
+                          </div>
                           {errors.price && <p className="text-red-500 text-sm mt-1">{errors.price}</p>}
+                          {priceAmount && (
+                            <p className="text-sm text-green-600 mt-2 font-medium">
+                              Preview: €{priceAmount} {priceType}
+                            </p>
+                          )}
                         </div>
 
                         <div>
@@ -716,13 +893,18 @@ export default function PropertyManagement() {
                             <Thermometer className="w-4 h-4 inline mr-2" />
                             Heating
                           </label>
-                          <input
-                            type="text"
+                          <select
                             value={formData.heating || ''}
                             onChange={(e) => handleInputChange('heating', e.target.value)}
-                            placeholder="e.g., Centrale verwarming"
                             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
-                          />
+                          >
+                            <option value="">Select heating type</option>
+                            {heatingOptions.map((heating) => (
+                              <option key={heating} value={heating}>
+                                {heating}
+                              </option>
+                            ))}
+                          </select>
                         </div>
 
                         <div>
@@ -730,13 +912,18 @@ export default function PropertyManagement() {
                             <Car className="w-4 h-4 inline mr-2" />
                             Parking
                           </label>
-                          <input
-                            type="text"
+                          <select
                             value={formData.parking || ''}
                             onChange={(e) => handleInputChange('parking', e.target.value)}
-                            placeholder="e.g., Parkeerplaats"
                             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
-                          />
+                          >
+                            <option value="">Select parking type</option>
+                            {parkingOptions.map((parking) => (
+                              <option key={parking} value={parking}>
+                                {parking}
+                              </option>
+                            ))}
+                          </select>
                         </div>
 
                         <div>
@@ -744,13 +931,18 @@ export default function PropertyManagement() {
                             <TreePine className="w-4 h-4 inline mr-2" />
                             Garden
                           </label>
-                          <input
-                            type="text"
+                          <select
                             value={formData.garden || ''}
                             onChange={(e) => handleInputChange('garden', e.target.value)}
-                            placeholder="e.g., Achtertuin"
                             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
-                          />
+                          >
+                            <option value="">Select garden type</option>
+                            {gardenOptions.map((garden) => (
+                              <option key={garden} value={garden}>
+                                {garden}
+                              </option>
+                            ))}
+                          </select>
                         </div>
                       </div>
 
