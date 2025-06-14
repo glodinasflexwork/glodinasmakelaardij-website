@@ -47,11 +47,15 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, language = 'nl' }
   // Check if property is saved on component mount
   useEffect(() => {
     const checkSavedStatus = async () => {
-      if (!user || !user.token) return;
+      if (!user) return;
+      
+      const token = localStorage.getItem('accessToken');
+      if (!token) return;
+      
       try {
         const response = await fetch(`${API_URL}/api/saved-properties`, {
           headers: {
-            'Authorization': `Bearer ${user.token}`,
+            'Authorization': `Bearer ${token}`,
           },
         });
         if (response.ok) {
@@ -67,7 +71,13 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, language = 'nl' }
 
   // Handle saving/removing property from favorites
   const handleSaveToggle = async () => {
-    if (!user || !user.token) {
+    if (!user) {
+      alert('Please log in to save properties.');
+      return;
+    }
+
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
       alert('Please log in to save properties.');
       return;
     }
@@ -79,7 +89,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, language = 'nl' }
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${user.token}`,
+            'Authorization': `Bearer ${token}`,
           },
         });
         if (response.ok) {
@@ -93,7 +103,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, language = 'nl' }
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${user.token}`,
+            'Authorization': `Bearer ${token}`,
           },
           body: JSON.stringify({
             property_id: property.id,
@@ -185,7 +195,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, language = 'nl' }
           </button>
           
           {/* Compare Checkbox */}
-          <div className="flex items-center gap-1 bg-white/80 rounded-full px-2 py-1">
+          <div className="flex items-center gap-1 bg-white/90 rounded-full px-2 py-1 shadow-sm">
             <Checkbox 
               id={`compare-${property.id}`}
               checked={isSelected}
@@ -194,7 +204,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, language = 'nl' }
             />
             <label 
               htmlFor={`compare-${property.id}`}
-              className="text-xs font-medium cursor-pointer"
+              className="text-xs font-semibold cursor-pointer text-gray-900"
             >
               {t.compare}
             </label>

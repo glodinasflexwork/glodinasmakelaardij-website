@@ -34,7 +34,7 @@ const ComparisonButton: React.FC<ComparisonButtonProps> = ({ language = 'nl' }) 
 
   return (
     <>
-      <div className="fixed bottom-20 right-4 z-50">
+      <div className="fixed bottom-32 right-4 z-50">
         <Button
           onClick={openComparison}
           className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2 font-semibold"
