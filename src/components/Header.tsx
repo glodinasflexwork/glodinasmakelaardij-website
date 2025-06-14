@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Menu, X, Phone, Home, Users, Building, Mail, Calendar, Heart, BookOpen, User, LogIn, ChevronDown, Globe } from 'lucide-react';
@@ -19,17 +19,38 @@ const Header = () => {
   const [authView, setAuthView] = useState<'login' | 'register'>('login');
   const [savedPropertiesCount, setSavedPropertiesCount] = useState(0);
   const [hoveredMenu, setHoveredMenu] = useState<string | null>(null);
-  const [dropdownTimeout, setDropdownTimeout] = useState<NodeJS.Timeout | null>(null);
+  
+  // Use useRef for timeout to avoid stale closure issues
+  const dropdownTimeoutRef = useRef<number | null>(null);
   const pathname = usePathname();
   const { user, isAuthenticated } = useAuth();
+
+  // Cleanup function for timeouts
+  const clearDropdownTimeout = useCallback(() => {
+    if (dropdownTimeoutRef.current !== null) {
+      clearTimeout(dropdownTimeoutRef.current);
+      dropdownTimeoutRef.current = null;
+    }
+  }, []);
+
+  // Cleanup timeouts on unmount
+  useEffect(() => {
+    return () => {
+      clearDropdownTimeout();
+    };
+  }, [clearDropdownTimeout]);
 
   // Handle scroll effect for header
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 10) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
+      try {
+        if (window.scrollY > 10) {
+          setScrolled(true);
+        } else {
+          setScrolled(false);
+        }
+      } catch (error) {
+        console.error('Error in scroll handler:', error);
       }
     };
 
@@ -42,8 +63,8 @@ const Header = () => {
   // Load saved properties count
   useEffect(() => {
     const updateSavedPropertiesCount = async () => {
-      if (isAuthenticated && user) {
-        try {
+      try {
+        if (isAuthenticated && user) {
           const token = localStorage.getItem('accessToken');
           const response = await fetch('/api/saved-properties', {
             headers: {
@@ -55,21 +76,22 @@ const Header = () => {
             const data = await response.json();
             setSavedPropertiesCount(data.saved_properties?.length || 0);
           }
-        } catch (err) {
-          console.error('Error fetching saved properties count:', err);
-        }
-      } else if (typeof window !== 'undefined') {
-        const saved = localStorage.getItem('savedProperties');
-        if (saved) {
-          try {
-            const properties = JSON.parse(saved);
-            setSavedPropertiesCount(properties.length);
-          } catch (e) {
+        } else if (typeof window !== 'undefined') {
+          const saved = localStorage.getItem('savedProperties');
+          if (saved) {
+            try {
+              const properties = JSON.parse(saved);
+              setSavedPropertiesCount(Array.isArray(properties) ? properties.length : 0);
+            } catch (e) {
+              setSavedPropertiesCount(0);
+            }
+          } else {
             setSavedPropertiesCount(0);
           }
-        } else {
-          setSavedPropertiesCount(0);
         }
+      } catch (err) {
+        console.error('Error fetching saved properties count:', err);
+        setSavedPropertiesCount(0);
       }
     };
 
@@ -81,8 +103,6 @@ const Header = () => {
     };
 
     window.addEventListener('storage', handleStorageChange);
-    
-    // Custom event for same-tab updates
     window.addEventListener('savedPropertiesUpdated', handleStorageChange);
 
     return () => {
@@ -94,9 +114,13 @@ const Header = () => {
   // Close mobile menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as HTMLElement;
-      if (isMenuOpen && !target.closest('.mobile-menu-container') && !target.closest('.mobile-menu-button')) {
-        setIsMenuOpen(false);
+      try {
+        const target = event.target as HTMLElement;
+        if (isMenuOpen && !target.closest('.mobile-menu-container') && !target.closest('.mobile-menu-button')) {
+          setIsMenuOpen(false);
+        }
+      } catch (error) {
+        console.error('Error in click outside handler:', error);
       }
     };
 
@@ -109,13 +133,20 @@ const Header = () => {
   // Close mobile menu when route changes
   useEffect(() => {
     setIsMenuOpen(false);
-  }, [pathname]);
+    setHoveredMenu(null);
+    clearDropdownTimeout();
+  }, [pathname, clearDropdownTimeout]);
 
   const isActive = (path: string) => {
-    if (path === '/') {
-      return pathname === '/' || pathname === '/nl';
+    try {
+      if (path === '/') {
+        return pathname === '/' || pathname === '/nl';
+      }
+      return pathname.includes(path);
+    } catch (error) {
+      console.error('Error in isActive:', error);
+      return false;
     }
-    return pathname.includes(path);
   };
 
   const isEnglish = pathname.startsWith('/en');
@@ -196,39 +227,57 @@ const Header = () => {
   ];
 
   const handleLoginClick = () => {
-    setAuthView('login');
-    setShowAuthModal(true);
+    try {
+      setAuthView('login');
+      setShowAuthModal(true);
+    } catch (error) {
+      console.error('Error in handleLoginClick:', error);
+    }
   };
 
   const handleRegisterClick = () => {
-    setAuthView('register');
-    setShowAuthModal(true);
-  };
-
-  const handleMenuHover = (menuName: string) => {
-    if (dropdownTimeout) {
-      clearTimeout(dropdownTimeout);
-      setDropdownTimeout(null);
-    }
-    setHoveredMenu(menuName);
-  };
-
-  const handleMenuLeave = () => {
-    const timeout = setTimeout(() => {
-      setHoveredMenu(null);
-    }, 150);
-    setDropdownTimeout(timeout);
-  };
-
-  const handleDropdownEnter = () => {
-    if (dropdownTimeout) {
-      clearTimeout(dropdownTimeout);
-      setDropdownTimeout(null);
+    try {
+      setAuthView('register');
+      setShowAuthModal(true);
+    } catch (error) {
+      console.error('Error in handleRegisterClick:', error);
     }
   };
+
+  const handleMenuHover = useCallback((menuName: string) => {
+    try {
+      clearDropdownTimeout();
+      setHoveredMenu(menuName);
+    } catch (error) {
+      console.error('Error in handleMenuHover:', error);
+    }
+  }, [clearDropdownTimeout]);
+
+  const handleMenuLeave = useCallback(() => {
+    try {
+      clearDropdownTimeout();
+      dropdownTimeoutRef.current = window.setTimeout(() => {
+        setHoveredMenu(null);
+      }, 150);
+    } catch (error) {
+      console.error('Error in handleMenuLeave:', error);
+    }
+  }, [clearDropdownTimeout]);
+
+  const handleDropdownEnter = useCallback(() => {
+    try {
+      clearDropdownTimeout();
+    } catch (error) {
+      console.error('Error in handleDropdownEnter:', error);
+    }
+  }, [clearDropdownTimeout]);
 
   const handleUserDashboardClick = () => {
-    setShowUserDashboard(true);
+    try {
+      setShowUserDashboard(true);
+    } catch (error) {
+      console.error('Error in handleUserDashboardClick:', error);
+    }
   };
 
   return (
@@ -287,13 +336,13 @@ const Header = () => {
                         onMouseLeave={handleMenuLeave}
                       >
                         <div className="grid grid-cols-2 gap-6">
-                          {item.megaMenu.sections.map((section, index) => (
+                          {item.megaMenu.sections?.map((section, index) => (
                             <div key={index}>
                               <h3 className="text-sm font-semibold text-gray-900 mb-3 pb-2 border-b border-gray-100">
                                 {section.title}
                               </h3>
                               <ul className="space-y-2">
-                                {section.links.map((link) => (
+                                {section.links?.map((link) => (
                                   <li key={link.name}>
                                     <Link
                                       href={link.href}
@@ -366,7 +415,7 @@ const Header = () => {
                       <div 
                         className="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-2 z-50"
                         onMouseEnter={handleDropdownEnter}
-                        onMouseLeave={handleDropdownLeave}
+                        onMouseLeave={handleMenuLeave}
                       >
                         {item.submenu.map((subItem) => (
                           <Link
@@ -396,81 +445,86 @@ const Header = () => {
                 >
                   <Heart className="h-4 w-4 group-hover:scale-110 transition-transform duration-200" />
                   {savedPropertiesCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center font-medium animate-pulse">
-                      {savedPropertiesCount}
+                    <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
+                      {savedPropertiesCount > 99 ? '99+' : savedPropertiesCount}
                     </span>
                   )}
                 </button>
-                
+
                 {/* Language Switcher */}
-                <div className="flex items-center bg-white rounded-md p-1">
+                <div className="flex items-center bg-white rounded-md shadow-sm">
                   <Link
-                    href="/"
-                    className={`flex items-center px-2 py-1 rounded text-xs font-semibold transition-all duration-200 ${
-                      !isEnglish
-                        ? 'bg-orange-500 text-white shadow-sm'
+                    href={isEnglish ? pathname.replace('/en', '') || '/' : `/en${pathname}`}
+                    className={`flex items-center px-2 py-1 text-xs font-medium rounded-l-md transition-all duration-200 ${
+                      !isEnglish 
+                        ? 'bg-orange-500 text-white' 
                         : 'text-gray-600 hover:text-orange-600 hover:bg-orange-50'
                     }`}
                   >
-                    <Globe className="w-3 h-3 mr-1" />
+                    <Globe className="h-3 w-3 mr-1" />
                     NL
                   </Link>
                   <Link
-                    href="/en"
-                    className={`flex items-center px-2 py-1 rounded text-xs font-semibold transition-all duration-200 ${
-                      isEnglish
-                        ? 'bg-orange-500 text-white shadow-sm'
+                    href={isEnglish ? pathname : `/en${pathname}`}
+                    className={`flex items-center px-2 py-1 text-xs font-medium rounded-r-md transition-all duration-200 ${
+                      isEnglish 
+                        ? 'bg-orange-500 text-white' 
                         : 'text-gray-600 hover:text-orange-600 hover:bg-orange-50'
                     }`}
                   >
-                    <Globe className="w-3 h-3 mr-1" />
+                    <Globe className="h-3 w-3 mr-1" />
                     EN
                   </Link>
                 </div>
               </div>
 
               {/* Contact Info */}
-              <a
-                href="tel:+31681348551"
-                className="flex items-center text-gray-600 hover:text-orange-600 transition-all duration-200 text-sm font-medium group"
-              >
-                <Phone className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform duration-200" />
-                <span>(6) 81 34 85 51</span>
-              </a>
-
-              {/* Auth Section */}
-              {isAuthenticated ? (
-                <button
-                  onClick={handleUserDashboardClick}
-                  className="flex items-center bg-green-50 hover:bg-green-100 text-green-700 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 hover:shadow-md group"
+              <div className="flex items-center space-x-3">
+                <a
+                  href="tel:+31681348551"
+                  className="flex items-center text-gray-600 hover:text-orange-600 transition-all duration-200 group"
                 >
-                  <User className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform duration-200" />
-                  {user?.firstName || user?.username || (isEnglish ? 'My Account' : 'Mijn Account')}
-                </button>
-              ) : (
-                <div className="flex items-center space-x-2">
+                  <Phone className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform duration-200" />
+                  <span className="text-sm font-medium">(6) 81 34 85 51</span>
+                </a>
+              </div>
+
+              {/* Authentication */}
+              <div className="flex items-center space-x-2">
+                {isAuthenticated && user ? (
                   <button
-                    onClick={handleLoginClick}
-                    className="flex items-center text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 hover:bg-green-50"
+                    onClick={handleUserDashboardClick}
+                    className="flex items-center px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-all duration-200 font-medium text-sm shadow-sm hover:shadow-md"
                   >
-                    <LogIn className="h-4 w-4 mr-1" />
-                    {isEnglish ? 'Login' : 'Inloggen'}
+                    <User className="h-4 w-4 mr-2" />
+                    {user.firstName || user.email?.split('@')[0] || 'User'}
                   </button>
-                  <Button
-                    onClick={handleRegisterClick}
-                    className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 hover:shadow-md"
-                  >
-                    {isEnglish ? 'Get Started' : 'Registreer'}
-                  </Button>
-                </div>
-              )}
+                ) : (
+                  <>
+                    <button
+                      onClick={handleLoginClick}
+                      className="flex items-center px-4 py-2 text-gray-700 hover:text-orange-600 transition-all duration-200 font-medium text-sm rounded-lg hover:bg-orange-50"
+                    >
+                      <LogIn className="h-4 w-4 mr-2" />
+                      {isEnglish ? 'Login' : 'Inloggen'}
+                    </button>
+                    <button
+                      onClick={handleRegisterClick}
+                      className="flex items-center px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-all duration-200 font-medium text-sm shadow-sm hover:shadow-md"
+                    >
+                      <User className="h-4 w-4 mr-2" />
+                      {isEnglish ? 'Register' : 'Registreer'}
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
 
             {/* Mobile menu button */}
             <div className="lg:hidden">
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="mobile-menu-button inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-orange-600 hover:bg-orange-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-orange-500 transition-colors duration-200"
+                className="mobile-menu-button inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-orange-600 hover:bg-orange-50 transition-all duration-200"
                 aria-expanded="false"
               >
                 <span className="sr-only">Open main menu</span>
@@ -484,117 +538,127 @@ const Header = () => {
           </div>
         </div>
 
-        {/* Mobile Navigation Menu */}
+        {/* Mobile menu */}
         {isMenuOpen && (
           <div className="lg:hidden mobile-menu-container">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t border-gray-100 shadow-lg">
-              {/* Primary Navigation Mobile */}
-              <div className="space-y-1 mb-4">
-                <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide px-3 py-2">
-                  {isEnglish ? 'Main Menu' : 'Hoofdmenu'}
-                </div>
-                {primaryNavigation.map((item) => (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    className={`flex items-center px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
-                      isActive(item.href)
-                        ? 'bg-orange-500 text-white'
-                        : 'text-gray-700 hover:text-orange-600 hover:bg-orange-50'
-                    }`}
-                  >
-                    <span className="mr-3">{item.icon}</span>
-                    {item.name}
-                  </Link>
-                ))}
-              </div>
-
-              {/* Secondary Navigation Mobile */}
-              <div className="space-y-1 mb-4 border-t border-gray-100 pt-4">
-                <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide px-3 py-2">
-                  {isEnglish ? 'More' : 'Meer'}
-                </div>
-                {secondaryNavigation.map((item) => (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    className={`flex items-center px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 ${
-                      isActive(item.href)
-                        ? 'bg-gray-100 text-gray-900'
-                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                    }`}
-                  >
-                    <span className="mr-3">{item.icon}</span>
-                    {item.name}
-                  </Link>
-                ))}
-              </div>
+              {/* Primary Navigation */}
+              {primaryNavigation.map((item) => (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className={`group flex items-center px-3 py-2 rounded-md text-base font-medium transition-all duration-200 ${
+                    isActive(item.href)
+                      ? 'bg-orange-500 text-white'
+                      : 'text-gray-700 hover:text-orange-600 hover:bg-orange-50'
+                  }`}
+                >
+                  <span className="mr-3">{item.icon}</span>
+                  {item.name}
+                </Link>
+              ))}
+              
+              {/* Secondary Navigation */}
+              {secondaryNavigation.map((item) => (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className={`group flex items-center px-3 py-2 rounded-md text-base font-medium transition-all duration-200 ${
+                    isActive(item.href)
+                      ? 'bg-gray-100 text-gray-900'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  }`}
+                >
+                  <span className="mr-3">{item.icon}</span>
+                  {item.name}
+                </Link>
+              ))}
 
               {/* Mobile Actions */}
-              <div className="border-t border-gray-100 pt-4 space-y-2">
-                <button
-                  onClick={() => setShowSavedProperties(true)}
-                  className="flex items-center w-full px-3 py-2 text-base font-medium text-gray-600 hover:text-orange-600 hover:bg-orange-50 rounded-md transition-colors duration-200"
-                >
-                  <Heart className="h-5 w-5 mr-3" />
-                  {isEnglish ? 'Saved Properties' : 'Opgeslagen Woningen'}
-                  {savedPropertiesCount > 0 && (
-                    <span className="ml-auto bg-orange-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
-                      {savedPropertiesCount}
-                    </span>
-                  )}
-                </button>
-
-                {isAuthenticated ? (
+              <div className="pt-4 border-t border-gray-100">
+                <div className="flex items-center justify-between px-3 py-2">
                   <button
-                    onClick={handleUserDashboardClick}
-                    className="flex items-center w-full px-3 py-2 text-base font-medium text-green-700 bg-green-50 hover:bg-green-100 rounded-md transition-colors duration-200"
+                    onClick={() => setShowSavedProperties(true)}
+                    className="flex items-center text-gray-600 hover:text-orange-600 transition-colors duration-200"
                   >
-                    <User className="h-5 w-5 mr-3" />
-                    {user?.firstName || user?.username || (isEnglish ? 'My Account' : 'Mijn Account')}
+                    <Heart className="h-5 w-5 mr-2" />
+                    <span className="text-sm font-medium">
+                      {isEnglish ? 'Saved Properties' : 'Opgeslagen Woningen'}
+                    </span>
+                    {savedPropertiesCount > 0 && (
+                      <span className="ml-2 bg-orange-500 text-white text-xs rounded-full px-2 py-1">
+                        {savedPropertiesCount}
+                      </span>
+                    )}
                   </button>
-                ) : (
-                  <div className="space-y-2">
-                    <button
-                      onClick={handleLoginClick}
-                      className="flex items-center w-full px-3 py-2 text-base font-medium text-gray-700 hover:text-green-600 hover:bg-green-50 rounded-md transition-colors duration-200"
-                    >
-                      <LogIn className="h-5 w-5 mr-3" />
-                      {isEnglish ? 'Login' : 'Inloggen'}
-                    </button>
-                    <button
-                      onClick={handleRegisterClick}
-                      className="flex items-center w-full px-3 py-2 text-base font-medium bg-orange-500 text-white hover:bg-orange-600 rounded-md transition-colors duration-200"
-                    >
-                      {isEnglish ? 'Get Started' : 'Registreer'}
-                    </button>
-                  </div>
-                )}
+                </div>
 
-                {/* Language Switcher Mobile */}
-                <div className="flex items-center justify-center space-x-2 pt-2">
-                  <Link
-                    href="/"
-                    className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
-                      !isEnglish
-                        ? 'bg-orange-500 text-white'
-                        : 'text-gray-600 hover:text-orange-600 hover:bg-orange-50'
-                    }`}
+                <div className="flex items-center justify-between px-3 py-2">
+                  <a
+                    href="tel:+31681348551"
+                    className="flex items-center text-gray-600 hover:text-orange-600 transition-colors duration-200"
                   >
-                    <Globe className="w-4 h-4 mr-1" />
-                    Nederlands
-                  </Link>
-                  <Link
-                    href="/en"
-                    className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
-                      isEnglish
-                        ? 'bg-orange-500 text-white'
-                        : 'text-gray-600 hover:text-orange-600 hover:bg-orange-50'
-                    }`}
-                  >
-                    <Globe className="w-4 h-4 mr-1" />
-                    English
-                  </Link>
+                    <Phone className="h-5 w-5 mr-2" />
+                    <span className="text-sm font-medium">(6) 81 34 85 51</span>
+                  </a>
+                </div>
+
+                {/* Mobile Authentication */}
+                <div className="px-3 py-2 space-y-2">
+                  {isAuthenticated && user ? (
+                    <button
+                      onClick={handleUserDashboardClick}
+                      className="w-full flex items-center justify-center px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors duration-200 font-medium"
+                    >
+                      <User className="h-4 w-4 mr-2" />
+                      {user.firstName || user.email?.split('@')[0] || 'User'}
+                    </button>
+                  ) : (
+                    <>
+                      <button
+                        onClick={handleLoginClick}
+                        className="w-full flex items-center justify-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200 font-medium"
+                      >
+                        <LogIn className="h-4 w-4 mr-2" />
+                        {isEnglish ? 'Login' : 'Inloggen'}
+                      </button>
+                      <button
+                        onClick={handleRegisterClick}
+                        className="w-full flex items-center justify-center px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors duration-200 font-medium"
+                      >
+                        <User className="h-4 w-4 mr-2" />
+                        {isEnglish ? 'Register' : 'Registreer'}
+                      </button>
+                    </>
+                  )}
+                </div>
+
+                {/* Language Switcher */}
+                <div className="px-3 py-2">
+                  <div className="flex items-center space-x-2">
+                    <Link
+                      href={isEnglish ? pathname.replace('/en', '') || '/' : `/en${pathname}`}
+                      className={`flex-1 flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
+                        !isEnglish 
+                          ? 'bg-orange-500 text-white' 
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      <Globe className="h-4 w-4 mr-1" />
+                      Nederlands
+                    </Link>
+                    <Link
+                      href={isEnglish ? pathname : `/en${pathname}`}
+                      className={`flex-1 flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
+                        isEnglish 
+                          ? 'bg-orange-500 text-white' 
+                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      }`}
+                    >
+                      <Globe className="h-4 w-4 mr-1" />
+                      English
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>
@@ -602,12 +666,31 @@ const Header = () => {
         )}
       </header>
 
+      {/* CTA Buttons */}
+      <div className="fixed bottom-6 right-6 flex flex-col space-y-3 z-40">
+        <Link
+          href={isEnglish ? '/en/contact' : '/contact'}
+          className="flex items-center px-4 py-3 bg-orange-500 text-white rounded-full shadow-lg hover:bg-orange-600 transition-all duration-200 hover:scale-105 group"
+        >
+          <Mail className="h-5 w-5 mr-2 group-hover:scale-110 transition-transform duration-200" />
+          <span className="font-medium text-sm">
+            {isEnglish ? 'Contact Us' : 'Neem Contact Op'}
+          </span>
+        </Link>
+        <Link
+          href={isEnglish ? '/en/schedule' : '/schedule'}
+          className="flex items-center px-4 py-3 bg-blue-500 text-white rounded-full shadow-lg hover:bg-blue-600 transition-all duration-200 hover:scale-105 group"
+        >
+          <Calendar className="h-5 w-5 mr-2 group-hover:scale-110 transition-transform duration-200" />
+          <span className="font-medium text-sm">
+            {isEnglish ? 'Schedule' : 'Plan Afspraak'}
+          </span>
+        </Link>
+      </div>
+
       {/* Modals */}
       {showSavedProperties && (
-        <SavedProperties 
-          onClose={() => setShowSavedProperties(false)} 
-          language={isEnglish ? 'en' : 'nl'}
-        />
+        <SavedProperties onClose={() => setShowSavedProperties(false)} />
       )}
 
       {showAuthModal && (
@@ -615,15 +698,11 @@ const Header = () => {
           isOpen={showAuthModal}
           onClose={() => setShowAuthModal(false)}
           initialView={authView}
-          language={isEnglish ? 'en' : 'nl'}
         />
       )}
 
       {showUserDashboard && (
-        <UserDashboard
-          onClose={() => setShowUserDashboard(false)}
-          language={isEnglish ? 'en' : 'nl'}
-        />
+        <UserDashboard onClose={() => setShowUserDashboard(false)} />
       )}
     </>
   );
