@@ -905,7 +905,7 @@ export default function PropertyManagement() {
                             min="0"
                             value={formData.bathrooms || ''}
                             onChange={(e) => handleInputChange('bathrooms', parseInt(e.target.value) || 0)}
-                            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors ${
+                            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors text-gray-900 ${
                               errors.bathrooms ? 'border-red-500' : 'border-gray-300'
                             }`}
                           />
@@ -913,7 +913,7 @@ export default function PropertyManagement() {
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-900 mb-2">
                             <Square className="w-4 h-4 inline mr-2" />
                             Area (m²) *
                           </label>
@@ -923,7 +923,7 @@ export default function PropertyManagement() {
                             min="0"
                             value={formData.area || ''}
                             onChange={(e) => handleInputChange('area', parseInt(e.target.value) || 0)}
-                            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors ${
+                            className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors text-gray-900 ${
                               errors.area ? 'border-red-500' : 'border-gray-300'
                             }`}
                           />
@@ -931,7 +931,7 @@ export default function PropertyManagement() {
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-900 mb-2">
                             <Calendar className="w-4 h-4 inline mr-2" />
                             Year Built
                           </label>
@@ -941,12 +941,12 @@ export default function PropertyManagement() {
                             max={new Date().getFullYear()}
                             value={formData.yearBuilt || ''}
                             onChange={(e) => handleInputChange('yearBuilt', parseInt(e.target.value) || new Date().getFullYear())}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors text-gray-900"
                           />
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-900 mb-2">
                             <TreePine className="w-4 h-4 inline mr-2" />
                             Plot Size (m²)
                           </label>
@@ -955,19 +955,19 @@ export default function PropertyManagement() {
                             min="0"
                             value={formData.plotSize || ''}
                             onChange={(e) => handleInputChange('plotSize', parseInt(e.target.value) || 0)}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors text-gray-900"
                           />
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-900 mb-2">
                             <Star className="w-4 h-4 inline mr-2" />
                             Rating
                           </label>
                           <select
                             value={formData.rating || 5}
                             onChange={(e) => handleInputChange('rating', parseInt(e.target.value))}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors text-gray-900"
                           >
                             {[1, 2, 3, 4, 5].map(rating => (
                               <option key={rating} value={rating}>{rating} Star{rating > 1 ? 's' : ''}</option>
@@ -976,14 +976,14 @@ export default function PropertyManagement() {
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-900 mb-2">
                             <Thermometer className="w-4 h-4 inline mr-2" />
                             Heating
                           </label>
                           <select
                             value={formData.heating || ''}
                             onChange={(e) => handleInputChange('heating', e.target.value)}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors text-gray-900"
                           >
                             <option value="">Select heating type</option>
                             {heatingOptions.map((heating) => (
@@ -995,14 +995,14 @@ export default function PropertyManagement() {
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-900 mb-2">
                             <Car className="w-4 h-4 inline mr-2" />
                             Parking
                           </label>
                           <select
                             value={formData.parking || ''}
                             onChange={(e) => handleInputChange('parking', e.target.value)}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors text-gray-900"
                           >
                             <option value="">Select parking type</option>
                             {parkingOptions.map((parking) => (
@@ -1014,14 +1014,14 @@ export default function PropertyManagement() {
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-900 mb-2">
                             <TreePine className="w-4 h-4 inline mr-2" />
                             Garden
                           </label>
                           <select
                             value={formData.garden || ''}
                             onChange={(e) => handleInputChange('garden', e.target.value)}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors text-gray-900"
                           >
                             <option value="">Select garden type</option>
                             {gardenOptions.map((garden) => (
@@ -1035,7 +1035,7 @@ export default function PropertyManagement() {
 
                       {/* Features Section */}
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-4">
+                        <label className="block text-sm font-medium text-gray-900 mb-4">
                           Property Features
                         </label>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -1047,7 +1047,7 @@ export default function PropertyManagement() {
                                 onChange={() => handleFeatureToggle(feature)}
                                 className="rounded border-gray-300 text-orange-600 focus:ring-orange-500"
                               />
-                              <span className="text-sm text-gray-700">{feature}</span>
+                              <span className="text-sm text-gray-900">{feature}</span>
                             </label>
                           ))}
                         </div>
@@ -1059,7 +1059,7 @@ export default function PropertyManagement() {
                   {currentStep === 3 && (
                     <div className="space-y-6">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-900 mb-2">
                           <Edit className="w-4 h-4 inline mr-2" />
                           Property Description *
                         </label>
@@ -1069,7 +1069,7 @@ export default function PropertyManagement() {
                           value={formData.description || ''}
                           onChange={(e) => handleInputChange('description', e.target.value)}
                           placeholder="Describe the property in detail. Include unique features, location benefits, and what makes this property special..."
-                          className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors resize-none ${
+                          className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors resize-none text-gray-900 ${
                             errors.description ? 'border-red-500' : 'border-gray-300'
                           }`}
                         />
@@ -1081,7 +1081,7 @@ export default function PropertyManagement() {
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-900 mb-2">
                             Main Image URL
                           </label>
                           <input
@@ -1089,12 +1089,12 @@ export default function PropertyManagement() {
                             value={formData.mainImage || ''}
                             onChange={(e) => handleInputChange('mainImage', e.target.value)}
                             placeholder="https://example.com/image.jpg"
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors text-gray-900"
                           />
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-900 mb-2">
                             Additional Images
                           </label>
                           <textarea
@@ -1102,7 +1102,7 @@ export default function PropertyManagement() {
                             value={formData.images?.join('\n') || ''}
                             onChange={(e) => handleInputChange('images', e.target.value.split('\n').filter(url => url.trim()))}
                             placeholder="Enter image URLs, one per line"
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors resize-none"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors resize-none text-gray-900"
                           />
                         </div>
                       </div>
@@ -1118,7 +1118,7 @@ export default function PropertyManagement() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           <div>
                             <h4 className="font-medium text-gray-900 mb-2">Basic Information</h4>
-                            <div className="space-y-2 text-sm">
+                            <div className="space-y-2 text-sm text-gray-900">
                               <p><span className="font-medium">Title:</span> {formData.title}</p>
                               <p><span className="font-medium">Location:</span> {formData.location}</p>
                               <p><span className="font-medium">Price:</span> {formData.price}</p>
@@ -1129,7 +1129,7 @@ export default function PropertyManagement() {
                           
                           <div>
                             <h4 className="font-medium text-gray-900 mb-2">Property Details</h4>
-                            <div className="space-y-2 text-sm">
+                            <div className="space-y-2 text-sm text-gray-900">
                               <p><span className="font-medium">Bedrooms:</span> {formData.bedrooms}</p>
                               <p><span className="font-medium">Bathrooms:</span> {formData.bathrooms}</p>
                               <p><span className="font-medium">Area:</span> {formData.area}m²</p>
@@ -1155,7 +1155,7 @@ export default function PropertyManagement() {
                         {formData.description && (
                           <div className="mt-4">
                             <h4 className="font-medium text-gray-900 mb-2">Description</h4>
-                            <p className="text-sm text-gray-700">{formData.description}</p>
+                            <p className="text-sm text-gray-900">{formData.description}</p>
                           </div>
                         )}
                       </div>
