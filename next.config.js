@@ -22,7 +22,8 @@ const nextConfig = {
       'plus.unsplash.com',
       'api.glodinasmakelaardij.nl',
       'glodinasmakelaardij.nl',
-      'www.glodinasmakelaardij.nl'
+      'www.glodinasmakelaardij.nl',
+      'res.cloudinary.com'
     ],
     unoptimized: false,
   },
