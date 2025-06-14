@@ -1,98 +1,53 @@
+'use client';
+
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import PropertyGallery from '@/components/PropertyGallery';
 import { Button } from '@/components/ui/button';
 import { Calendar, Star, Home, Search, Handshake, Building, Calculator, Mail, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
+
+interface Property {
+  id: string;
+  title: string;
+  location: string;
+  price: string;
+  originalPrice?: string;
+  size: string;
+  bedrooms: number;
+  bathrooms: number;
+  area: number;
+  energyLabel: string;
+  features: string[];
+  mainImage?: string;
+  images: string[];
+  rating: number;
+  status: 'available' | 'under_offer' | 'sold' | 'new';
+  description: string;
+}
 
 export default function HomePage() {
-  const galleryProperties = [
-    {
-      id: 'jacob-schorerlaan-201',
-      title: 'Jacob Schorerlaan 201',
-      location: 'Den Haag, Groente- en Fruitmarkt',
-      price: '€465.000 k.k.',
-      originalPrice: '€475.000',
-      size: '107m²',
-      bedrooms: 4,
-      bathrooms: 1,
-      area: 107,
-      energyLabel: 'A',
-      features: ['Tuin', 'Serre', 'Moderne Keuken', 'Parkeren'],
-      mainImage: '/images/properties/living-room-1.jpg',
-      images: [
-        '/images/properties/living-room-1.jpg',
-        '/images/properties/kitchen-1.jpg',
-        '/images/properties/bedroom-1.jpg',
-      ],
-      rating: 5,
-      status: 'new' as const,
-      description: 'Prachtig gerenoveerd appartement met moderne afwerking, ruime woonkamer en volledig uitgeruste keuken. Gelegen in een levendige buurt met alle voorzieningen binnen handbereik.',
-    },
-    {
-      id: 'groenewegje-76',
-      title: 'Groenewegje 76',
-      location: 'Den Haag, Centrum',
-      price: '€695.000 k.k.',
-      size: '120m²',
-      bedrooms: 3,
-      bathrooms: 2,
-      area: 120,
-      energyLabel: 'B',
-      features: ['Grachtzicht', 'Historisch', 'Centrale Ligging'],
-      mainImage: '/images/properties/living-room-2.jpg',
-      images: [
-        '/images/properties/living-room-2.jpg',
-        '/images/properties/bedroom-1.jpg',
-        '/images/properties/kitchen-1.jpg',
-      ],
-      rating: 5,
-      status: 'under_offer' as const,
-      description: 'Karakteristiek appartement in het historische centrum van Den Haag met uitzicht op de gracht. Hoge plafonds, originele details en moderne voorzieningen maken dit een unieke woonkans.',
-    },
-    {
-      id: 'westeinde-11-d',
-      title: 'Westeinde 11-D',
-      location: 'Den Haag, Centrum',
-      price: '€525.000 k.k.',
-      size: '95m²',
-      bedrooms: 2,
-      bathrooms: 1,
-      area: 95,
-      energyLabel: 'C',
-      features: ['Stadscentrum', 'Gerenoveerd', 'Balkon'],
-      mainImage: '/images/properties/living-room-3.jpg',
-      images: [
-        '/images/properties/living-room-3.jpg',
-        '/images/properties/bedroom-2.jpg',
-        '/images/properties/kitchen-1.jpg',
-      ],
-      rating: 4,
-      status: 'available' as const,
-      description: 'Modern appartement in het bruisende centrum van Den Haag. Volledig gerenoveerd met hoogwaardige materialen en voorzien van een ruim balkon met uitzicht over de stad.',
-    },
-    {
-      id: 'rijslag-27',
-      title: 'Rijslag 27',
-      location: 'Den Haag, Benoordenhout',
-      price: '€1.250.000 k.k.',
-      size: '180m²',
-      bedrooms: 5,
-      bathrooms: 3,
-      area: 180,
-      energyLabel: 'A',
-      features: ['Zwembad', 'Grote Tuin', 'Moderne Villa'],
-      mainImage: '/images/properties/living-room-1.jpg',
-      images: [
-        '/images/properties/living-room-1.jpg',
-        '/images/properties/bedroom-2.jpg',
-        '/images/properties/kitchen-1.jpg',
-      ],
-      rating: 5,
-      status: 'under_offer' as const,
-      description: 'Luxe villa in de prestigieuze wijk Benoordenhout. Deze ruime woning biedt alle comfort met een privé zwembad, grote tuin en hoogwaardige afwerking in alle ruimtes.',
-    },
-  ];
+  const [galleryProperties, setGalleryProperties] = useState<Property[]>([]);
+
+  // Fetch featured properties for homepage
+  useEffect(() => {
+    const fetchFeaturedProperties = async () => {
+      try {
+        const response = await fetch('/api/properties?sort_by=newest');
+        if (response.ok) {
+          const data = await response.json();
+          // Show only first 4 properties for homepage gallery
+          setGalleryProperties(data.properties.slice(0, 4) || []);
+        }
+      } catch (error) {
+        console.error('Error fetching featured properties:', error);
+        // Keep empty array if fetch fails
+      }
+    };
+
+    fetchFeaturedProperties();
+  }, []);
 
   return (
     <div className="min-h-screen bg-white">

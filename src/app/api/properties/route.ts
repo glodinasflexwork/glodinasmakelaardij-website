@@ -1,103 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { PrismaClient } from '@prisma/client';
 
-// In-memory storage for properties (in production, this would be a database)
-let properties: any[] = [
-  {
-    id: 'jacob-schorerlaan-201',
-    title: 'Jacob Schorerlaan 201',
-    location: 'Den Haag, Groente- en Fruitmarkt',
-    price: '€465.000 k.k.',
-    originalPrice: '€475.000',
-    size: '107m²',
-    bedrooms: 4,
-    bathrooms: 1,
-    area: 107,
-    energyLabel: 'A',
-    features: ['Tuin', 'Serre', 'Moderne Keuken', 'Parkeren'],
-    mainImage: '/images/properties/living-room-1.jpg',
-    images: [
-      '/images/properties/living-room-1.jpg',
-      '/images/properties/kitchen-1.jpg',
-      '/images/properties/bedroom-1.jpg',
-    ],
-    rating: 5,
-    status: 'new',
-    description: 'Prachtig gerenoveerd appartement met moderne afwerking, ruime woonkamer en volledig uitgeruste keuken. Gelegen in een levendige buurt met alle voorzieningen binnen handbereik.',
-    neighborhood: 'Groente- en Fruitmarkt',
-    yearBuilt: 1920,
-    plotSize: 0,
-    heating: 'Centrale verwarming',
-    parking: 'Parkeerplaats',
-    garden: 'Achtertuin',
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  },
-  {
-    id: 'groenewegje-76',
-    title: 'Groenewegje 76',
-    location: 'Den Haag, Centrum',
-    price: '€695.000 k.k.',
-    size: '120m²',
-    bedrooms: 3,
-    bathrooms: 2,
-    area: 120,
-    energyLabel: 'B',
-    features: ['Grachtzicht', 'Historisch', 'Centrale Ligging'],
-    mainImage: '/images/properties/living-room-2.jpg',
-    images: [
-      '/images/properties/living-room-2.jpg',
-      '/images/properties/bedroom-1.jpg',
-      '/images/properties/kitchen-1.jpg',
-    ],
-    rating: 5,
-    status: 'under_offer',
-    description: 'Karakteristiek appartement in het historische centrum van Den Haag met uitzicht op de gracht. Hoge plafonds, originele details en moderne voorzieningen maken dit een unieke woonkans.',
-    neighborhood: 'Centrum',
-    yearBuilt: 1890,
-    plotSize: 0,
-    heating: 'Centrale verwarming',
-    parking: 'Geen',
-    garden: 'Geen',
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  },
-  {
-    id: 'westeinde-11-d',
-    title: 'Westeinde 11-D',
-    location: 'Den Haag, Centrum',
-    price: '€525.000 k.k.',
-    size: '95m²',
-    bedrooms: 2,
-    bathrooms: 1,
-    area: 95,
-    energyLabel: 'C',
-    features: ['Stadscentrum', 'Gerenoveerd', 'Balkon'],
-    mainImage: '/images/properties/living-room-3.jpg',
-    images: [
-      '/images/properties/living-room-3.jpg',
-      '/images/properties/bedroom-2.jpg',
-      '/images/properties/kitchen-1.jpg',
-    ],
-    rating: 4,
-    status: 'available',
-    description: 'Modern appartement in het bruisende centrum van Den Haag. Volledig gerenoveerd met hoogwaardige materialen en voorzien van een ruim balkon met uitzicht over de stad.',
-    neighborhood: 'Centrum',
-    yearBuilt: 1960,
-    plotSize: 0,
-    heating: 'Centrale verwarming',
-    parking: 'Geen',
-    garden: 'Balkon',
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
+const prisma = new PrismaClient();
+
+function extractPrice(priceString: string): number {
+  try {
+    // Remove € symbol, dots, and text, then convert to int
+    const priceClean = priceString.replace('€', '').replace(/\./g, '').replace(' k.k.', '').replace(' v.o.n.', '');
+    return parseInt(priceClean) || 0;
+  } catch {
+    return 0;
   }
-];
-
-function generateId(title: string): string {
-  return title.toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .trim();
 }
 
 // GET /api/properties - Get all properties
@@ -111,53 +24,54 @@ export async function GET(request: NextRequest) {
     const bedrooms = searchParams.get('bedrooms');
     const sortBy = searchParams.get('sort_by') || 'newest';
 
-    let filteredProperties = [...properties];
+    // Build where clause for filtering
+    const where: any = {};
 
-    // Apply filters
     if (location) {
-      filteredProperties = filteredProperties.filter(p => 
-        p.location.toLowerCase().includes(location)
-      );
+      where.location = {
+        contains: location,
+        mode: 'insensitive'
+      };
     }
 
     if (status) {
-      filteredProperties = filteredProperties.filter(p => p.status === status);
-    }
-
-    if (minPrice) {
-      const min = parseInt(minPrice);
-      filteredProperties = filteredProperties.filter(p => {
-        const price = extractPrice(p.price);
-        return price >= min;
-      });
-    }
-
-    if (maxPrice) {
-      const max = parseInt(maxPrice);
-      filteredProperties = filteredProperties.filter(p => {
-        const price = extractPrice(p.price);
-        return price <= max;
-      });
+      where.status = status;
     }
 
     if (bedrooms) {
-      const beds = parseInt(bedrooms);
-      filteredProperties = filteredProperties.filter(p => p.bedrooms >= beds);
+      where.bedrooms = {
+        gte: parseInt(bedrooms)
+      };
     }
 
-    // Apply sorting
+    // Build orderBy clause for sorting
+    let orderBy: any = { createdAt: 'desc' }; // default newest first
+
     if (sortBy === 'price_asc') {
-      filteredProperties.sort((a, b) => extractPrice(a.price) - extractPrice(b.price));
+      orderBy = { price: 'asc' };
     } else if (sortBy === 'price_desc') {
-      filteredProperties.sort((a, b) => extractPrice(b.price) - extractPrice(a.price));
+      orderBy = { price: 'desc' };
     } else if (sortBy === 'area_asc') {
-      filteredProperties.sort((a, b) => a.area - b.area);
+      orderBy = { area: 'asc' };
     } else if (sortBy === 'area_desc') {
-      filteredProperties.sort((a, b) => b.area - a.area);
-    } else if (sortBy === 'newest') {
-      filteredProperties.sort((a, b) => 
-        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-      );
+      orderBy = { area: 'desc' };
+    }
+
+    const properties = await prisma.property.findMany({
+      where,
+      orderBy
+    });
+
+    // Apply price filtering (since we can't easily filter by extracted price in DB)
+    let filteredProperties = properties;
+
+    if (minPrice || maxPrice) {
+      filteredProperties = properties.filter(property => {
+        const price = extractPrice(property.price);
+        if (minPrice && price < parseInt(minPrice)) return false;
+        if (maxPrice && price > parseInt(maxPrice)) return false;
+        return true;
+      });
     }
 
     return NextResponse.json({
@@ -189,39 +103,32 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Generate ID if not provided
-    if (!data.id) {
-      data.id = generateId(data.title);
-    }
-
-    // Check if ID already exists
-    if (properties.find(p => p.id === data.id)) {
-      return NextResponse.json(
-        { error: 'Property with this ID already exists' },
-        { status: 400 }
-      );
-    }
-
-    // Add timestamps and defaults
-    const newProperty = {
-      ...data,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      features: data.features || [],
-      images: data.images || [],
-      rating: data.rating || 5,
-      status: data.status || 'available',
-      energyLabel: data.energyLabel || 'A',
-      yearBuilt: data.yearBuilt || new Date().getFullYear(),
-      plotSize: data.plotSize || 0,
-      heating: data.heating || '',
-      parking: data.parking || '',
-      garden: data.garden || '',
-      neighborhood: data.neighborhood || '',
-      mainImage: data.mainImage || '/images/properties/default.jpg'
-    };
-
-    properties.push(newProperty);
+    // Create property in database
+    const newProperty = await prisma.property.create({
+      data: {
+        title: data.title,
+        location: data.location,
+        price: data.price,
+        originalPrice: data.originalPrice || null,
+        size: data.size,
+        bedrooms: parseInt(data.bedrooms),
+        bathrooms: parseInt(data.bathrooms),
+        area: parseInt(data.area),
+        energyLabel: data.energyLabel || 'A',
+        features: data.features || [],
+        mainImage: data.mainImage || '/images/properties/default.jpg',
+        images: data.images || [],
+        rating: parseInt(data.rating) || 5,
+        status: data.status || 'available',
+        description: data.description,
+        neighborhood: data.neighborhood || null,
+        yearBuilt: data.yearBuilt ? parseInt(data.yearBuilt) : null,
+        plotSize: parseInt(data.plotSize) || 0,
+        heating: data.heating || null,
+        parking: data.parking || null,
+        garden: data.garden || null
+      }
+    });
 
     return NextResponse.json(newProperty, { status: 201 });
   } catch (error) {
@@ -230,16 +137,6 @@ export async function POST(request: NextRequest) {
       { error: 'Failed to create property' },
       { status: 500 }
     );
-  }
-}
-
-function extractPrice(priceString: string): number {
-  try {
-    // Remove € symbol, dots, and text, then convert to int
-    const priceClean = priceString.replace('€', '').replace(/\./g, '').replace(' k.k.', '').replace(' v.o.n.', '');
-    return parseInt(priceClean) || 0;
-  } catch {
-    return 0;
   }
 }
 

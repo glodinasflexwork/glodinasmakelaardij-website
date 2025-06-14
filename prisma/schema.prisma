@@ -46,4 +46,33 @@ model SavedProperty {
   @@map("saved_properties")
 }
 
+model Property {
+  id            String   @id @default(cuid())
+  title         String
+  location      String
+  price         String
+  originalPrice String?
+  size          String
+  bedrooms      Int
+  bathrooms     Int
+  area          Int
+  energyLabel   String   @default("A")
+  features      String[]
+  mainImage     String?
+  images        String[]
+  rating        Int      @default(5)
+  status        String   @default("available") // available, under_offer, sold, new
+  description   String
+  neighborhood  String?
+  yearBuilt     Int?
+  plotSize      Int      @default(0)
+  heating       String?
+  parking       String?
+  garden        String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("properties")
+}
+
 

@@ -1,97 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { PrismaClient } from '@prisma/client';
 
-// This would be imported from the main properties route in a real app
-// For now, we'll use the same in-memory storage
-let properties: any[] = [
-  {
-    id: 'jacob-schorerlaan-201',
-    title: 'Jacob Schorerlaan 201',
-    location: 'Den Haag, Groente- en Fruitmarkt',
-    price: '€465.000 k.k.',
-    originalPrice: '€475.000',
-    size: '107m²',
-    bedrooms: 4,
-    bathrooms: 1,
-    area: 107,
-    energyLabel: 'A',
-    features: ['Tuin', 'Serre', 'Moderne Keuken', 'Parkeren'],
-    mainImage: '/images/properties/living-room-1.jpg',
-    images: [
-      '/images/properties/living-room-1.jpg',
-      '/images/properties/kitchen-1.jpg',
-      '/images/properties/bedroom-1.jpg',
-    ],
-    rating: 5,
-    status: 'new',
-    description: 'Prachtig gerenoveerd appartement met moderne afwerking, ruime woonkamer en volledig uitgeruste keuken. Gelegen in een levendige buurt met alle voorzieningen binnen handbereik.',
-    neighborhood: 'Groente- en Fruitmarkt',
-    yearBuilt: 1920,
-    plotSize: 0,
-    heating: 'Centrale verwarming',
-    parking: 'Parkeerplaats',
-    garden: 'Achtertuin',
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  },
-  {
-    id: 'groenewegje-76',
-    title: 'Groenewegje 76',
-    location: 'Den Haag, Centrum',
-    price: '€695.000 k.k.',
-    size: '120m²',
-    bedrooms: 3,
-    bathrooms: 2,
-    area: 120,
-    energyLabel: 'B',
-    features: ['Grachtzicht', 'Historisch', 'Centrale Ligging'],
-    mainImage: '/images/properties/living-room-2.jpg',
-    images: [
-      '/images/properties/living-room-2.jpg',
-      '/images/properties/bedroom-1.jpg',
-      '/images/properties/kitchen-1.jpg',
-    ],
-    rating: 5,
-    status: 'under_offer',
-    description: 'Karakteristiek appartement in het historische centrum van Den Haag met uitzicht op de gracht. Hoge plafonds, originele details en moderne voorzieningen maken dit een unieke woonkans.',
-    neighborhood: 'Centrum',
-    yearBuilt: 1890,
-    plotSize: 0,
-    heating: 'Centrale verwarming',
-    parking: 'Geen',
-    garden: 'Geen',
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  },
-  {
-    id: 'westeinde-11-d',
-    title: 'Westeinde 11-D',
-    location: 'Den Haag, Centrum',
-    price: '€525.000 k.k.',
-    size: '95m²',
-    bedrooms: 2,
-    bathrooms: 1,
-    area: 95,
-    energyLabel: 'C',
-    features: ['Stadscentrum', 'Gerenoveerd', 'Balkon'],
-    mainImage: '/images/properties/living-room-3.jpg',
-    images: [
-      '/images/properties/living-room-3.jpg',
-      '/images/properties/bedroom-2.jpg',
-      '/images/properties/kitchen-1.jpg',
-    ],
-    rating: 4,
-    status: 'available',
-    description: 'Modern appartement in het bruisende centrum van Den Haag. Volledig gerenoveerd met hoogwaardige materialen en voorzien van een ruim balkon met uitzicht over de stad.',
-    neighborhood: 'Centrum',
-    yearBuilt: 1960,
-    plotSize: 0,
-    heating: 'Centrale verwarming',
-    parking: 'Geen',
-    garden: 'Balkon',
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  }
-];
+const prisma = new PrismaClient();
 
 // GET /api/properties/[id] - Get specific property
 export async function GET(
@@ -99,7 +9,9 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const property = properties.find(p => p.id === params.id);
+    const property = await prisma.property.findUnique({
+      where: { id: params.id }
+    });
     
     if (!property) {
       return NextResponse.json(
@@ -125,9 +37,13 @@ export async function PUT(
 ) {
   try {
     const data = await request.json();
-    const propertyIndex = properties.findIndex(p => p.id === params.id);
     
-    if (propertyIndex === -1) {
+    // Check if property exists
+    const existingProperty = await prisma.property.findUnique({
+      where: { id: params.id }
+    });
+    
+    if (!existingProperty) {
       return NextResponse.json(
         { error: 'Property not found' },
         { status: 404 }
@@ -135,13 +51,35 @@ export async function PUT(
     }
 
     // Update property
-    properties[propertyIndex] = {
-      ...properties[propertyIndex],
-      ...data,
-      updated_at: new Date().toISOString()
-    };
+    const updatedProperty = await prisma.property.update({
+      where: { id: params.id },
+      data: {
+        title: data.title,
+        location: data.location,
+        price: data.price,
+        originalPrice: data.originalPrice || null,
+        size: data.size,
+        bedrooms: data.bedrooms ? parseInt(data.bedrooms) : undefined,
+        bathrooms: data.bathrooms ? parseInt(data.bathrooms) : undefined,
+        area: data.area ? parseInt(data.area) : undefined,
+        energyLabel: data.energyLabel,
+        features: data.features || [],
+        mainImage: data.mainImage,
+        images: data.images || [],
+        rating: data.rating ? parseInt(data.rating) : undefined,
+        status: data.status,
+        description: data.description,
+        neighborhood: data.neighborhood || null,
+        yearBuilt: data.yearBuilt ? parseInt(data.yearBuilt) : undefined,
+        plotSize: data.plotSize ? parseInt(data.plotSize) : undefined,
+        heating: data.heating || null,
+        parking: data.parking || null,
+        garden: data.garden || null,
+        updatedAt: new Date()
+      }
+    });
 
-    return NextResponse.json(properties[propertyIndex]);
+    return NextResponse.json(updatedProperty);
   } catch (error) {
     console.error('Error updating property:', error);
     return NextResponse.json(
@@ -157,17 +95,22 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const propertyIndex = properties.findIndex(p => p.id === params.id);
+    // Check if property exists
+    const existingProperty = await prisma.property.findUnique({
+      where: { id: params.id }
+    });
     
-    if (propertyIndex === -1) {
+    if (!existingProperty) {
       return NextResponse.json(
         { error: 'Property not found' },
         { status: 404 }
       );
     }
 
-    // Remove property
-    properties.splice(propertyIndex, 1);
+    // Delete property
+    await prisma.property.delete({
+      where: { id: params.id }
+    });
 
     return NextResponse.json({ message: 'Property deleted successfully' });
   } catch (error) {
