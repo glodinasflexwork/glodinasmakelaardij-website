@@ -17,6 +17,8 @@ const RegisterModal: React.FC<RegisterModalProps> = ({
   language = 'nl' 
 }) => {
   const { register, error, clearError, isLoading } = useAuth();
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -28,6 +30,8 @@ const RegisterModal: React.FC<RegisterModalProps> = ({
   const translations = {
     nl: {
       title: 'Registreren',
+      firstName: 'Voornaam',
+      lastName: 'Achternaam',
       username: 'Gebruikersnaam',
       email: 'E-mailadres',
       password: 'Wachtwoord',
@@ -37,6 +41,8 @@ const RegisterModal: React.FC<RegisterModalProps> = ({
       login: 'Log in',
       showPassword: 'Toon wachtwoord',
       hidePassword: 'Verberg wachtwoord',
+      firstNameRequired: 'Voornaam is verplicht',
+      lastNameRequired: 'Achternaam is verplicht',
       usernameRequired: 'Gebruikersnaam is verplicht',
       emailRequired: 'E-mailadres is verplicht',
       passwordRequired: 'Wachtwoord is verplicht',
@@ -49,6 +55,8 @@ const RegisterModal: React.FC<RegisterModalProps> = ({
     },
     en: {
       title: 'Register',
+      firstName: 'First Name',
+      lastName: 'Last Name',
       username: 'Username',
       email: 'Email address',
       password: 'Password',
@@ -58,6 +66,8 @@ const RegisterModal: React.FC<RegisterModalProps> = ({
       login: 'Log in',
       showPassword: 'Show password',
       hidePassword: 'Hide password',
+      firstNameRequired: 'First name is required',
+      lastNameRequired: 'Last name is required',
       usernameRequired: 'Username is required',
       emailRequired: 'Email is required',
       passwordRequired: 'Password is required',
@@ -74,6 +84,8 @@ const RegisterModal: React.FC<RegisterModalProps> = ({
   
   // Form validation
   const [errors, setErrors] = useState({
+    firstName: '',
+    lastName: '',
     username: '',
     email: '',
     password: '',
@@ -83,11 +95,25 @@ const RegisterModal: React.FC<RegisterModalProps> = ({
   const validateForm = () => {
     let valid = true;
     const newErrors = { 
+      firstName: '',
+      lastName: '',
       username: '', 
       email: '', 
       password: '', 
       confirmPassword: '' 
     };
+    
+    // First name validation
+    if (!firstName.trim()) {
+      newErrors.firstName = t.firstNameRequired;
+      valid = false;
+    }
+    
+    // Last name validation
+    if (!lastName.trim()) {
+      newErrors.lastName = t.lastNameRequired;
+      valid = false;
+    }
     
     // Username validation
     if (!username) {
@@ -129,7 +155,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({
     
     if (validateForm()) {
       try {
-        await register(username, email, password);
+        await register(firstName, lastName, username, email, password);
         setRegistrationSuccess(true);
       } catch (err) {
         // Error is handled by the AuthContext
@@ -184,6 +210,40 @@ const RegisterModal: React.FC<RegisterModalProps> = ({
           )}
           
           <form onSubmit={handleSubmit}>
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <div>
+                <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">
+                  {t.firstName}
+                </label>
+                <input
+                  type="text"
+                  id="firstName"
+                  className={`w-full px-3 py-2 border rounded-md ${errors.firstName ? 'border-red-500' : 'border-gray-300'}`}
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                />
+                {errors.firstName && (
+                  <p className="mt-1 text-sm text-red-600">{errors.firstName}</p>
+                )}
+              </div>
+              
+              <div>
+                <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">
+                  {t.lastName}
+                </label>
+                <input
+                  type="text"
+                  id="lastName"
+                  className={`w-full px-3 py-2 border rounded-md ${errors.lastName ? 'border-red-500' : 'border-gray-300'}`}
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                />
+                {errors.lastName && (
+                  <p className="mt-1 text-sm text-red-600">{errors.lastName}</p>
+                )}
+              </div>
+            </div>
+            
             <div className="mb-4">
               <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
                 {t.username}

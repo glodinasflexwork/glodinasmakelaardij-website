@@ -175,7 +175,7 @@ const LoginModal: React.FC<LoginModalProps> = ({
           </form>
           
           <div className="mt-4 text-center">
-            <a href="#" className="text-sm text-green-600 hover:text-green-700">
+            <a href="/forgot-password" className="text-sm text-green-600 hover:text-green-700">
               {t.forgotPassword}
             </a>
           </div>

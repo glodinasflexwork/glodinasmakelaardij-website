@@ -5,12 +5,13 @@ import React, { createContext, useState, useContext, useEffect, ReactNode } from
 // Define user type
 interface User {
   id: number;
-  username: string;
+  username?: string;
   email: string;
-  first_name?: string;
-  last_name?: string;
+  firstName?: string;
+  lastName?: string;
+  phone?: string;
   profile_image?: string;
-  is_verified: boolean;
+  emailVerified: boolean;
   notification_preferences?: {
     email_alerts: boolean;
     property_updates: boolean;
@@ -25,7 +26,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (username: string, email: string, password: string) => Promise<void>;
+  register: (firstName: string, lastName: string, username: string, email: string, password: string) => Promise<void>;
   logout: () => void;
   updateUser: (userData: Partial<User>) => void;
   error: string | null;
@@ -174,7 +175,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           id: 0,
           username: email.split('@')[0],
           email: email,
-          is_verified: true
+          firstName: '',
+          lastName: '',
+          emailVerified: true
         });
       }
     } catch (err: any) {
@@ -187,7 +190,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   // Register function
-  const register = async (username: string, email: string, password: string) => {
+  const register = async (firstName: string, lastName: string, username: string, email: string, password: string) => {
     try {
       setIsLoading(true);
       setError(null);
@@ -197,13 +200,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ username, email, password })
+        body: JSON.stringify({ firstName, lastName, username, email, password })
       });
       
       const data = await response.json();
       
       if (!response.ok) {
-        throw new Error(data.error || 'Registration failed');
+        throw new Error(data.message || 'Registration failed');
       }
       
       // Don't automatically log in after registration since email verification is required
