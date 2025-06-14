@@ -179,7 +179,12 @@ const LoginModal: React.FC<LoginModalProps> = ({
           
           <div className="mt-4 text-center">
             <button 
-              onClick={onSwitchToForgotPassword}
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onSwitchToForgotPassword();
+              }}
               className="text-sm text-green-600 hover:text-green-700"
             >
               {t.forgotPassword}
@@ -190,7 +195,12 @@ const LoginModal: React.FC<LoginModalProps> = ({
             <p className="text-sm text-gray-600">
               {t.noAccount}{' '}
               <button 
-                onClick={onSwitchToRegister}
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onSwitchToRegister();
+                }}
                 className="text-green-600 hover:text-green-700 font-medium"
               >
                 {t.register}

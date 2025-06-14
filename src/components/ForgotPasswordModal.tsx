@@ -118,7 +118,11 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({
             </div>
             <p className="mb-6 text-gray-600">{t.successMessage}</p>
             <Button 
-              onClick={onSwitchToLogin}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onSwitchToLogin();
+              }}
               className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-md"
             >
               {t.goToLogin}
@@ -134,7 +138,16 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({
       <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-hidden flex flex-col">
         <div className="p-4 border-b flex justify-between items-center">
           <div className="flex items-center">
-            <Button variant="ghost" size="icon" onClick={onSwitchToLogin} className="mr-2">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onSwitchToLogin();
+              }} 
+              className="mr-2"
+            >
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <h2 className="text-xl font-bold">{t.title}</h2>
@@ -189,7 +202,12 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({
           
           <div className="text-center">
             <button 
-              onClick={onSwitchToLogin}
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onSwitchToLogin();
+              }}
               className="text-sm text-green-600 hover:text-green-700 font-medium"
             >
               {t.backToLogin}
