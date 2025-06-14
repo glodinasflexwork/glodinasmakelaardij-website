@@ -15,45 +15,44 @@ const GMLogo: React.FC<GMLogoProps> = ({ className = '', size = 'md' }) => {
   return (
     <div className={`${sizeClasses[size]} ${className} relative`}>
       <svg
-        viewBox="0 0 120 120"
+        viewBox="0 0 200 120"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         className="w-full h-full"
       >
-        {/* House outline */}
+        {/* House outline - curved left side wrapping around GM */}
         <path
-          d="M20 45L60 10L100 45V50H95L60 20L25 50H20V45Z"
+          d="M20 85C20 75 25 65 35 60L65 35L95 60C105 65 110 75 110 85V90H105L95 65L65 45L35 65L25 90H20V85Z"
           fill="#EF4444"
-          className="drop-shadow-sm"
+          stroke="#EF4444"
+          strokeWidth="2"
         />
+        
+        {/* Chimney */}
         <rect
           x="85"
-          y="25"
-          width="12"
-          height="20"
+          y="40"
+          width="8"
+          height="15"
           fill="#EF4444"
-          className="drop-shadow-sm"
         />
         
-        {/* House base */}
+        {/* Curved house base that wraps around the left side of GM */}
         <path
-          d="M20 50C20 47 22 45 25 45H95C98 45 100 47 100 50V52H20V50Z"
+          d="M20 85C20 75 25 65 35 60C35 65 35 70 35 75C35 80 40 85 45 85H25C22 85 20 85 20 85Z"
           fill="#EF4444"
-          className="drop-shadow-sm"
         />
         
-        {/* Letter G */}
+        {/* Letter G - bold, matching the actual logo style */}
         <path
-          d="M25 60C25 57 27 55 30 55H50C53 55 55 57 55 60V65H45V65C45 63 43 62 41 62H35C33 62 32 63 32 65V85C32 87 33 88 35 88H41C43 88 45 87 45 85V80H40V75H55V85C55 88 53 90 50 90H30C27 90 25 88 25 85V60Z"
+          d="M45 45C40 45 35 50 35 55V85C35 90 40 95 45 95H65C70 95 75 90 75 85V80H60V75H80V85C80 95 70 105 60 105H45C30 105 20 95 20 80V60C20 45 30 35 45 35H65C70 35 75 40 75 45H45Z"
           fill="#1E3A8A"
-          className="drop-shadow-sm"
         />
         
-        {/* Letter M */}
+        {/* Letter M - bold, matching the actual logo style */}
         <path
-          d="M65 55H72L78 70L84 55H91V90H84V70L78 82L72 70V90H65V55Z"
+          d="M90 45H105L120 75L135 45H150V105H135V75L120 95L105 75V105H90V45Z"
           fill="#1E3A8A"
-          className="drop-shadow-sm"
         />
       </svg>
     </div>
