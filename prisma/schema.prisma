@@ -26,13 +26,11 @@ model User {
   @@map("users")
 }
 
-
-
 model SavedProperty {
   id          String    @id @default(cuid())
   userId      String
   user        User      @relation(fields: [userId], references: [id])
-  property_id Int
+  property_id String
   title       String
   location    String
   price       String
@@ -40,8 +38,9 @@ model SavedProperty {
   bathrooms   Int
   area        Int
   images      String[]
-  created_at  DateTime  @default(now())
   notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@unique([userId, property_id])
   @@map("saved_properties")

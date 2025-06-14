@@ -1,4 +1,3 @@
-'use client';
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
@@ -238,4 +237,5 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, language = 'nl' }
 };
 
 export default PropertyCard;
+
 
