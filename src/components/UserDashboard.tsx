@@ -293,11 +293,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
                 <li>
                   <button
                     onClick={() => setActiveTab('settings')}
-<<<<<<< HEAD
-                    className={`flex items-center w-full p-2 rounded-md ${activeTab === 'settings' ? 'bg-blue-600 text-white' : 'hover:bg-gray-200'}`}
-=======
                     className={`flex items-center w-full p-2 rounded-md ${activeTab === 'settings' ? 'bg-primary text-white' : 'hover:bg-gray-200'}`}
->>>>>>> 5cba8bdd2678fe5357268b0a74005409c6a9cfd0
                   >
                     <Settings className="h-5 w-5 mr-2" />
                     {t.settings}
