@@ -73,6 +73,7 @@ export default function WoningenPage() {
       setError('Failed to load properties');
     } finally {
       setLoading(false);
+    }
   };
 
   return (
