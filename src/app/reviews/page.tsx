@@ -150,7 +150,7 @@ const ReviewsPage = () => {
                 </Button>
               </Link>
               <Link href="/schedule">
-                <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-900 px-8 py-4 text-lg">
+                <Button size="lg" className="bg-white text-blue-900 hover:bg-gray-100 px-8 py-4 text-lg border-2 border-white">
                   <Mail className="w-5 h-5 mr-2" />
                   Plan Gratis Gesprek
                 </Button>
@@ -347,7 +347,7 @@ const ReviewsPage = () => {
               </Button>
             </Link>
             <Link href="/schedule">
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-700 px-8 py-4 text-lg">
+              <Button size="lg" className="bg-white text-blue-700 hover:bg-gray-100 px-8 py-4 text-lg border-2 border-white">
                 <Mail className="w-5 h-5 mr-2" />
                 Plan Gratis Gesprek
               </Button>
