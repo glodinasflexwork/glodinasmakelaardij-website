@@ -3,9 +3,10 @@
 import React, { useState } from 'react';
 import LoginModal from './LoginModal';
 import RegisterModal from './RegisterModal';
+import ForgotPasswordModal from './ForgotPasswordModal';
 
 interface AuthModalProps {
-  initialView?: 'login' | 'register';
+  initialView?: 'login' | 'register' | 'forgot-password';
   onClose: () => void;
   language?: 'nl' | 'en';
 }
@@ -15,10 +16,11 @@ const AuthModal: React.FC<AuthModalProps> = ({
   onClose,
   language = 'nl'
 }) => {
-  const [view, setView] = useState<'login' | 'register'>(initialView);
+  const [view, setView] = useState<'login' | 'register' | 'forgot-password'>(initialView);
   
   const switchToLogin = () => setView('login');
   const switchToRegister = () => setView('register');
+  const switchToForgotPassword = () => setView('forgot-password');
   
   return (
     <>
@@ -26,10 +28,17 @@ const AuthModal: React.FC<AuthModalProps> = ({
         <LoginModal 
           onClose={onClose} 
           onSwitchToRegister={switchToRegister}
+          onSwitchToForgotPassword={switchToForgotPassword}
+          language={language}
+        />
+      ) : view === 'register' ? (
+        <RegisterModal 
+          onClose={onClose} 
+          onSwitchToLogin={switchToLogin}
           language={language}
         />
       ) : (
-        <RegisterModal 
+        <ForgotPasswordModal 
           onClose={onClose} 
           onSwitchToLogin={switchToLogin}
           language={language}
