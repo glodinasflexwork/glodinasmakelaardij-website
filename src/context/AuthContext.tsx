@@ -150,18 +150,37 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const data = await response.json();
       
       if (!response.ok) {
-        throw new Error(data.error || 'Login failed');
+        throw new Error(data.message || 'Login failed');
       }
       
-      // Save tokens to localStorage
-      localStorage.setItem('accessToken', data.access_token);
-      localStorage.setItem('refreshToken', data.refresh_token);
+      // Save tokens to localStorage (using the correct field names from our API)
+      localStorage.setItem('accessToken', data.token);
+      localStorage.setItem('refreshToken', data.refreshToken);
       
-      // Set user data
-      setUser(data.user);
+      // Fetch user profile after successful login
+      const profileResponse = await fetch(`${API_URL}/api/users/profile`, {
+        headers: {
+          'Authorization': `Bearer ${data.token}`
+        }
+      });
+      
+      if (profileResponse.ok) {
+        const profileData = await profileResponse.json();
+        setUser(profileData.user);
+      } else {
+        // If profile fetch fails, still consider login successful but without user data
+        console.warn('Could not fetch user profile after login');
+        setUser({
+          id: 0,
+          username: email.split('@')[0],
+          email: email,
+          is_verified: true
+        });
+      }
     } catch (err: any) {
       setError(err.message || 'An error occurred during login');
       console.error('Login error:', err);
+      throw err;
     } finally {
       setIsLoading(false);
     }
