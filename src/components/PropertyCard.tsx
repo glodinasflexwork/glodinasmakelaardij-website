@@ -7,6 +7,7 @@ import { Heart, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useComparison } from '@/context/ComparisonContext';
 import { Checkbox } from '@/components/ui/checkbox';
+import { useAuth } from '@/context/AuthContext';
 
 // Define the property type
 interface Property {
@@ -35,52 +36,86 @@ interface PropertyCardProps {
 
 const PropertyCard: React.FC<PropertyCardProps> = ({ property, language = 'nl' }) => {
   const { selectedPropertyIds, addToComparison, removeFromComparison } = useComparison();
+  const { user } = useAuth();
   const isSelected = selectedPropertyIds.includes(property.id);
   const [isSaved, setIsSaved] = useState(false);
 
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 
+    (process.env.NODE_ENV === 'production' 
+      ? 'https://api.glodinasmakelaardij.nl' 
+      : 'http://localhost:5000');
+
   // Check if property is saved on component mount
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('savedProperties');
-      if (saved) {
-        try {
-          const properties = JSON.parse(saved);
-          setIsSaved(properties.some((p: Property) => p.id === property.id));
-        } catch (e) {
-          setIsSaved(false);
+    const checkSavedStatus = async () => {
+      if (!user || !user.token) return;
+      try {
+        const response = await fetch(`${API_URL}/api/saved-properties`, {
+          headers: {
+            'Authorization': `Bearer ${user.token}`,
+          },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setIsSaved(data.saved_properties.some((p: any) => p.property_id === property.id));
         }
+      } catch (error) {
+        console.error('Error checking saved status:', error);
       }
-    }
-  }, [property.id]);
+    };
+    checkSavedStatus();
+  }, [user, property.id, API_URL]);
 
   // Handle saving/removing property from favorites
-  const handleSaveToggle = () => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('savedProperties');
-      let properties: Property[] = [];
-      
-      if (saved) {
-        try {
-          properties = JSON.parse(saved);
-        } catch (e) {
-          properties = [];
-        }
-      }
+  const handleSaveToggle = async () => {
+    if (!user || !user.token) {
+      alert('Please log in to save properties.');
+      return;
+    }
 
+    try {
       if (isSaved) {
         // Remove from saved properties
-        properties = properties.filter(p => p.id !== property.id);
-        setIsSaved(false);
+        const response = await fetch(`${API_URL}/api/saved-properties/${property.id}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${user.token}`,
+          },
+        });
+        if (response.ok) {
+          setIsSaved(false);
+        } else {
+          console.error('Failed to remove property:', response.status);
+        }
       } else {
         // Add to saved properties
-        properties.push(property);
-        setIsSaved(true);
+        const response = await fetch(`${API_URL}/api/saved-properties`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${user.token}`,
+          },
+          body: JSON.stringify({
+            property_id: property.id,
+            title: property.title,
+            location: property.location,
+            price: property.price,
+            bedrooms: property.bedrooms,
+            bathrooms: property.bathrooms,
+            area: property.area,
+            images: property.images,
+            notes: property.description, // Using description as notes for now
+          }),
+        });
+        if (response.ok) {
+          setIsSaved(true);
+        } else {
+          console.error('Failed to save property:', response.status);
+        }
       }
-
-      localStorage.setItem('savedProperties', JSON.stringify(properties));
-      
-      // Dispatch custom event to update header counter
-      window.dispatchEvent(new Event('savedPropertiesUpdated'));
+    } catch (error) {
+      console.error('Error toggling saved status:', error);
     }
   };
 

@@ -34,7 +34,10 @@ interface AuthContextType {
 }
 
 // API URL - Use relative URLs for Next.js API routes
-const API_URL = '';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 
+    (process.env.NODE_ENV === 'production' 
+      ? 'https://api.glodinasmakelaardij.nl' 
+      : 'http://localhost:5000');
 
 // Create the context with default values
 export const AuthContext = createContext<AuthContextType>({

@@ -3,6 +3,8 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --primary: 220 89% 48%;
+  --primary-foreground: 0 0% 100%;
 }
 
 @theme inline {
@@ -16,6 +18,8 @@
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --primary: 220 89% 68%;
+    --primary-foreground: 0 0% 100%;
   }
 }
 
