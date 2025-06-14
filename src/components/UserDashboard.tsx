@@ -45,8 +45,8 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
   const [isLoadingSearches, setIsLoadingSearches] = useState(false);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [profileData, setProfileData] = useState({
-    first_name: user?.first_name || '',
-    last_name: user?.last_name || '',
+    firstName: user?.firstName || '',
+    lastName: user?.lastName || '',
     phone: user?.phone || '',
   });
   
@@ -244,7 +244,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center overflow-y-auto">
       <div className="bg-white rounded-lg shadow-lg max-w-4xl w-full mx-4 my-8">
         <div className="flex justify-between items-center p-4 border-b">
-          <h2 className="text-xl font-semibold">{t.welcome}, {user.first_name}</h2>
+          <h2 className="text-xl font-semibold">{t.welcome}, {user.firstName || user.username || user.email.split('@')[0]}</h2>
           <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
             <X className="h-6 w-6" />
           </button>

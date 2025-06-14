@@ -3,10 +3,10 @@ import { hashPassword, prisma, sendEmail, generateRandomToken } from '@/lib/auth
 
 export async function POST(request: Request) {
   try {
-    const { email, password, firstName, lastName, phone, username } = await request.json();
+    const { firstName, lastName, username, email, password, phone } = await request.json();
 
-    if (!email || !password) {
-      return NextResponse.json({ message: 'Email and password are required' }, { status: 400 });
+    if (!firstName || !lastName || !email || !password) {
+      return NextResponse.json({ message: 'First name, last name, email and password are required' }, { status: 400 });
     }
 
     const existingUser = await prisma.user.findUnique({ where: { email } });
@@ -21,8 +21,8 @@ export async function POST(request: Request) {
       data: {
         email,
         password: hashedPassword,
-        firstName: firstName || username || null,
-        lastName: lastName || null,
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
         phone: phone || null,
         emailVerifyToken: verificationToken,
       },
