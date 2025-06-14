@@ -3,9 +3,8 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, Phone, Home, Users, Building, Mail, Calendar, Heart, BookOpen, User, LogIn, ChevronDown, Globe } from 'lucide-react';
+import { Menu, X, Phone, Home, Users, Building, Mail, Calendar, BookOpen, User, LogIn, ChevronDown, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import SavedProperties from '@/components/SavedProperties';
 import AuthModal from '@/components/AuthModal';
 import UserDashboard from '@/components/UserDashboard';
 import GMLogo from '@/components/GMLogo';
@@ -14,11 +13,9 @@ import { useAuth } from '@/context/AuthContext';
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [showSavedProperties, setShowSavedProperties] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showUserDashboard, setShowUserDashboard] = useState(false);
   const [authView, setAuthView] = useState<'login' | 'register'>('login');
-  const [savedPropertiesCount, setSavedPropertiesCount] = useState(0);
   const [hoveredMenu, setHoveredMenu] = useState<string | null>(null);
   
   // Use useRef for timeout to avoid stale closure issues
@@ -60,57 +57,6 @@ const Header = () => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
-
-  // Load saved properties count
-  useEffect(() => {
-    const updateSavedPropertiesCount = async () => {
-      try {
-        if (isAuthenticated && user) {
-          const token = localStorage.getItem('accessToken');
-          const response = await fetch('/api/saved-properties', {
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
-          });
-          
-          if (response.ok) {
-            const data = await response.json();
-            setSavedPropertiesCount(data.saved_properties?.length || 0);
-          }
-        } else if (typeof window !== 'undefined') {
-          const saved = localStorage.getItem('savedProperties');
-          if (saved) {
-            try {
-              const properties = JSON.parse(saved);
-              setSavedPropertiesCount(Array.isArray(properties) ? properties.length : 0);
-            } catch (e) {
-              setSavedPropertiesCount(0);
-            }
-          } else {
-            setSavedPropertiesCount(0);
-          }
-        }
-      } catch (err) {
-        console.error('Error fetching saved properties count:', err);
-        setSavedPropertiesCount(0);
-      }
-    };
-
-    updateSavedPropertiesCount();
-
-    // Listen for storage changes to update count in real-time
-    const handleStorageChange = () => {
-      updateSavedPropertiesCount();
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    window.addEventListener('savedPropertiesUpdated', handleStorageChange);
-
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('savedPropertiesUpdated', handleStorageChange);
-    };
-  }, [isAuthenticated, user]);
 
   // Close mobile menu when clicking outside
   useEffect(() => {
@@ -437,20 +383,6 @@ const Header = () => {
             <div className="hidden lg:flex items-center space-x-4">
               {/* Quick Actions Group */}
               <div className="flex items-center space-x-2 bg-gray-50 rounded-lg p-1">
-                {/* Saved Properties Button */}
-                <button
-                  onClick={() => setShowSavedProperties(true)}
-                  className="relative flex items-center text-gray-600 hover:text-orange-600 transition-all duration-200 p-2 rounded-md hover:bg-white hover:shadow-sm group"
-                  aria-label={isEnglish ? 'View saved properties' : 'Bekijk opgeslagen woningen'}
-                >
-                  <Heart className="h-4 w-4 group-hover:scale-110 transition-transform duration-200" />
-                  {savedPropertiesCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
-                      {savedPropertiesCount > 99 ? '99+' : savedPropertiesCount}
-                    </span>
-                  )}
-                </button>
-
                 {/* Language Switcher */}
                 <div className="flex items-center bg-white rounded-md shadow-sm">
                   <Link
@@ -689,10 +621,6 @@ const Header = () => {
       </div>
 
       {/* Modals */}
-      {showSavedProperties && (
-        <SavedProperties onClose={() => setShowSavedProperties(false)} />
-      )}
-
       {showAuthModal && (
         <AuthModal
           isOpen={showAuthModal}
