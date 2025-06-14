@@ -5,6 +5,8 @@ import { Plus, Edit, Trash2, Eye, Upload, Save, X, Home, MapPin, Euro, Bed, Bath
 import { Button } from '@/components/ui/button';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import CloudinaryUpload from '@/components/CloudinaryUpload';
+import ImagePreview from '@/components/ImagePreview';
 
 interface Property {
   id: string;
@@ -1079,32 +1081,45 @@ export default function PropertyManagement() {
                         </p>
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-6">
                         <div>
                           <label className="block text-sm font-medium text-gray-900 mb-2">
-                            Main Image URL
+                            Property Images
                           </label>
-                          <input
-                            type="url"
-                            value={formData.mainImage || ''}
-                            onChange={(e) => handleInputChange('mainImage', e.target.value)}
-                            placeholder="https://example.com/image.jpg"
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors text-gray-900"
+                          <CloudinaryUpload
+                            onImagesChange={(images) => {
+                              handleInputChange('images', images);
+                              if (images.length > 0 && !formData.mainImage) {
+                                handleInputChange('mainImage', images[0]);
+                              }
+                            }}
+                            initialImages={formData.images || []}
+                            maxImages={15}
+                            className="mb-6"
                           />
                         </div>
 
-                        <div>
-                          <label className="block text-sm font-medium text-gray-900 mb-2">
-                            Additional Images
-                          </label>
-                          <textarea
-                            rows={3}
-                            value={formData.images?.join('\n') || ''}
-                            onChange={(e) => handleInputChange('images', e.target.value.split('\n').filter(url => url.trim()))}
-                            placeholder="Enter image URLs, one per line"
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors resize-none text-gray-900"
-                          />
-                        </div>
+                        {/* Image Preview and Management */}
+                        {formData.images && formData.images.length > 0 && (
+                          <div>
+                            <label className="block text-sm font-medium text-gray-900 mb-2">
+                              Image Preview & Management
+                            </label>
+                            <ImagePreview
+                              images={formData.images}
+                              onImagesChange={(images) => {
+                                handleInputChange('images', images);
+                                if (images.length > 0) {
+                                  handleInputChange('mainImage', images[0]);
+                                } else {
+                                  handleInputChange('mainImage', '');
+                                }
+                              }}
+                              selectedImage={formData.mainImage}
+                              onImageSelect={(imageUrl) => handleInputChange('mainImage', imageUrl)}
+                            />
+                          </div>
+                        )}
                       </div>
                     </div>
                   )}
