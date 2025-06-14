@@ -52,13 +52,33 @@ export function verifyRefreshToken(token: string): { userId: string } | null {
   }
 }
 
-// Email sending function (placeholder - implement with your email service)
+// Email sending function with Mailtrap integration
 export async function sendEmail(to: string, subject: string, html: string): Promise<boolean> {
   try {
-    // TODO: Implement email sending with Mailtrap or your preferred service
-    console.log(`Email would be sent to: ${to}`);
-    console.log(`Subject: ${subject}`);
-    console.log(`HTML: ${html}`);
+    const nodemailer = require('nodemailer');
+    
+    // Create transporter with Mailtrap SMTP settings
+    const transporter = nodemailer.createTransporter({
+      host: 'live.smtp.mailtrap.io',
+      port: 587,
+      secure: false, // true for 465, false for other ports
+      auth: {
+        user: 'api',
+        pass: process.env.MAILTRAP_API_TOKEN || ''
+      }
+    });
+
+    // Email options
+    const mailOptions = {
+      from: process.env.MAILTRAP_FROM_EMAIL || 'noreply@glodinasmakelaardij.nl',
+      to: to,
+      subject: subject,
+      html: html
+    };
+
+    // Send email
+    const info = await transporter.sendMail(mailOptions);
+    console.log('Email sent successfully:', info.messageId);
     return true;
   } catch (error) {
     console.error('Email sending error:', error);
