@@ -73,7 +73,6 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
               alt="Main property image"
               fill
               className="object-cover"
-              unoptimized={true}
             />
             
             {/* Main Image Controls */}
@@ -137,7 +136,6 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
                     alt={`Property image ${actualIndex + 1}`}
                     fill
                     className="object-cover"
-                    unoptimized={true}
                   />
                   
                   {/* Image Controls */}
@@ -222,7 +220,6 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
                 width={800}
                 height={600}
                 className="object-contain max-w-full max-h-full"
-                unoptimized={true}
               />
             </div>
           </div>
