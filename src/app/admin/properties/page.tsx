@@ -677,7 +677,7 @@ export default function PropertyManagement() {
                     <div className="space-y-6">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="md:col-span-2">
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-900 mb-2">
                             <Home className="w-4 h-4 inline mr-2" />
                             Property Title *
                           </label>
@@ -695,7 +695,7 @@ export default function PropertyManagement() {
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-900 mb-2">
                             <MapPin className="w-4 h-4 inline mr-2" />
                             Location *
                           </label>
@@ -713,7 +713,7 @@ export default function PropertyManagement() {
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-900 mb-2">
                             Neighborhood
                           </label>
                           <select
@@ -731,7 +731,7 @@ export default function PropertyManagement() {
                         </div>
 
                         <div className="md:col-span-2">
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-900 mb-2">
                             <Euro className="w-4 h-4 inline mr-2" />
                             Price *
                           </label>
@@ -773,7 +773,7 @@ export default function PropertyManagement() {
                         </div>
 
                         <div className="md:col-span-2">
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-900 mb-2">
                             Original Price
                           </label>
                           <div className="grid grid-cols-2 gap-3">
@@ -813,7 +813,7 @@ export default function PropertyManagement() {
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-900 mb-2">
                             <Square className="w-4 h-4 inline mr-2" />
                             Size *
                           </label>
@@ -838,7 +838,7 @@ export default function PropertyManagement() {
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-900 mb-2">
                             Status
                           </label>
                           <select
@@ -854,7 +854,7 @@ export default function PropertyManagement() {
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-900 mb-2">
                             <Zap className="w-4 h-4 inline mr-2" />
                             Energy Label
                           </label>
@@ -877,7 +877,7 @@ export default function PropertyManagement() {
                     <div className="space-y-6">
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-900 mb-2">
                             <Bed className="w-4 h-4 inline mr-2" />
                             Bedrooms *
                           </label>
@@ -895,7 +895,7 @@ export default function PropertyManagement() {
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-gray-900 mb-2">
                             <Bath className="w-4 h-4 inline mr-2" />
                             Bathrooms *
                           </label>

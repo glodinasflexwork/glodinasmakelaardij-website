@@ -204,21 +204,21 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, language = 'nl' }
       
       <div className="p-4">
         {/* Property Title */}
-        <h3 className="font-semibold text-lg mb-1">{property.title}</h3>
+        <h3 className="font-semibold text-lg text-gray-900 mb-1">{property.title}</h3>
         
         {/* Location */}
-        <p className="text-gray-600 text-sm mb-2">{property.location}</p>
+        <p className="text-gray-900 text-sm font-medium mb-2">{property.location}</p>
         
         {/* Price */}
         <div className="mb-3">
           <span className="font-semibold text-orange-600">{property.price}</span>
           {property.originalPrice && (
-            <span className="text-sm text-gray-500 line-through ml-2">{property.originalPrice}</span>
+            <span className="text-sm text-gray-600 line-through ml-2">{property.originalPrice}</span>
           )}
         </div>
         
         {/* Property Features */}
-        <div className="flex justify-between text-sm text-gray-600 mb-4">
+        <div className="flex justify-between text-sm text-gray-900 font-medium mb-4">
           <div>{property.bedrooms} slaapkamers</div>
           <div>{property.bathrooms} badkamers</div>
           <div>{property.size}</div>

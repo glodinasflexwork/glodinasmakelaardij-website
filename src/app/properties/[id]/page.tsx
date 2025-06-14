@@ -163,8 +163,8 @@ export default function PropertyDetailPage({ params }: Props) {
         {/* Property Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
           <div>
-            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-2">{property.title}</h1>
-            <div className="flex items-center text-gray-600 mb-2">
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-2">{property.title}</h1>
+            <div className="flex items-center text-gray-800 mb-2">
               <MapPin className="h-4 w-4 mr-1" />
               <span>{property.location}</span>
             </div>
@@ -252,37 +252,37 @@ export default function PropertyDetailPage({ params }: Props) {
                 <div className="flex items-center">
                   <BedDouble className="h-5 w-5 text-orange-500 mr-2" />
                   <div>
-                    <div className="text-sm text-gray-600">Slaapkamers</div>
-                    <div className="font-semibold">{property.bedrooms}</div>
+                    <div className="text-sm text-gray-900 font-medium">Slaapkamers</div>
+                    <div className="font-semibold text-gray-900">{property.bedrooms}</div>
                   </div>
                 </div>
                 <div className="flex items-center">
                   <Bath className="h-5 w-5 text-orange-500 mr-2" />
                   <div>
-                    <div className="text-sm text-gray-600">Badkamers</div>
-                    <div className="font-semibold">{property.bathrooms}</div>
+                    <div className="text-sm text-gray-900 font-medium">Badkamers</div>
+                    <div className="font-semibold text-gray-900">{property.bathrooms}</div>
                   </div>
                 </div>
                 <div className="flex items-center">
                   <Ruler className="h-5 w-5 text-orange-500 mr-2" />
                   <div>
-                    <div className="text-sm text-gray-600">Woonoppervlak</div>
-                    <div className="font-semibold">{property.size}</div>
+                    <div className="text-sm text-gray-900 font-medium">Woonoppervlak</div>
+                    <div className="font-semibold text-gray-900">{property.size}</div>
                   </div>
                 </div>
                 <div className="flex items-center">
                   <Lightbulb className="h-5 w-5 text-orange-500 mr-2" />
                   <div>
-                    <div className="text-sm text-gray-600">Energielabel</div>
-                    <div className="font-semibold">{property.energyLabel}</div>
+                    <div className="text-sm text-gray-900 font-medium">Energielabel</div>
+                    <div className="font-semibold text-gray-900">{property.energyLabel}</div>
                   </div>
                 </div>
                 {property.yearBuilt && (
                   <div className="flex items-center">
                     <Building className="h-5 w-5 text-orange-500 mr-2" />
                     <div>
-                      <div className="text-sm text-gray-600">Bouwjaar</div>
-                      <div className="font-semibold">{property.yearBuilt}</div>
+                      <div className="text-sm text-gray-900">Bouwjaar</div>
+                      <div className="font-semibold text-gray-900">{property.yearBuilt}</div>
                     </div>
                   </div>
                 )}
@@ -290,8 +290,8 @@ export default function PropertyDetailPage({ params }: Props) {
                   <div className="flex items-center">
                     <Info className="h-5 w-5 text-orange-500 mr-2" />
                     <div>
-                      <div className="text-sm text-gray-600">Oppervlakte</div>
-                      <div className="font-semibold">{property.area}m²</div>
+                      <div className="text-sm text-gray-900">Oppervlakte</div>
+                      <div className="font-semibold text-gray-900">{property.area}m²</div>
                     </div>
                   </div>
                 )}
@@ -301,7 +301,7 @@ export default function PropertyDetailPage({ params }: Props) {
             {/* Description */}
             <div className="bg-white rounded-lg border p-6 mb-8">
               <h2 className="text-xl font-bold mb-4">Beschrijving</h2>
-              <div className="text-gray-700 leading-relaxed whitespace-pre-line">
+              <div className="text-gray-900 leading-relaxed whitespace-pre-line">
                 {property.description}
               </div>
             </div>
@@ -314,7 +314,9 @@ export default function PropertyDetailPage({ params }: Props) {
                   {property.features.map((feature, index) => (
                     <div key={index} className="flex items-center">
                       <Tag className="h-4 w-4 text-orange-500 mr-2" />
-                      <span className="text-sm">{feature}</span>
+                    <div>
+                      <span className="text-sm text-gray-900">{feature}</span>
+                    </div>
                     </div>
                   ))}
                 </div>
@@ -327,32 +329,32 @@ export default function PropertyDetailPage({ params }: Props) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {property.neighborhood && (
                   <div>
-                    <div className="text-sm text-gray-600">Buurt</div>
-                    <div className="font-semibold">{property.neighborhood}</div>
+                    <div className="text-sm text-gray-900">Buurt</div>
+                    <div className="font-semibold text-gray-900">{property.neighborhood}</div>
                   </div>
                 )}
                 {property.heating && (
                   <div>
-                    <div className="text-sm text-gray-600">Verwarming</div>
-                    <div className="font-semibold">{property.heating}</div>
+                    <div className="text-sm text-gray-900">Verwarming</div>
+                    <div className="font-semibold text-gray-900">{property.heating}</div>
                   </div>
                 )}
                 {property.parking && (
                   <div>
-                    <div className="text-sm text-gray-600">Parkeren</div>
-                    <div className="font-semibold">{property.parking}</div>
+                    <div className="text-sm text-gray-900">Parkeren</div>
+                    <div className="font-semibold text-gray-900">{property.parking}</div>
                   </div>
                 )}
                 {property.garden && (
                   <div>
-                    <div className="text-sm text-gray-600">Tuin</div>
-                    <div className="font-semibold">{property.garden}</div>
+                    <div className="text-sm text-gray-900">Tuin</div>
+                    <div className="font-semibold text-gray-900">{property.garden}</div>
                   </div>
                 )}
                 {property.plotSize && property.plotSize > 0 && (
                   <div>
-                    <div className="text-sm text-gray-600">Perceeloppervlakte</div>
-                    <div className="font-semibold">{property.plotSize}m²</div>
+                    <div className="text-sm text-gray-900">Perceeloppervlakte</div>
+                    <div className="font-semibold text-gray-900">{property.plotSize}m²</div>
                   </div>
                 )}
               </div>
