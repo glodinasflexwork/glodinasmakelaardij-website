@@ -8,12 +8,14 @@ import { X, Eye, EyeOff, Loader2 } from 'lucide-react';
 interface LoginModalProps {
   onClose: () => void;
   onSwitchToRegister: () => void;
+  onSwitchToForgotPassword: () => void;
   language?: 'nl' | 'en';
 }
 
 const LoginModal: React.FC<LoginModalProps> = ({ 
   onClose, 
   onSwitchToRegister,
+  onSwitchToForgotPassword,
   language = 'nl' 
 }) => {
   const { login, error, clearError, isLoading } = useAuth();
@@ -91,7 +93,8 @@ const LoginModal: React.FC<LoginModalProps> = ({
     if (validateForm()) {
       try {
         await login(email, password);
-        // If login is successful, the AuthContext will update and the modal will be closed by the parent component
+        // Close modal on successful login
+        onClose();
       } catch (err) {
         // Error is handled by the AuthContext
       }
@@ -175,9 +178,12 @@ const LoginModal: React.FC<LoginModalProps> = ({
           </form>
           
           <div className="mt-4 text-center">
-            <a href="/forgot-password" className="text-sm text-green-600 hover:text-green-700">
+            <button 
+              onClick={onSwitchToForgotPassword}
+              className="text-sm text-green-600 hover:text-green-700"
+            >
               {t.forgotPassword}
-            </a>
+            </button>
           </div>
           
           <div className="mt-6 text-center border-t pt-4">

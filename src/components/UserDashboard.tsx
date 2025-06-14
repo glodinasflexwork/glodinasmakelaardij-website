@@ -180,11 +180,17 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
     if (!user) return;
     
     try {
-      const response = await fetch(`${API_URL}/api/users/profile`, {
+      const token = localStorage.getItem('accessToken');
+      if (!token) {
+        console.error('No access token found');
+        return;
+      }
+
+      const response = await fetch(`/api/users/profile`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${user.token}`
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(profileData)
       });
@@ -193,11 +199,13 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
         const data = await response.json();
         updateUser({
           ...user,
-          first_name: profileData.first_name,
-          last_name: profileData.last_name,
+          firstName: profileData.firstName,
+          lastName: profileData.lastName,
           phone: profileData.phone
         });
         setIsEditingProfile(false);
+      } else {
+        console.error('Failed to update profile:', response.status);
       }
     } catch (error) {
       console.error('Error updating profile:', error);
@@ -316,8 +324,8 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
                       <label className="block text-sm font-medium text-gray-700">{t.firstName}</label>
                       <input
                         type="text"
-                        value={profileData.first_name}
-                        onChange={(e) => setProfileData({...profileData, first_name: e.target.value})}
+                        value={profileData.firstName}
+                        onChange={(e) => setProfileData({...profileData, firstName: e.target.value})}
                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm"
                       />
                     </div>
@@ -325,8 +333,8 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
                       <label className="block text-sm font-medium text-gray-700">{t.lastName}</label>
                       <input
                         type="text"
-                        value={profileData.last_name}
-                        onChange={(e) => setProfileData({...profileData, last_name: e.target.value})}
+                        value={profileData.lastName}
+                        onChange={(e) => setProfileData({...profileData, lastName: e.target.value})}
                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm"
                       />
                     </div>
@@ -363,11 +371,11 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <p className="text-sm text-gray-500">{t.firstName}</p>
-                        <p>{user.first_name}</p>
+                        <p>{user.firstName}</p>
                       </div>
                       <div>
                         <p className="text-sm text-gray-500">{t.lastName}</p>
-                        <p>{user.last_name}</p>
+                        <p>{user.lastName}</p>
                       </div>
                       <div>
                         <p className="text-sm text-gray-500">{t.email}</p>
