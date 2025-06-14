@@ -63,6 +63,10 @@ export default function PropertyManagement() {
   const [isDirty, setIsDirty] = useState(false);
   const [priceAmount, setPriceAmount] = useState('');
   const [priceType, setPriceType] = useState('k.k.');
+  const [originalPriceAmount, setOriginalPriceAmount] = useState('');
+  const [originalPriceType, setOriginalPriceType] = useState('k.k.');
+  const [sizeNumber, setSizeNumber] = useState(0);
+  const [originalPriceTypeManuallySet, setOriginalPriceTypeManuallySet] = useState(false);
 
   // Industry standard price types
   const priceTypes = [
@@ -202,15 +206,49 @@ export default function PropertyManagement() {
         setPriceType(priceMatch[2].trim());
       }
     }
+    if (editingProperty && editingProperty.originalPrice) {
+      const originalPriceMatch = editingProperty.originalPrice.match(/€([\d.]+)\s*(.+)/);
+      if (originalPriceMatch) {
+        setOriginalPriceAmount(originalPriceMatch[1]);
+        setOriginalPriceType(originalPriceMatch[2].trim());
+      }
+    }
+    if (editingProperty && editingProperty.size) {
+      const sizeMatch = editingProperty.size.match(/(\d+)/);
+      if (sizeMatch) {
+        setSizeNumber(parseInt(sizeMatch[1]));
+      }
+    }
   }, [editingProperty]);
 
-  // Update formData.price when amount or type changes
+  // Update formData when price/size values change
   useEffect(() => {
     if (priceAmount) {
       const formattedPrice = `€${priceAmount} ${priceType}`;
       setFormData(prev => ({ ...prev, price: formattedPrice }));
     }
   }, [priceAmount, priceType]);
+
+  useEffect(() => {
+    if (originalPriceAmount) {
+      const formattedOriginalPrice = `€${originalPriceAmount} ${originalPriceType}`;
+      setFormData(prev => ({ ...prev, originalPrice: formattedOriginalPrice }));
+    }
+  }, [originalPriceAmount, originalPriceType]);
+
+  // Update original price type when main price type changes (unless manually set)
+  useEffect(() => {
+    if (!originalPriceTypeManuallySet) {
+      setOriginalPriceType(priceType);
+    }
+  }, [priceType, originalPriceTypeManuallySet]);
+
+  useEffect(() => {
+    if (sizeNumber > 0) {
+      const formattedSize = `${sizeNumber}m²`;
+      setFormData(prev => ({ ...prev, size: formattedSize }));
+    }
+  }, [sizeNumber]);
 
   const fetchProperties = async () => {
     try {
@@ -369,6 +407,10 @@ export default function PropertyManagement() {
     });
     setPriceAmount('');
     setPriceType('k.k.');
+    setOriginalPriceAmount('');
+    setOriginalPriceType('k.k.');
+    setSizeNumber(0);
+    setOriginalPriceTypeManuallySet(false);
     setEditingProperty(null);
     setShowAddForm(false);
     setCurrentStep(1);
@@ -419,6 +461,17 @@ export default function PropertyManagement() {
   const handlePriceAmountChange = (value: string) => {
     const formatted = formatPrice(value);
     setPriceAmount(formatted);
+    setIsDirty(true);
+  };
+
+  const handleOriginalPriceAmountChange = (value: string) => {
+    const formatted = formatPrice(value);
+    setOriginalPriceAmount(formatted);
+    setIsDirty(true);
+  };
+
+  const handleSizeChange = (value: number) => {
+    setSizeNumber(value);
     setIsDirty(true);
   };
 
@@ -719,17 +772,44 @@ export default function PropertyManagement() {
                           )}
                         </div>
 
-                        <div>
+                        <div className="md:col-span-2">
                           <label className="block text-sm font-medium text-gray-700 mb-2">
                             Original Price
                           </label>
-                          <input
-                            type="text"
-                            value={formData.originalPrice || ''}
-                            onChange={(e) => handlePriceChange('originalPrice', e.target.value)}
-                            placeholder="475000"
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
-                          />
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>
+                              <input
+                                type="text"
+                                value={originalPriceAmount}
+                                onChange={(e) => handleOriginalPriceAmountChange(e.target.value)}
+                                placeholder="475.000"
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
+                              />
+                              <p className="text-xs text-gray-500 mt-1">Amount (without €)</p>
+                            </div>
+                            <div>
+                              <select
+                                value={originalPriceType}
+                                onChange={(e) => {
+                                  setOriginalPriceType(e.target.value);
+                                  setOriginalPriceTypeManuallySet(true);
+                                }}
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
+                              >
+                                {priceTypes.map((type) => (
+                                  <option key={type.value} value={type.value}>
+                                    {type.label}
+                                  </option>
+                                ))}
+                              </select>
+                              <p className="text-xs text-gray-500 mt-1">Price type</p>
+                            </div>
+                          </div>
+                          {originalPriceAmount && (
+                            <p className="text-sm text-green-600 mt-2 font-medium">
+                              Preview: €{originalPriceAmount} {originalPriceType}
+                            </p>
+                          )}
                         </div>
 
                         <div>
@@ -738,15 +818,22 @@ export default function PropertyManagement() {
                             Size *
                           </label>
                           <input
-                            type="text"
+                            type="number"
                             required
-                            value={formData.size || ''}
-                            onChange={(e) => handleInputChange('size', e.target.value)}
-                            placeholder="107m²"
+                            min="1"
+                            value={sizeNumber || ''}
+                            onChange={(e) => handleSizeChange(parseInt(e.target.value) || 0)}
+                            placeholder="107"
                             className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors ${
                               errors.size ? 'border-red-500' : 'border-gray-300'
                             }`}
                           />
+                          <p className="text-xs text-gray-500 mt-1">Size in m² (number only)</p>
+                          {sizeNumber > 0 && (
+                            <p className="text-sm text-green-600 mt-1 font-medium">
+                              Preview: {sizeNumber}m²
+                            </p>
+                          )}
                           {errors.size && <p className="text-red-500 text-sm mt-1">{errors.size}</p>}
                         </div>
 
