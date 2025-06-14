@@ -3,6 +3,8 @@ import { Metadata } from 'next';
 import { Calculator, TrendingUp, FileText, Award, Clock, CheckCircle, Euro, Phone, Mail, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 
 export const metadata: Metadata = {
   title: 'Woningtaxatie Den Haag | Gratis Waardebepaling | Glodinas Makelaardij',
@@ -94,6 +96,7 @@ const TaxatiePage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Header />
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-purple-900 via-purple-800 to-purple-700 text-white py-20">
         <div className="absolute inset-0 bg-black/20"></div>
@@ -280,6 +283,8 @@ const TaxatiePage = () => {
           </div>
         </div>
       </section>
+      
+      <Footer />
     </div>
   );
 };

@@ -85,6 +85,7 @@ const WoningenKopenPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <Header />
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-blue-900 via-blue-800 to-blue-700 text-white py-20">
         <div className="absolute inset-0 bg-black/20"></div>
@@ -241,6 +242,8 @@ const WoningenKopenPage = () => {
           </div>
         </div>
       </section>
+      
+      <Footer />
     </div>
   );
 };
