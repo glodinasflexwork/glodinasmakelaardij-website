@@ -14,17 +14,27 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-    --primary: 220 89% 68%;
-    --primary-foreground: 0 0% 100%;
-  }
-}
+/* Removed dark mode media query to ensure consistent light theme */
+/* This prevents system dark mode from making text barely visible */
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Ensure all text elements have proper contrast */
+* {
+  color: inherit;
+}
+
+/* Force dark text for better readability */
+.text-gray-500,
+.text-gray-600,
+.text-gray-700 {
+  color: #374151 !important; /* Darker gray for better contrast */
+}
+
+.text-gray-400 {
+  color: #6b7280 !important; /* Slightly darker for visibility */
 }
