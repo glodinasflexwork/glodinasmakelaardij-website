@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
-// Initialize Prisma Client
+// Singleton pattern for Prisma Client to prevent multiple connections
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
