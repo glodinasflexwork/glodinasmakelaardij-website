@@ -194,51 +194,27 @@ export default function PropertyDetailPage({ params }: Props) {
             Verkocht
           </div>
         )}
-        
-        {/* Property Images Gallery - Improved Layout */}
-        <div className="mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            {/* Main Image - Takes up more space */}
-            <div className="md:col-span-3 relative h-[400px] md:h-[500px] rounded-lg overflow-hidden group">
-              <Image 
-                src={property.mainImage || property.images[0] || '/images/placeholder-property.jpg'} 
-                alt={property.title}
-                fill
-                className="object-cover transition-transform duration-300 group-hover:scale-105"
-                onError={(e) => {
-                  console.error('Image failed to load:', e);
-                  e.currentTarget.src = '/images/placeholder-property.jpg';
-                }}
-              />
-              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300"></div>
-            </div>
-            
-            {/* Thumbnail Images */}
-            <div className="grid grid-cols-2 md:grid-cols-1 gap-4">
-              {property.images.slice(1, 5).map((image, index) => (
-                <div key={index} className="relative h-[120px] rounded-lg overflow-hidden group cursor-pointer">
-                  <Image 
-                    src={image || '/images/placeholder-property.jpg'} 
-                    alt={`${property.title} - Image ${index + 2}`}
-                    fill
-                    className="object-cover transition-transform duration-300 group-hover:scale-105"
-                    onError={(e) => {
-                      console.error('Thumbnail failed to load:', e);
-                      e.currentTarget.src = '/images/placeholder-property.jpg';
-                    }}
-                  />
-                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300"></div>
-                </div>
-              ))}
-              {property.images.length > 5 && (
-                <div className="relative h-[120px] rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center cursor-pointer hover:bg-gray-200 transition-colors">
-                  <div className="text-center">
-                    <div className="text-lg font-semibold text-gray-600">+{property.images.length - 5}</div>
-                    <div className="text-sm text-gray-500">meer foto's</div>
-                  </div>
-                </div>
-              )}
-            </div>
+                {/* Property Images Gallery */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          <div className="md:col-span-2 relative h-[400px] rounded-lg overflow-hidden">
+            <Image 
+              src={property.mainImage || property.images[0] || '/images/placeholder-property.jpg'} 
+              alt={property.title}
+              fill
+              className="object-cover"
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            {property.images.slice(1, 5).map((image, index) => (
+              <div key={index} className="relative h-[190px] rounded-lg overflow-hidden">
+                <Image 
+                  src={image || '/images/placeholder-property.jpg'} 
+                  alt={`${property.title} - Image ${index + 2}`}
+                  fill
+                  className="object-cover"
+                />
+              </div>
+            ))}
           </div>
         </div>
         
