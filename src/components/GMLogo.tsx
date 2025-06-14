@@ -21,6 +21,12 @@ const GMLogo: React.FC<GMLogoProps> = ({ className = '', size = 'md' }) => {
         fill
         className="object-contain"
         priority
+        unoptimized={true}
+        onError={(e) => {
+          console.error('GM Logo failed to load:', e);
+          // Fallback to text if image fails
+          e.currentTarget.style.display = 'none';
+        }}
       />
     </div>
   );

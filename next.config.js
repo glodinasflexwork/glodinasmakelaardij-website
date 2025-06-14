@@ -15,6 +15,17 @@ const nextConfig = {
   env: {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'https://api.glodinasmakelaardij.nl',
   },
+  // Configure image domains for external images
+  images: {
+    domains: [
+      'images.unsplash.com',
+      'plus.unsplash.com',
+      'api.glodinasmakelaardij.nl',
+      'glodinasmakelaardij.nl',
+      'www.glodinasmakelaardij.nl'
+    ],
+    unoptimized: false,
+  },
   // Allow CORS from the API domain in development
   async headers() {
     return [
