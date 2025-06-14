@@ -205,7 +205,6 @@ export default function PropertyDetailPage({ params }: Props) {
                 alt={property.title}
                 fill
                 className="object-cover transition-transform duration-300 group-hover:scale-105"
-                unoptimized={true}
                 onError={(e) => {
                   console.error('Image failed to load:', e);
                   e.currentTarget.src = '/images/placeholder-property.jpg';
@@ -223,7 +222,6 @@ export default function PropertyDetailPage({ params }: Props) {
                     alt={`${property.title} - Image ${index + 2}`}
                     fill
                     className="object-cover transition-transform duration-300 group-hover:scale-105"
-                    unoptimized={true}
                     onError={(e) => {
                       console.error('Thumbnail failed to load:', e);
                       e.currentTarget.src = '/images/placeholder-property.jpg';
