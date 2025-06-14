@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from 'react';
 import { Metadata } from 'next';
 import { Plus, Edit, Trash2, Eye, Upload, Save, X } from 'lucide-react';
