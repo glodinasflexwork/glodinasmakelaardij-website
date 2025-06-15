@@ -238,7 +238,7 @@ export default function PropertyDetailPage({ params }: Props) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <div className="md:col-span-2 relative h-[400px] rounded-lg overflow-hidden">
             <Image 
-              src={property.mainImage || property.images[0] || '/images/placeholder-property.jpg'} 
+              src={property.images[0] || '/images/placeholder-property.jpg'} 
               alt={property.title}
               fill
               className="object-cover"

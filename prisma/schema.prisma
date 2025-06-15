@@ -80,4 +80,26 @@ model Property {
   @@map("properties")
 }
 
+model MarketReport {
+  id            String   @id @default(cuid())
+  title         String
+  description   String?
+  quarter       String?  // Q1, Q2, Q3, Q4
+  year          Int
+  location      String   // Den Haag, Amsterdam, etc.
+  reportType    String   // Marktrapport, Jaaroverzicht, Wijkrapport, etc.
+  pdfUrl        String   // URL to the PDF file
+  coverImageUrl String?  // Optional cover image
+  isLatest      Boolean  @default(false) // Mark as latest report
+  isFeatured    Boolean  @default(false) // Featured on homepage
+  downloadCount Int      @default(0)
+  fileSize      String?  // e.g., "2.5 MB"
+  tags          String[] // e.g., ["vastgoed", "marktanalyse", "den-haag"]
+  summary       String?  // Brief summary for display
+  publishedAt   DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("market_reports")
+}
 

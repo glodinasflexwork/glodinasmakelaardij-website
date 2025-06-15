@@ -1,92 +1,99 @@
-import React from 'react';
-import { Metadata } from 'next';
-import { Download, TrendingUp, BarChart3, FileText, Calendar, MapPin, Euro, Users, Building, CheckCircle, Phone, Mail } from 'lucide-react';
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import { Download, TrendingUp, BarChart3, FileText, Calendar, MapPin, Euro, Users, Building, CheckCircle, Phone, Mail, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
-export const metadata: Metadata = {
-  title: 'Marktrapportages | Vastgoedmarkt Rapporten | Glodinas Makelaardij',
-  description: 'Download gratis marktrapportages over de vastgoedmarkt in Den Haag. Kwartaalrapporten, jaaroverzichten en wijkanalyses.',
-  keywords: 'marktrapportages, vastgoedmarkt, rapporten, Den Haag, marktanalyse, kwartaalrapport, Glodinas',
-};
+interface MarketReport {
+  id: string;
+  title: string;
+  description?: string;
+  quarter?: string;
+  year: number;
+  location: string;
+  reportType: string;
+  pdfUrl: string;
+  coverImageUrl?: string;
+  isLatest: boolean;
+  isFeatured: boolean;
+  downloadCount: number;
+  fileSize?: string;
+  tags: string[];
+  summary?: string;
+  publishedAt: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
 const MarktrapportagesPage = () => {
-  const latestReport = {
-    title: "Marktrapport Q2 2025 - Den Haag",
-    description: "Uitgebreide analyse van de vastgoedmarkt in Den Haag voor het tweede kwartaal van 2025",
-    date: "Juni 2025",
-    pages: 24,
-    highlights: [
-      "Prijsstijging van 4.2% ten opzichte van vorig jaar",
-      "Gemiddelde verkooptijd gedaald naar 28 dagen",
-      "Nieuwbouwprojecten zorgen voor meer aanbod",
-      "Duurzaamheid wordt steeds belangrijker"
-    ]
+  const [reports, setReports] = useState<MarketReport[]>([]);
+  const [latestReport, setLatestReport] = useState<MarketReport | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchReports();
+  }, []);
+
+  const fetchReports = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/market-reports');
+      if (response.ok) {
+        const data = await response.json();
+        const allReports = data.reports || [];
+        setReports(allReports);
+        
+        // Find the latest report
+        const latest = allReports.find((report: MarketReport) => report.isLatest);
+        setLatestReport(latest || allReports[0] || null);
+      } else {
+        setError('Failed to fetch reports');
+      }
+    } catch (error) {
+      console.error('Error fetching reports:', error);
+      setError('Error loading reports');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const reports = [
-    {
-      title: "Marktrapport Q2 2025 - Den Haag",
-      description: "Uitgebreide analyse van de vastgoedmarkt in Den Haag voor het tweede kwartaal van 2025",
-      date: "Juni 2025",
-      type: "Kwartaalrapport",
-      pages: 24,
-      downloads: 0,
-      featured: true,
-      filename: "Marktrapport-Q2-2025-Den-Haag.pdf"
-    },
-    {
-      title: "Jaaroverzicht 2024 - Vastgoedmarkt Den Haag",
-      description: "Complete analyse van de vastgoedmarkt ontwikkelingen in 2024",
-      date: "Januari 2025",
-      type: "Jaarrapport",
-      pages: 48,
-      downloads: 1250,
-      featured: false
-    },
-    {
-      title: "Marktrapport Q1 2025 - Den Haag",
-      description: "Kwartaalanalyse van de vastgoedmarkt in het eerste kwartaal",
-      date: "April 2025",
-      type: "Kwartaalrapport",
-      pages: 22,
-      downloads: 890
-    },
-    {
-      title: "Wijkrapport Benoordenhout 2025",
-      description: "Uitgebreide analyse van de vastgoedmarkt in Benoordenhout met prijsontwikkelingen, demografische trends en marktvooruitzichten",
-      date: "Juni 2025",
-      type: "Wijkrapport",
-      pages: 28,
-      downloads: 750
-    },
-    {
-      title: "Huurmarkt Rapport Den Haag 2024",
-      description: "Uitgebreide analyse van de huurmarkt ontwikkelingen",
-      date: "December 2024",
-      type: "Themarapport",
-      pages: 32,
-      downloads: 1100
-    },
-    {
-      title: "Nieuwbouw Monitor Q4 2024",
-      description: "Overzicht van nieuwbouwprojecten en ontwikkelingen",
-      date: "November 2024",
-      type: "Themarapport",
-      pages: 20,
-      downloads: 720
-    },
-    {
-      title: "Marktrapport Q4 2024 - Den Haag",
-      description: "Kwartaalanalyse van het vierde kwartaal 2024",
-      date: "Oktober 2024",
-      type: "Kwartaalrapport",
-      pages: 24,
-      downloads: 980
+  const handleDownload = async (report: MarketReport) => {
+    try {
+      // Increment download count
+      await fetch(`/api/market-reports/${report.id}/download`, {
+        method: 'POST'
+      });
+      
+      // Open PDF in new tab
+      window.open(report.pdfUrl, '_blank');
+      
+      // Refresh reports to update download count
+      fetchReports();
+    } catch (error) {
+      console.error('Error downloading report:', error);
+      // Still open the PDF even if count update fails
+      window.open(report.pdfUrl, '_blank');
     }
-  ];
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('nl-NL', { 
+      year: 'numeric', 
+      month: 'long' 
+    });
+  };
+
+  const getReportPeriod = (report: MarketReport) => {
+    if (report.quarter) {
+      return `${report.quarter} ${report.year}`;
+    }
+    return report.year.toString();
+  };
 
   const marketStats = [
     {
@@ -161,20 +168,30 @@ const MarktrapportagesPage = () => {
             <p className="text-xl md:text-2xl mb-8 text-emerald-100 max-w-3xl mx-auto">
               Gratis toegang tot uitgebreide marktanalyses en vastgoedrapporten
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-4 text-lg">
-                <Download className="w-5 h-5 mr-2" />
-                <a href="/Marktrapport-Q2-2025-Den-Haag.pdf" download="Marktrapport-Q2-2025-Den-Haag.pdf" className="text-white no-underline">
-                  Download Laatste Rapport
-                </a>
-              </Button>
-              <Link href="/contact">
-                <Button size="lg" className="bg-white text-emerald-700 hover:bg-gray-100 px-8 py-4 text-lg">
-                  <Mail className="w-5 h-5 mr-2" />
-                  Vraag Maatwerk Rapport
+            
+            {loading ? (
+              <div className="flex justify-center">
+                <Loader2 className="w-8 h-8 animate-spin" />
+              </div>
+            ) : (
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button 
+                  size="lg" 
+                  className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-4 text-lg"
+                  onClick={() => latestReport && handleDownload(latestReport)}
+                  disabled={!latestReport}
+                >
+                  <Download className="w-5 h-5 mr-2" />
+                  {latestReport ? 'Download Laatste Rapport' : 'Geen rapporten beschikbaar'}
                 </Button>
-              </Link>
-            </div>
+                <Link href="/contact">
+                  <Button size="lg" className="bg-white text-emerald-700 hover:bg-gray-100 px-8 py-4 text-lg">
+                    <Mail className="w-5 h-5 mr-2" />
+                    Vraag Maatwerk Rapport
+                  </Button>
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -306,81 +323,115 @@ const MarktrapportagesPage = () => {
             </p>
           </div>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {reports.map((report, index) => (
-              <div key={index} className={`bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 ${
-                report.featured ? 'ring-2 ring-emerald-500' : ''
-              }`}>
-                {report.featured && (
-                  <div className="bg-emerald-500 text-white text-sm font-medium px-3 py-1 rounded-full text-center mb-4">
-                    Meest Populair
+          {loading ? (
+            <div className="text-center py-12">
+              <Loader2 className="w-12 h-12 animate-spin mx-auto text-emerald-600" />
+              <p className="text-gray-600 mt-4">Rapporten laden...</p>
+            </div>
+          ) : error ? (
+            <div className="text-center py-12">
+              <p className="text-red-600 mb-4">{error}</p>
+              <Button onClick={fetchReports} variant="outline">
+                Probeer opnieuw
+              </Button>
+            </div>
+          ) : reports.length === 0 ? (
+            <div className="text-center py-12">
+              <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+              <p className="text-gray-600">Geen rapporten beschikbaar</p>
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {reports.map((report) => (
+                <div key={report.id} className={`bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 ${
+                  report.isFeatured ? 'ring-2 ring-emerald-500' : ''
+                }`}>
+                  {report.isFeatured && (
+                    <div className="bg-emerald-500 text-white text-sm font-medium px-3 py-1 rounded-full text-center mb-4">
+                      Uitgelicht
+                    </div>
+                  )}
+                  
+                  {report.isLatest && (
+                    <div className="bg-orange-500 text-white text-sm font-medium px-3 py-1 rounded-full text-center mb-4">
+                      Nieuwste Rapport
+                    </div>
+                  )}
+                  
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex-1">
+                      <span className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-medium">
+                        {report.reportType}
+                      </span>
+                    </div>
+                    <div className="text-right text-sm text-gray-500">
+                      {report.fileSize && <div>{report.fileSize}</div>}
+                      <div>{report.downloadCount} downloads</div>
+                    </div>
                   </div>
-                )}
-                
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex-1">
-                    <span className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-medium">
-                      {report.type}
-                    </span>
+                  
+                  <h3 className="text-xl font-semibold text-gray-900 mb-3">
+                    {report.title}
+                  </h3>
+                  
+                  <p className="text-gray-600 mb-4">
+                    {report.summary || report.description || 'Geen beschrijving beschikbaar'}
+                  </p>
+                  
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="text-sm text-gray-500">
+                      <div>{getReportPeriod(report)}</div>
+                      <div>{formatDate(report.publishedAt)}</div>
+                    </div>
+                    <div className="text-sm text-gray-500">
+                      {report.location}
+                    </div>
                   </div>
-                  <div className="text-right text-sm text-gray-500">
-                    <div>{report.pages} pagina's</div>
-                    <div>{report.downloads} downloads</div>
-                  </div>
-                </div>
-                
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                  {report.title}
-                </h3>
-                
-                <p className="text-gray-600 mb-4">
-                  {report.description}
-                </p>
-                
-                <div className="flex items-center justify-between">
-                  <div className="text-sm text-gray-500">
-                    {report.date}
-                  </div>
-                  <Button variant="outline" size="sm">
+                  
+                  {/* Tags */}
+                  {report.tags && report.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mb-4">
+                      {report.tags.slice(0, 3).map((tag) => (
+                        <span key={tag} className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">
+                          {tag}
+                        </span>
+                      ))}
+                      {report.tags.length > 3 && (
+                        <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">
+                          +{report.tags.length - 3}
+                        </span>
+                      )}
+                    </div>
+                  )}
+                  
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="w-full"
+                    onClick={() => handleDownload(report)}
+                  >
                     <Download className="w-4 h-4 mr-2" />
-                    {report.title === "Marktrapport Q2 2025 - Den Haag" ? (
-                      <a href="/Marktrapport-Q2-2025-Den-Haag.pdf" download="Marktrapport-Q2-2025-Den-Haag.pdf" className="text-inherit no-underline">
-                        Download
-                      </a>
-                    ) : report.title === "Jaaroverzicht 2024 - Vastgoedmarkt Den Haag" ? (
-                      <a href="/Jaaroverzicht-2024-Professional-GM.pdf" download="Jaaroverzicht-2024-Vastgoedmarkt-Den-Haag.pdf" className="text-inherit no-underline">
-                        Download
-                      </a>
-                    ) : report.title === "Wijkrapport Benoordenhout 2025" ? (
-                      <a href="/Wijkrapport-Benoordenhout-2025-GM.pdf" download="Wijkrapport-Benoordenhout-2025.pdf" className="text-inherit no-underline">
-                        Download
-                      </a>
-                    ) : report.title === "Nieuwbouw Monitor Q4 2024" ? (
-                      <a href="/Nieuwbouw_Monitor_Q4_2024.pdf" download="Nieuwbouw-Monitor-Q4-2024.pdf" className="text-inherit no-underline">
-                        Download
-                      </a>
-                    ) : report.title === "Huurmarkt Rapport Den Haag 2024" ? (
-                      <a href="/Huurmarkt_Rapport_Den_Haag_2024.pdf" download="Huurmarkt-Rapport-Den-Haag-2024.pdf" className="text-inherit no-underline">
-                        Download
-                      </a>
-                    ) : report.title === "Marktrapport Q4 2024 - Den Haag" ? (
-                      <a href="/Marktrapport-Q4-2024-Den-Haag.pdf" download="Marktrapport-Q4-2024-Den-Haag.pdf" className="text-inherit no-underline">
-                        Download
-                      </a>
-                    ) : (
-                      "Download"
-                    )}
+                    Download Gratis
                   </Button>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
           
-          <div className="text-center mt-12">
-            <Button className="bg-emerald-600 hover:bg-emerald-700 px-8 py-3">
-              Bekijk Alle Rapporten
-            </Button>
-          </div>
+          {reports.length > 0 && (
+            <div className="text-center mt-12">
+              <p className="text-gray-600 mb-4">
+                Totaal {reports.length} rapporten beschikbaar
+              </p>
+              <Link href="/admin/market-reports">
+                <Button className="bg-emerald-600 hover:bg-emerald-700 px-8 py-3">
+                  Beheer Rapporten
+                </Button>
+              </Link>
+            </div>
+          )}
+        </div>
+      </section>
         </div>
       </section>
 

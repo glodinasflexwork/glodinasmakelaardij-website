@@ -1282,8 +1282,11 @@ export default function PropertyManagement() {
                           <CloudinaryUpload
                             onImagesChange={(images) => {
                               handleInputChange('images', images);
-                              if (images.length > 0 && !formData.mainImage) {
+                              // Always set the first image as mainImage to ensure consistency
+                              if (images.length > 0) {
                                 handleInputChange('mainImage', images[0]);
+                              } else {
+                                handleInputChange('mainImage', '');
                               }
                             }}
                             initialImages={formData.images || []}
@@ -1302,6 +1305,7 @@ export default function PropertyManagement() {
                               images={formData.images}
                               onImagesChange={(images) => {
                                 handleInputChange('images', images);
+                                // Always set the first image as mainImage to ensure consistency
                                 if (images.length > 0) {
                                   handleInputChange('mainImage', images[0]);
                                 } else {
@@ -1309,7 +1313,20 @@ export default function PropertyManagement() {
                                 }
                               }}
                               selectedImage={formData.mainImage}
-                              onImageSelect={(imageUrl) => handleInputChange('mainImage', imageUrl)}
+                              onImageSelect={(imageUrl) => {
+                                // When an image is selected, move it to the front of the array
+                                const currentImages = [...(formData.images || [])];
+                                const selectedIndex = currentImages.indexOf(imageUrl);
+                                if (selectedIndex > 0) {
+                                  // Remove the selected image from its current position
+                                  const [selectedImage] = currentImages.splice(selectedIndex, 1);
+                                  // Add it to the front
+                                  currentImages.unshift(selectedImage);
+                                  // Update both images array and mainImage
+                                  handleInputChange('images', currentImages);
+                                  handleInputChange('mainImage', selectedImage);
+                                }
+                              }}
                             />
                           </div>
                         )}
