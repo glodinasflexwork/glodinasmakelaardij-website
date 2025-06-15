@@ -110,11 +110,11 @@ const Footer = () => {
             <ul className="space-y-4">
               <li className="flex items-start">
                 <MapPin className="w-5 h-5 mr-3 mt-1 text-primary" />
-                <span>Den Haag, Nederland</span>
+                <span>Schiphol Boulevard 127<br />1118 BG Schiphol, Netherlands</span>
               </li>
               <li className="flex items-center">
                 <Phone className="w-5 h-5 mr-3 text-primary" />
-                <span>(6) 81 34 85 51</span>
+                <span>(06) 81 34 85 51</span>
               </li>
               <li className="flex items-center">
                 <Mail className="w-5 h-5 mr-3 text-primary" />
