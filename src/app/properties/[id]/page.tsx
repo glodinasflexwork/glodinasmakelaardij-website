@@ -51,6 +51,7 @@ interface Property {
   heating?: string;
   parking?: string;
   garden?: string;
+  additionalInfo?: string;
 }
 
 type Props = {
@@ -453,6 +454,14 @@ export default function PropertyDetailPage({ params }: Props) {
                   </div>
                 )}
               </div>
+              
+              {/* Custom Additional Information */}
+              {property.additionalInfo && (
+                <div className="mt-6 p-4 bg-orange-50 border border-orange-200 rounded-lg">
+                  <h3 className="text-lg font-semibold text-orange-900 mb-2">Investeerders Informatie</h3>
+                  <div className="text-gray-800 whitespace-pre-wrap">{property.additionalInfo}</div>
+                </div>
+              )}
             </div>
           </div>
           

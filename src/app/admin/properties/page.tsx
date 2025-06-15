@@ -31,6 +31,7 @@ interface Property {
   heating?: string;
   parking?: string;
   garden?: string;
+  additionalInfo?: string;
 }
 
 export default function PropertyManagement() {
@@ -59,7 +60,8 @@ export default function PropertyManagement() {
     plotSize: 0,
     heating: '',
     parking: '',
-    garden: ''
+    garden: '',
+    additionalInfo: ''
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isDirty, setIsDirty] = useState(false);
@@ -1033,6 +1035,24 @@ export default function PropertyManagement() {
                             ))}
                           </select>
                         </div>
+                      </div>
+
+                      {/* Additional Information Section */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-900 mb-2">
+                          <Home className="w-4 h-4 inline mr-2" />
+                          Aanvullende Informatie
+                        </label>
+                        <textarea
+                          value={formData.additionalInfo || ''}
+                          onChange={(e) => handleInputChange('additionalInfo', e.target.value)}
+                          placeholder="Voeg extra informatie toe voor investeerders (bijv. huurinkomsten, zittende huurder, rendement, etc.)"
+                          rows={4}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors text-gray-900 resize-vertical"
+                        />
+                        <p className="text-sm text-gray-500 mt-1">
+                          Ideaal voor investeringseigenschappen: vermeld huurinkomsten, zittende huurders, rendement, etc.
+                        </p>
                       </div>
 
                       {/* Features Section */}
