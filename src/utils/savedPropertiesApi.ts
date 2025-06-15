@@ -110,14 +110,21 @@ export async function fetchSavedProperties(): Promise<SavedProperty[]> {
 /**
  * Save a property via the API
  */
-export async function savePropertyToApi(propertyId: string): Promise<void> {
+export async function savePropertyToApi(propertyId: string, propertyData?: Partial<SavedProperty>): Promise<void> {
   try {
     const response = await fetch(`${API_BASE_URL}/saved-properties`, {
       method: 'POST',
       headers: createHeaders(),
       body: JSON.stringify({
         property_id: propertyId,
-        saved_at: new Date().toISOString()
+        title: propertyData?.title || '',
+        location: propertyData?.location || '',
+        price: propertyData?.price || '',
+        bedrooms: 0, // Default values for required fields
+        bathrooms: 0,
+        area: 0,
+        images: propertyData?.imageUrl ? [propertyData.imageUrl] : [],
+        notes: null
       }),
     });
 

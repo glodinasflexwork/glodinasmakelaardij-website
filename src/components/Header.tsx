@@ -509,23 +509,6 @@ const Header = () => {
               {/* Mobile Actions */}
               <div className="pt-4 border-t border-gray-100">
                 <div className="flex items-center justify-between px-3 py-2">
-                  <button
-                    onClick={() => setShowSavedProperties(true)}
-                    className="flex items-center text-gray-600 hover:text-orange-600 transition-colors duration-200"
-                  >
-                    <Heart className="h-5 w-5 mr-2" />
-                    <span className="text-sm font-medium">
-                      {isEnglish ? 'Saved Properties' : 'Opgeslagen Woningen'}
-                    </span>
-                    {savedPropertiesCount > 0 && (
-                      <span className="ml-2 bg-orange-500 text-white text-xs rounded-full px-2 py-1">
-                        {savedPropertiesCount}
-                      </span>
-                    )}
-                  </button>
-                </div>
-
-                <div className="flex items-center justify-between px-3 py-2">
                   <a
                     href="tel:+31681348551"
                     className="flex items-center text-gray-600 hover:text-orange-600 transition-colors duration-200"

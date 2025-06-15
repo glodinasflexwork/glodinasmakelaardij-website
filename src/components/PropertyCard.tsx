@@ -162,7 +162,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
             onClick={handleSaveToggle}
             disabled={isLoading}
             className={cn(
-              "absolute top-2 right-12 p-2 rounded-full shadow-md transition-all duration-200",
+              "absolute top-2 right-2 p-2 rounded-full shadow-md transition-all duration-200 z-20",
               "bg-white/90 hover:bg-white hover:scale-110",
               "disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100",
               isPropertySaved && "bg-red-50 hover:bg-red-100"
@@ -175,7 +175,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({
         )}
         
         {/* Compare Checkbox */}
-        <div className="absolute top-2 right-2 z-10">
+        <div className="absolute top-12 right-2 z-10">
           <div className="flex items-center gap-1 bg-white/90 rounded-full px-2 py-1 shadow-sm">
             <Checkbox 
               id={`compare-${property.id}`}

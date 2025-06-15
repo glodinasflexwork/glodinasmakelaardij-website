@@ -54,9 +54,22 @@ export async function GET(req: NextRequest) {
 
     const savedProperties = await prisma.savedProperty.findMany({
       where: { userId },
+      orderBy: { createdAt: 'desc' }
     });
 
-    return NextResponse.json({ saved_properties: savedProperties }, { status: 200 });
+    // Transform to match frontend expectations
+    const transformedProperties = savedProperties.map(prop => ({
+      property_id: prop.property_id,
+      saved_at: prop.createdAt.toISOString(),
+      property: {
+        title: prop.title,
+        price: prop.price,
+        location: prop.location,
+        images: prop.images
+      }
+    }));
+
+    return NextResponse.json({ saved_properties: transformedProperties }, { status: 200 });
   } catch (error: any) {
     if (error instanceof jwt.JsonWebTokenError) {
       return NextResponse.json({ message: 'Invalid token' }, { status: 401 });
@@ -79,17 +92,18 @@ export async function DELETE(req: NextRequest) {
     const decoded: any = jwt.verify(token, JWT_SECRET);
     const userId = decoded.userId;
 
-    const url = new URL(req.url);
-    const propertyId = url.pathname.split("/").pop();
+    // Get property_id from request body
+    const { property_id } = await req.json();
 
-    if (!propertyId) {
+    if (!property_id) {
       return NextResponse.json({ message: "Property ID is required" }, { status: 400 });
     }
 
-    await prisma.savedProperty.delete({
+    // Delete by userId and property_id combination
+    await prisma.savedProperty.deleteMany({
       where: {
-        id: propertyId,
         userId: userId,
+        property_id: property_id,
       },
     });
 
