@@ -22,7 +22,8 @@ import {
   Info,
   Building,
   Lightbulb,
-  Loader2
+  Loader2,
+  Euro
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
