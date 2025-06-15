@@ -345,6 +345,10 @@ const MarktrapportagesPage = () => {
                       <a href="/Nieuwbouw_Monitor_Q4_2024.pdf" download="Nieuwbouw-Monitor-Q4-2024.pdf" className="text-inherit no-underline">
                         Download
                       </a>
+                    ) : report.title === "Huurmarkt Rapport Den Haag 2024" ? (
+                      <a href="/Huurmarkt_Rapport_Den_Haag_2024.pdf" download="Huurmarkt-Rapport-Den-Haag-2024.pdf" className="text-inherit no-underline">
+                        Download
+                      </a>
                     ) : (
                       "Download"
                     )}
