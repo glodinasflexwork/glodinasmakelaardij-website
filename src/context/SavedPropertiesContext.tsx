@@ -156,48 +156,70 @@ export function SavedPropertiesProvider({ children }: { children: React.ReactNod
     try {
       if (isAuthenticated) {
         // Load from database
-        const properties = await retryApiOperation(() => fetchSavedProperties());
-        dispatch({ type: 'SET_SAVED_PROPERTIES', payload: properties });
+        try {
+          const properties = await retryApiOperation(() => fetchSavedProperties());
+          dispatch({ type: 'SET_SAVED_PROPERTIES', payload: properties });
+        } catch (apiError) {
+          console.warn('Failed to load from database, falling back to localStorage:', apiError);
+          // Fallback to localStorage if database fails
+          if (isLocalStorageAvailable()) {
+            const properties = getLocalStorageProperties();
+            dispatch({ type: 'SET_SAVED_PROPERTIES', payload: properties });
+          } else {
+            dispatch({ type: 'SET_SAVED_PROPERTIES', payload: [] });
+          }
+        }
         
         // Check for localStorage data to migrate
         if (isLocalStorageAvailable()) {
-          const localProperties = getLocalStorageProperties();
-          if (localProperties.length > 0) {
-            try {
-              const migrationData = preparePropertiesForMigration();
-              await migrateSavedPropertiesToApi(migrationData);
-              clearLocalStorageProperties();
-              
-              // Reload from database after migration
-              const updatedProperties = await retryApiOperation(() => fetchSavedProperties());
-              dispatch({ type: 'SET_SAVED_PROPERTIES', payload: updatedProperties });
-            } catch (migrationError) {
-              console.warn('Failed to migrate localStorage data:', migrationError);
-              // Continue with database data even if migration fails
+          try {
+            const localProperties = getLocalStorageProperties();
+            if (localProperties.length > 0) {
+              try {
+                const migrationData = preparePropertiesForMigration();
+                await migrateSavedPropertiesToApi(migrationData);
+                clearLocalStorageProperties();
+                
+                // Reload from database after migration
+                const updatedProperties = await retryApiOperation(() => fetchSavedProperties());
+                dispatch({ type: 'SET_SAVED_PROPERTIES', payload: updatedProperties });
+              } catch (migrationError) {
+                console.warn('Failed to migrate localStorage data:', migrationError);
+                // Continue with database data even if migration fails
+              }
             }
+          } catch (localError) {
+            console.warn('Error checking localStorage for migration:', localError);
           }
         }
       } else {
         // Load from localStorage
+        try {
+          if (isLocalStorageAvailable()) {
+            const properties = getLocalStorageProperties();
+            dispatch({ type: 'SET_SAVED_PROPERTIES', payload: properties });
+          } else {
+            dispatch({ type: 'SET_SAVED_PROPERTIES', payload: [] });
+          }
+        } catch (localError) {
+          console.warn('Error loading from localStorage:', localError);
+          dispatch({ type: 'SET_SAVED_PROPERTIES', payload: [] });
+        }
+      }
+    } catch (error) {
+      console.error('Error in initializeSavedProperties:', error);
+      handleError(error, 'initialize');
+      
+      // Final fallback - always set some state
+      try {
         if (isLocalStorageAvailable()) {
           const properties = getLocalStorageProperties();
           dispatch({ type: 'SET_SAVED_PROPERTIES', payload: properties });
         } else {
           dispatch({ type: 'SET_SAVED_PROPERTIES', payload: [] });
         }
-      }
-    } catch (error) {
-      handleError(error, 'initialize');
-      
-      // Fallback to localStorage if database fails
-      if (isAuthenticated && isLocalStorageAvailable()) {
-        try {
-          const properties = getLocalStorageProperties();
-          dispatch({ type: 'SET_SAVED_PROPERTIES', payload: properties });
-        } catch (localError) {
-          dispatch({ type: 'SET_SAVED_PROPERTIES', payload: [] });
-        }
-      } else {
+      } catch (fallbackError) {
+        console.error('Even fallback failed:', fallbackError);
         dispatch({ type: 'SET_SAVED_PROPERTIES', payload: [] });
       }
     } finally {
