@@ -28,13 +28,23 @@ const MarktrapportagesPage = () => {
 
   const reports = [
     {
+      title: "Marktrapport Q2 2025 - Den Haag",
+      description: "Uitgebreide analyse van de vastgoedmarkt in Den Haag voor het tweede kwartaal van 2025",
+      date: "Juni 2025",
+      type: "Kwartaalrapport",
+      pages: 24,
+      downloads: 0,
+      featured: true,
+      filename: "Marktrapport-Q2-2025-Den-Haag.pdf"
+    },
+    {
       title: "Jaaroverzicht 2024 - Vastgoedmarkt Den Haag",
       description: "Complete analyse van de vastgoedmarkt ontwikkelingen in 2024",
       date: "Januari 2025",
       type: "Jaarrapport",
       pages: 48,
       downloads: 1250,
-      featured: true
+      featured: false
     },
     {
       title: "Marktrapport Q1 2025 - Den Haag",
@@ -154,7 +164,7 @@ const MarktrapportagesPage = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-4 text-lg">
                 <Download className="w-5 h-5 mr-2" />
-                <a href="/Jaaroverzicht-2024-Professional-GM.pdf" download="Jaaroverzicht-2024-Vastgoedmarkt-Den-Haag.pdf" className="text-white no-underline">
+                <a href="/Marktrapport-Q2-2025-Den-Haag.pdf" download="Marktrapport-Q2-2025-Den-Haag.pdf" className="text-white no-underline">
                   Download Laatste Rapport
                 </a>
               </Button>
@@ -333,7 +343,11 @@ const MarktrapportagesPage = () => {
                   </div>
                   <Button variant="outline" size="sm">
                     <Download className="w-4 h-4 mr-2" />
-                    {report.title === "Jaaroverzicht 2024 - Vastgoedmarkt Den Haag" ? (
+                    {report.title === "Marktrapport Q2 2025 - Den Haag" ? (
+                      <a href="/Marktrapport-Q2-2025-Den-Haag.pdf" download="Marktrapport-Q2-2025-Den-Haag.pdf" className="text-inherit no-underline">
+                        Download
+                      </a>
+                    ) : report.title === "Jaaroverzicht 2024 - Vastgoedmarkt Den Haag" ? (
                       <a href="/Jaaroverzicht-2024-Professional-GM.pdf" download="Jaaroverzicht-2024-Vastgoedmarkt-Den-Haag.pdf" className="text-inherit no-underline">
                         Download
                       </a>
