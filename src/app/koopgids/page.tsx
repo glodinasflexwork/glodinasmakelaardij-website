@@ -176,10 +176,12 @@ const KoopgidsPage = () => {
               Alles wat u moet weten over het kopen van een woning in Den Haag
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-4 text-lg">
-                <Download className="w-5 h-5 mr-2" />
-                Download Koopgids PDF
-              </Button>
+              <a href="/Koopgids-2025-GM-Final.pdf" download="Koopgids-2025-Glodinas-Makelaardij.pdf">
+                <Button size="lg" className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-4 text-lg">
+                  <Download className="w-5 h-5 mr-2" />
+                  Download Koopgids PDF
+                </Button>
+              </a>
               <Link href="/contact">
                 <Button size="lg" className="bg-white text-indigo-700 hover:bg-gray-100 px-8 py-4 text-lg">
                   <Phone className="w-5 h-5 mr-2" />
