@@ -1,10 +1,11 @@
-'use client';
+'use client'
 
 import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import GMLogo from '@/components/GMLogo';
 import { Button } from '@/components/ui/button';
+import { useSavedProperties } from '@/context/SavedPropertiesContext';
 import { 
   Calendar, 
   Mail, 
@@ -20,10 +21,12 @@ import {
   ArrowLeft,
   Info,
   Building,
-  Lightbulb
+  Lightbulb,
+  Loader2
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { cn } from '@/lib/utils';
 
 interface Property {
   id: string;
@@ -58,6 +61,37 @@ export default function PropertyDetailPage({ params }: Props) {
   const [property, setProperty] = useState<Property | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // Saved properties functionality
+  const { 
+    saveProperty, 
+    unsaveProperty, 
+    isSaved, 
+    getPropertyLoadingState 
+  } = useSavedProperties();
+
+  // Helper functions for save functionality
+  const isPropertySaved = property ? isSaved(property.id) : false;
+  const isSaveLoading = property ? getPropertyLoadingState(property.id) : false;
+
+  const handleSaveToggle = async () => {
+    if (!property || isSaveLoading) return;
+
+    try {
+      if (isPropertySaved) {
+        await unsaveProperty(property.id);
+      } else {
+        await saveProperty(property.id, {
+          title: property.title,
+          price: property.price,
+          location: property.location,
+          imageUrl: property.mainImage
+        });
+      }
+    } catch (error) {
+      console.error('Failed to toggle save state:', error);
+    }
+  };
 
   useEffect(() => {
     const fetchProperty = async () => {
@@ -235,24 +269,27 @@ export default function PropertyDetailPage({ params }: Props) {
           <Button 
             variant="outline" 
             size="lg" 
-            className="w-full md:w-auto"
-            onClick={() => {
-              const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
-              const isAlreadyFavorite = favorites.includes(property.id);
-              
-              if (isAlreadyFavorite) {
-                const updatedFavorites = favorites.filter((id: string) => id !== property.id);
-                localStorage.setItem('favorites', JSON.stringify(updatedFavorites));
-                alert('Woning verwijderd uit favorieten');
-              } else {
-                favorites.push(property.id);
-                localStorage.setItem('favorites', JSON.stringify(favorites));
-                alert('Woning toegevoegd aan favorieten');
-              }
-            }}
+            className={cn(
+              "w-full md:w-auto transition-all duration-200",
+              isPropertySaved 
+                ? "bg-red-50 text-red-700 border-red-200 hover:bg-red-100 hover:border-red-300" 
+                : "hover:bg-gray-50"
+            )}
+            onClick={handleSaveToggle}
+            disabled={isSaveLoading}
           >
-            <Heart className="mr-2 h-5 w-5" />
-            Opslaan
+            {isSaveLoading ? (
+              <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+            ) : (
+              <Heart className={cn(
+                "mr-2 h-5 w-5 transition-colors",
+                isPropertySaved ? "fill-current text-red-500" : ""
+              )} />
+            )}
+            {isSaveLoading 
+              ? (isPropertySaved ? 'Verwijderen...' : 'Opslaan...') 
+              : (isPropertySaved ? 'Verwijderen' : 'Opslaan')
+            }
           </Button>
           <Button 
             variant="outline" 

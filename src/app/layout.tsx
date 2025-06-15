@@ -31,9 +31,11 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <AuthProvider>
-          <ComparisonProvider>
-            {children}
-          </ComparisonProvider>
+          <SavedPropertiesProvider>
+            <ComparisonProvider>
+              {children}
+            </ComparisonProvider>
+          </SavedPropertiesProvider>
         </AuthProvider>
       </body>
     </html>

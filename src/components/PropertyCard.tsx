@@ -1,10 +1,12 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Heart, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useComparison } from '@/context/ComparisonContext';
+import { useSavedProperties } from '@/context/SavedPropertiesContext';
 import { Checkbox } from '@/components/ui/checkbox';
+import { cn } from '@/lib/utils';
 
 // Define the property type
 interface Property {
@@ -29,11 +31,26 @@ interface Property {
 interface PropertyCardProps {
   property: Property;
   language?: 'nl' | 'en';
+  showSaveButton?: boolean;
 }
 
-const PropertyCard: React.FC<PropertyCardProps> = ({ property, language = 'nl' }) => {
+const PropertyCard: React.FC<PropertyCardProps> = ({ 
+  property, 
+  language = 'nl',
+  showSaveButton = true 
+}) => {
   const { selectedPropertyIds, addToComparison, removeFromComparison } = useComparison();
+  const { 
+    saveProperty, 
+    unsaveProperty, 
+    isSaved, 
+    getPropertyLoadingState,
+    error 
+  } = useSavedProperties();
+  
   const isSelected = selectedPropertyIds.includes(property.id);
+  const isPropertySaved = isSaved(property.id);
+  const isLoading = getPropertyLoadingState(property.id);
 
   // Translations
   const translations = {
@@ -42,12 +59,22 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, language = 'nl' }
       underOffer: 'Onder Bod',
       viewProperty: 'Bekijk Woning',
       compare: 'Vergelijken',
+      saveProperty: 'Woning opslaan',
+      unsaveProperty: 'Woning verwijderen',
+      saved: 'Opgeslagen',
+      saving: 'Opslaan...',
+      removing: 'Verwijderen...',
     },
     en: {
       new: 'New',
       underOffer: 'Under Offer',
       viewProperty: 'View Property',
       compare: 'Compare',
+      saveProperty: 'Save property',
+      unsaveProperty: 'Remove property',
+      saved: 'Saved',
+      saving: 'Saving...',
+      removing: 'Removing...',
     }
   };
 
@@ -59,6 +86,49 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, language = 'nl' }
     } else {
       removeFromComparison(property.id);
     }
+  };
+
+  const handleSaveToggle = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (isLoading) return;
+
+    try {
+      if (isPropertySaved) {
+        await unsaveProperty(property.id);
+      } else {
+        await saveProperty(property.id, {
+          title: property.title,
+          price: property.price,
+          location: property.location,
+          imageUrl: property.mainImage
+        });
+      }
+    } catch (error) {
+      console.error('Failed to toggle save state:', error);
+    }
+  };
+
+  const getSaveButtonText = () => {
+    if (isLoading) {
+      return isPropertySaved ? t.removing : t.saving;
+    }
+    return isPropertySaved ? t.unsaveProperty : t.saveProperty;
+  };
+
+  const getSaveButtonIcon = () => {
+    if (isLoading) {
+      return <Loader2 className="h-4 w-4 animate-spin" />;
+    }
+    return (
+      <Heart 
+        className={cn(
+          "h-4 w-4 transition-colors",
+          isPropertySaved ? "fill-current text-red-500" : "text-gray-600"
+        )} 
+      />
+    );
   };
 
   return (
@@ -84,6 +154,24 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, language = 'nl' }
           <span className="absolute top-2 left-2 bg-orange-500 text-white text-xs px-2 py-1 rounded-full">
             {t.underOffer}
           </span>
+        )}
+        
+        {/* Save Button */}
+        {showSaveButton && (
+          <button
+            onClick={handleSaveToggle}
+            disabled={isLoading}
+            className={cn(
+              "absolute top-2 right-12 p-2 rounded-full shadow-md transition-all duration-200",
+              "bg-white/90 hover:bg-white hover:scale-110",
+              "disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100",
+              isPropertySaved && "bg-red-50 hover:bg-red-100"
+            )}
+            aria-label={getSaveButtonText()}
+            title={getSaveButtonText()}
+          >
+            {getSaveButtonIcon()}
+          </button>
         )}
         
         {/* Compare Checkbox */}
@@ -127,13 +215,44 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property, language = 'nl' }
           <div>{property.size}</div>
         </div>
         
-        {/* View Property Button */}
-        <Link href={`/properties/${property.id}`}>
-          <Button variant="ctaOutline" className="w-full">
-            {t.viewProperty}
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
-        </Link>
+        {/* Action Buttons */}
+        <div className="space-y-2">
+          {/* View Property Button */}
+          <Link href={`/properties/${property.id}`}>
+            <Button variant="ctaOutline" className="w-full">
+              {t.viewProperty}
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </Link>
+          
+          {/* Save Button (Mobile/Alternative) */}
+          {showSaveButton && (
+            <button
+              onClick={handleSaveToggle}
+              disabled={isLoading}
+              className={cn(
+                "w-full flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200",
+                "border border-gray-300 hover:border-gray-400",
+                isPropertySaved 
+                  ? "bg-red-50 text-red-700 border-red-200 hover:bg-red-100 hover:border-red-300" 
+                  : "bg-white text-gray-700 hover:bg-gray-50",
+                "disabled:opacity-50 disabled:cursor-not-allowed",
+                "lg:hidden" // Hide on desktop, show on mobile
+              )}
+              aria-label={getSaveButtonText()}
+            >
+              {getSaveButtonIcon()}
+              <span>{getSaveButtonText()}</span>
+            </button>
+          )}
+        </div>
+        
+        {/* Error Message */}
+        {error && (
+          <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-md">
+            <p className="text-red-600 text-xs">{error}</p>
+          </div>
+        )}
       </div>
     </div>
   );

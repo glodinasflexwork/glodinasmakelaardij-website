@@ -2,14 +2,16 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { useSavedProperties } from '@/context/SavedPropertiesContext';
 import { Button } from '@/components/ui/button';
 import { 
   X, User, Heart, Bell, Settings, LogOut, Loader2, Home, Edit, Save, 
   ChevronRight, ChevronLeft, Search, AlertCircle, Shield, Palette,
   Download, HelpCircle, Star, Calendar, MapPin, Phone, Mail,
-  Building, TrendingUp, FileText, Archive
+  Building, TrendingUp, FileText, Archive, Trash2, ExternalLink
 } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface SavedProperty {
   id: number;
@@ -46,11 +48,18 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
   language = 'nl' 
 }) => {
   const { user, logout, updateUser, isLoading } = useAuth();
+  const { 
+    savedProperties: contextSavedProperties, 
+    getSavedCount, 
+    unsaveProperty,
+    isLoading: isSavedPropertiesLoading,
+    error: savedPropertiesError,
+    clearError
+  } = useSavedProperties();
+  
   const [activeMainSection, setActiveMainSection] = useState<MainSection>('dashboard');
   const [activeSubSection, setActiveSubSection] = useState<SubSection>('overview');
-  const [savedProperties, setSavedProperties] = useState<SavedProperty[]>([]);
   const [savedSearches, setSavedSearches] = useState<SavedSearch[]>([]);
-  const [isLoadingProperties, setIsLoadingProperties] = useState(false);
   const [isLoadingSearches, setIsLoadingSearches] = useState(false);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [profileData, setProfileData] = useState({
@@ -205,9 +214,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
   // Load data based on active section
   useEffect(() => {
     if (activeMainSection === 'properties') {
-      if (activeSubSection === 'saved') {
-        loadSavedProperties();
-      } else if (activeSubSection === 'alerts' || activeSubSection === 'searches') {
+      if (activeSubSection === 'alerts' || activeSubSection === 'searches') {
         loadSavedSearches();
       }
     }
@@ -219,26 +226,12 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
     setActiveSubSection(defaultSubsection);
   }, [activeMainSection]);
 
-  const loadSavedProperties = async () => {
-    setIsLoadingProperties(true);
-    try {
-      const token = localStorage.getItem('accessToken');
-      const response = await fetch('/api/saved-properties', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        setSavedProperties(data.saved_properties || []);
-      }
-    } catch (err) {
-      console.error('Error fetching saved properties:', err);
-    } finally {
-      setIsLoadingProperties(false);
+  // Clear saved properties errors when switching sections
+  useEffect(() => {
+    if (savedPropertiesError) {
+      clearError();
     }
-  };
+  }, [activeMainSection, activeSubSection, savedPropertiesError, clearError]);
 
   const loadSavedSearches = async () => {
     setIsLoadingSearches(true);
@@ -360,7 +353,7 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
             <Heart className="w-8 h-8 text-red-500 mr-3" />
             <div>
               <p className="text-sm text-gray-600">{t.savedProperties}</p>
-              <p className="text-2xl font-bold text-gray-900">{savedProperties.length}</p>
+              <p className="text-2xl font-bold text-gray-900">{getSavedCount()}</p>
             </div>
           </div>
         </div>
@@ -420,46 +413,105 @@ const UserDashboard: React.FC<UserDashboardProps> = ({
     </div>
   );
 
-  const renderSavedProperties = () => (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold text-gray-900">{t.savedProperties}</h2>
-        <span className="text-sm text-gray-500">{savedProperties.length} {language === 'nl' ? 'woningen' : 'properties'}</span>
-      </div>
+  const renderSavedProperties = () => {
+    // Handle remove property
+    const handleRemoveProperty = async (propertyId: string) => {
+      try {
+        await unsaveProperty(propertyId);
+      } catch (error) {
+        console.error('Failed to remove property:', error);
+      }
+    };
 
-      {isLoadingProperties ? (
-        <div className="flex items-center justify-center py-12">
-          <Loader2 className="h-8 w-8 animate-spin text-orange-500" />
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-semibold text-gray-900">{t.savedProperties}</h2>
+          <span className="text-sm text-gray-500">{getSavedCount()} {language === 'nl' ? 'woningen' : 'properties'}</span>
         </div>
-      ) : savedProperties.length === 0 ? (
-        <div className="text-center py-12 bg-gray-50 rounded-lg">
-          <Heart className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-          <p className="text-gray-500">{t.noSavedProperties}</p>
-          <button className="mt-4 bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors duration-200">
-            {t.searchProperties}
-          </button>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {savedProperties.map((property) => (
-            <div key={property.id} className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-200">
-              <div className="p-4">
-                <h3 className="font-semibold text-gray-900 mb-2">{property.title}</h3>
-                <p className="text-sm text-gray-600 mb-2">{property.location}</p>
-                <p className="text-lg font-bold text-orange-600 mb-3">{property.price}</p>
-                <div className="flex items-center justify-between text-sm text-gray-500">
-                  <span>{property.bedrooms} bed • {property.bathrooms} bath • {property.area}m²</span>
-                  <button className="text-red-500 hover:text-red-700 transition-colors duration-200">
-                    <X className="w-4 h-4" />
-                  </button>
+
+        {/* Error Message */}
+        {savedPropertiesError && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <div className="flex items-center">
+              <AlertCircle className="h-5 w-5 text-red-500 mr-2" />
+              <p className="text-red-700 text-sm">{savedPropertiesError}</p>
+              <button 
+                onClick={clearError}
+                className="ml-auto text-red-500 hover:text-red-700"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {isSavedPropertiesLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-orange-500" />
+          </div>
+        ) : contextSavedProperties.length === 0 ? (
+          <div className="text-center py-12 bg-gray-50 rounded-lg">
+            <Heart className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+            <p className="text-gray-500">{t.noSavedProperties}</p>
+            <Link href="/woningen">
+              <button className="mt-4 bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors duration-200">
+                {t.searchProperties}
+              </button>
+            </Link>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {contextSavedProperties.map((property) => (
+              <div key={property.id} className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-200">
+                {/* Property Image */}
+                {property.imageUrl && (
+                  <div className="relative h-48 w-full">
+                    <Image 
+                      src={property.imageUrl} 
+                      alt={property.title || 'Property image'}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                )}
+                
+                <div className="p-4">
+                  <h3 className="font-semibold text-gray-900 mb-2">{property.title || `Property ${property.id}`}</h3>
+                  <p className="text-sm text-gray-600 mb-2">{property.location || 'Location not available'}</p>
+                  <p className="text-lg font-bold text-orange-600 mb-3">{property.price || 'Price on request'}</p>
+                  
+                  {/* Property Details */}
+                  <div className="text-sm text-gray-500 mb-3">
+                    <p>Saved on: {new Date(property.savedAt).toLocaleDateString(language === 'nl' ? 'nl-NL' : 'en-US')}</p>
+                  </div>
+                  
+                  {/* Action Buttons */}
+                  <div className="flex items-center justify-between">
+                    <Link href={`/properties/${property.id}`}>
+                      <button className="flex items-center text-orange-600 hover:text-orange-700 transition-colors duration-200 text-sm font-medium">
+                        <ExternalLink className="w-4 h-4 mr-1" />
+                        {t.viewProperty}
+                      </button>
+                    </Link>
+                    
+                    <button 
+                      onClick={() => handleRemoveProperty(property.id)}
+                      className="flex items-center text-red-500 hover:text-red-700 transition-colors duration-200 text-sm font-medium"
+                      title={t.removeProperty}
+                    >
+                      <Trash2 className="w-4 h-4 mr-1" />
+                      {t.removeProperty}
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   const renderProfile = () => (
     <div className="space-y-6">

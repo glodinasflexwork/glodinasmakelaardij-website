@@ -1,258 +1,480 @@
-'use client';
+'use client'
 
-import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
-import { useAuth } from './AuthContext';
+import React, { createContext, useContext, useReducer, useEffect, useCallback, useRef } from 'react';
+import { useAuth } from '@/context/AuthContext';
+import { 
+  SavedPropertiesState, 
+  SavedPropertiesContextType, 
+  SavedPropertiesAction, 
+  SavedProperty,
+  SavedPropertiesError,
+  ERROR_CODES
+} from '@/types/savedProperties';
+import {
+  getLocalStorageProperties,
+  setLocalStorageProperties,
+  addPropertyToLocalStorage,
+  removePropertyFromLocalStorage,
+  clearLocalStorageProperties,
+  isPropertySavedInLocalStorage,
+  preparePropertiesForMigration,
+  isLocalStorageAvailable
+} from '@/utils/localStorage';
+import {
+  fetchSavedProperties,
+  savePropertyToApi,
+  removePropertyFromApi,
+  clearAllSavedPropertiesFromApi,
+  migrateSavedPropertiesToApi,
+  retryApiOperation
+} from '@/utils/savedPropertiesApi';
 
-// Define saved property type
-interface SavedProperty {
-  id: number;
-  property_id: number;
-  title: string;
-  location: string;
-  price: string;
-  bedrooms: number;
-  bathrooms: number;
-  area: string;
-  images: string[];
-  notes?: string;
-  saved_at: string;
-}
-
-// Define context type
-interface SavedPropertiesContextType {
-  savedProperties: SavedProperty[];
-  isSaved: (propertyId: number) => boolean;
-  saveProperty: (property: any) => Promise<void>;
-  removeProperty: (propertyId: number) => Promise<void>;
-  getSavedCount: () => number;
-  isLoading: boolean;
-}
-
-// Create the context
-export const SavedPropertiesContext = createContext<SavedPropertiesContextType>({
+// Initial state
+const initialState: SavedPropertiesState = {
   savedProperties: [],
-  isSaved: () => false,
-  saveProperty: async () => {},
-  removeProperty: async () => {},
-  getSavedCount: () => 0,
   isLoading: false,
-});
+  error: null,
+  isInitialized: false,
+};
 
-// Create a provider component
-export const SavedPropertiesProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [savedProperties, setSavedProperties] = useState<SavedProperty[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const { user, isAuthenticated } = useAuth();
+// Reducer for state management
+function savedPropertiesReducer(state: SavedPropertiesState, action: SavedPropertiesAction): SavedPropertiesState {
+  switch (action.type) {
+    case 'SET_LOADING':
+      return {
+        ...state,
+        isLoading: action.payload,
+      };
 
-  // Load saved properties on mount and when auth state changes
-  useEffect(() => {
-    loadSavedProperties();
-  }, [user, isAuthenticated]);
+    case 'SET_ERROR':
+      return {
+        ...state,
+        error: action.payload,
+        isLoading: false,
+      };
 
-  // Load saved properties from database or localStorage
-  const loadSavedProperties = async () => {
-    setIsLoading(true);
+    case 'SET_SAVED_PROPERTIES':
+      return {
+        ...state,
+        savedProperties: action.payload,
+        isLoading: false,
+        error: null,
+      };
+
+    case 'ADD_PROPERTY':
+      return {
+        ...state,
+        savedProperties: [...state.savedProperties, action.payload],
+        isLoading: false,
+        error: null,
+      };
+
+    case 'REMOVE_PROPERTY':
+      return {
+        ...state,
+        savedProperties: state.savedProperties.filter(p => p.id !== action.payload),
+        isLoading: false,
+        error: null,
+      };
+
+    case 'CLEAR_ALL':
+      return {
+        ...state,
+        savedProperties: [],
+        isLoading: false,
+        error: null,
+      };
+
+    case 'SET_INITIALIZED':
+      return {
+        ...state,
+        isInitialized: true,
+      };
+
+    default:
+      return state;
+  }
+}
+
+// Create context
+const SavedPropertiesContext = createContext<SavedPropertiesContextType | undefined>(undefined);
+
+// Property loading states (for individual property operations)
+interface PropertyLoadingStates {
+  [propertyId: string]: boolean;
+}
+
+// Provider component
+export function SavedPropertiesProvider({ children }: { children: React.ReactNode }) {
+  const [state, dispatch] = useReducer(savedPropertiesReducer, initialState);
+  const { isAuthenticated, user } = useAuth();
+  const [propertyLoadingStates, setPropertyLoadingStates] = React.useState<PropertyLoadingStates>({});
+  const lastOperationRef = useRef<(() => Promise<void>) | null>(null);
+  const initializationRef = useRef<boolean>(false);
+
+  // Set property loading state
+  const setPropertyLoading = useCallback((propertyId: string, loading: boolean) => {
+    setPropertyLoadingStates(prev => ({
+      ...prev,
+      [propertyId]: loading
+    }));
+  }, []);
+
+  // Clear property loading state
+  const clearPropertyLoading = useCallback((propertyId: string) => {
+    setPropertyLoadingStates(prev => {
+      const newState = { ...prev };
+      delete newState[propertyId];
+      return newState;
+    });
+  }, []);
+
+  // Error handling utility
+  const handleError = useCallback((error: unknown, operation: string) => {
+    console.error(`SavedProperties ${operation} error:`, error);
+    
+    let errorMessage = `Failed to ${operation}`;
+    
+    if (error instanceof SavedPropertiesError) {
+      errorMessage = error.message;
+    } else if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+    
+    dispatch({ type: 'SET_ERROR', payload: errorMessage });
+  }, []);
+
+  // Initialize saved properties
+  const initializeSavedProperties = useCallback(async () => {
+    if (initializationRef.current) {
+      return;
+    }
+    
+    initializationRef.current = true;
+    dispatch({ type: 'SET_LOADING', payload: true });
+
     try {
-      if (isAuthenticated && user) {
+      if (isAuthenticated) {
         // Load from database
-        const token = localStorage.getItem('accessToken');
-        if (token) {
-          const response = await fetch('/api/saved-properties', {
-            headers: {
-              'Authorization': `Bearer ${token}`,
-            },
-          });
-          
-          if (response.ok) {
-            const data = await response.json();
-            setSavedProperties(data.saved_properties || []);
+        const properties = await retryApiOperation(() => fetchSavedProperties());
+        dispatch({ type: 'SET_SAVED_PROPERTIES', payload: properties });
+        
+        // Check for localStorage data to migrate
+        if (isLocalStorageAvailable()) {
+          const localProperties = getLocalStorageProperties();
+          if (localProperties.length > 0) {
+            try {
+              const migrationData = preparePropertiesForMigration();
+              await migrateSavedPropertiesToApi(migrationData);
+              clearLocalStorageProperties();
+              
+              // Reload from database after migration
+              const updatedProperties = await retryApiOperation(() => fetchSavedProperties());
+              dispatch({ type: 'SET_SAVED_PROPERTIES', payload: updatedProperties });
+            } catch (migrationError) {
+              console.warn('Failed to migrate localStorage data:', migrationError);
+              // Continue with database data even if migration fails
+            }
           }
         }
       } else {
         // Load from localStorage
-        const localSaved = localStorage.getItem('savedProperties');
-        if (localSaved) {
-          const parsed = JSON.parse(localSaved);
-          setSavedProperties(parsed);
+        if (isLocalStorageAvailable()) {
+          const properties = getLocalStorageProperties();
+          dispatch({ type: 'SET_SAVED_PROPERTIES', payload: properties });
+        } else {
+          dispatch({ type: 'SET_SAVED_PROPERTIES', payload: [] });
         }
       }
     } catch (error) {
-      console.error('Error loading saved properties:', error);
+      handleError(error, 'initialize');
+      
+      // Fallback to localStorage if database fails
+      if (isAuthenticated && isLocalStorageAvailable()) {
+        try {
+          const properties = getLocalStorageProperties();
+          dispatch({ type: 'SET_SAVED_PROPERTIES', payload: properties });
+        } catch (localError) {
+          dispatch({ type: 'SET_SAVED_PROPERTIES', payload: [] });
+        }
+      } else {
+        dispatch({ type: 'SET_SAVED_PROPERTIES', payload: [] });
+      }
     } finally {
-      setIsLoading(false);
+      dispatch({ type: 'SET_INITIALIZED' });
     }
-  };
+  }, [isAuthenticated, handleError]);
 
-  // Check if a property is saved
-  const isSaved = (propertyId: number): boolean => {
-    return savedProperties.some(p => p.property_id === propertyId);
-  };
+  // Save property
+  const saveProperty = useCallback(async (propertyId: string, propertyData?: Partial<SavedProperty>): Promise<boolean> => {
+    if (!propertyId) {
+      handleError(new Error('Property ID is required'), 'save property');
+      return false;
+    }
 
-  // Save a property
-  const saveProperty = async (property: any) => {
-    try {
-      const savedProperty: SavedProperty = {
-        id: Date.now(), // Temporary ID for localStorage
-        property_id: property.id,
-        title: property.title,
-        location: property.location,
-        price: property.price,
-        bedrooms: property.bedrooms || 0,
-        bathrooms: property.bathrooms || 0,
-        area: property.area || property.size || '',
-        images: property.images || [],
-        notes: property.description || '',
-        saved_at: new Date().toISOString(),
-      };
+    setPropertyLoading(propertyId, true);
+    
+    const property: SavedProperty = {
+      id: propertyId,
+      savedAt: new Date().toISOString(),
+      ...propertyData
+    };
 
-      if (isAuthenticated && user) {
-        // Save to database
-        const token = localStorage.getItem('accessToken');
-        if (token) {
-          const response = await fetch('/api/saved-properties', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`,
-            },
-            body: JSON.stringify({
-              property_id: property.id,
-              title: property.title,
-              location: property.location,
-              price: property.price,
-              bedrooms: property.bedrooms || 0,
-              bathrooms: property.bathrooms || 0,
-              area: property.area || property.size || '',
-              images: property.images || [],
-              notes: property.description || '',
-            }),
-          });
+    // Optimistic update
+    dispatch({ type: 'ADD_PROPERTY', payload: property });
 
-          if (response.ok) {
-            const data = await response.json();
-            setSavedProperties(prev => [...prev, data.saved_property]);
-          } else {
-            throw new Error('Failed to save to database');
-          }
-        }
+    const operation = async () => {
+      if (isAuthenticated) {
+        await savePropertyToApi(propertyId);
       } else {
-        // Save to localStorage
-        const newSavedProperties = [...savedProperties, savedProperty];
-        setSavedProperties(newSavedProperties);
-        localStorage.setItem('savedProperties', JSON.stringify(newSavedProperties));
-      }
-    } catch (error) {
-      console.error('Error saving property:', error);
-      throw error;
-    }
-  };
-
-  // Remove a property
-  const removeProperty = async (propertyId: number) => {
-    try {
-      if (isAuthenticated && user) {
-        // Remove from database
-        const token = localStorage.getItem('accessToken');
-        if (token) {
-          const response = await fetch(`/api/saved-properties/${propertyId}`, {
-            method: 'DELETE',
-            headers: {
-              'Authorization': `Bearer ${token}`,
-            },
-          });
-
-          if (response.ok) {
-            setSavedProperties(prev => prev.filter(p => p.property_id !== propertyId));
-          } else {
-            throw new Error('Failed to remove from database');
-          }
-        }
-      } else {
-        // Remove from localStorage
-        const newSavedProperties = savedProperties.filter(p => p.property_id !== propertyId);
-        setSavedProperties(newSavedProperties);
-        localStorage.setItem('savedProperties', JSON.stringify(newSavedProperties));
-      }
-    } catch (error) {
-      console.error('Error removing property:', error);
-      throw error;
-    }
-  };
-
-  // Get saved properties count
-  const getSavedCount = (): number => {
-    return savedProperties.length;
-  };
-
-  // Migrate localStorage saved properties to database when user logs in
-  useEffect(() => {
-    const migrateLocalStorageToDatabase = async () => {
-      if (isAuthenticated && user) {
-        const localSaved = localStorage.getItem('savedProperties');
-        if (localSaved) {
-          try {
-            const localProperties = JSON.parse(localSaved);
-            const token = localStorage.getItem('accessToken');
-            
-            if (localProperties.length > 0 && token) {
-              // Migrate each property
-              for (const property of localProperties) {
-                try {
-                  await fetch('/api/saved-properties', {
-                    method: 'POST',
-                    headers: {
-                      'Content-Type': 'application/json',
-                      'Authorization': `Bearer ${token}`,
-                    },
-                    body: JSON.stringify({
-                      property_id: property.property_id,
-                      title: property.title,
-                      location: property.location,
-                      price: property.price,
-                      bedrooms: property.bedrooms,
-                      bathrooms: property.bathrooms,
-                      area: property.area,
-                      images: property.images,
-                      notes: property.notes,
-                    }),
-                  });
-                } catch (err) {
-                  console.error('Error migrating property:', err);
-                }
-              }
-              
-              // Clear localStorage after migration
-              localStorage.removeItem('savedProperties');
-              
-              // Reload saved properties from database
-              await loadSavedProperties();
-            }
-          } catch (err) {
-            console.error('Error migrating saved properties:', err);
-          }
-        }
+        addPropertyToLocalStorage(property);
       }
     };
 
-    migrateLocalStorageToDatabase();
-  }, [isAuthenticated, user]);
+    lastOperationRef.current = operation;
+
+    try {
+      await retryApiOperation(operation);
+      clearPropertyLoading(propertyId);
+      return true;
+    } catch (error) {
+      // Revert optimistic update
+      dispatch({ type: 'REMOVE_PROPERTY', payload: propertyId });
+      handleError(error, 'save property');
+      clearPropertyLoading(propertyId);
+      return false;
+    }
+  }, [isAuthenticated, handleError, setPropertyLoading, clearPropertyLoading]);
+
+  // Unsave property
+  const unsaveProperty = useCallback(async (propertyId: string): Promise<boolean> => {
+    if (!propertyId) {
+      handleError(new Error('Property ID is required'), 'unsave property');
+      return false;
+    }
+
+    setPropertyLoading(propertyId, true);
+
+    // Store the property for potential rollback
+    const propertyToRemove = state.savedProperties.find(p => p.id === propertyId);
+    
+    // Optimistic update
+    dispatch({ type: 'REMOVE_PROPERTY', payload: propertyId });
+
+    const operation = async () => {
+      if (isAuthenticated) {
+        await removePropertyFromApi(propertyId);
+      } else {
+        removePropertyFromLocalStorage(propertyId);
+      }
+    };
+
+    lastOperationRef.current = operation;
+
+    try {
+      await retryApiOperation(operation);
+      clearPropertyLoading(propertyId);
+      return true;
+    } catch (error) {
+      // Revert optimistic update
+      if (propertyToRemove) {
+        dispatch({ type: 'ADD_PROPERTY', payload: propertyToRemove });
+      }
+      handleError(error, 'unsave property');
+      clearPropertyLoading(propertyId);
+      return false;
+    }
+  }, [isAuthenticated, state.savedProperties, handleError, setPropertyLoading, clearPropertyLoading]);
+
+  // Check if property is saved
+  const isSaved = useCallback((propertyId: string): boolean => {
+    return state.savedProperties.some(p => p.id === propertyId);
+  }, [state.savedProperties]);
+
+  // Clear all saved properties
+  const clearAllSaved = useCallback(async (): Promise<boolean> => {
+    dispatch({ type: 'SET_LOADING', payload: true });
+
+    // Store current properties for potential rollback
+    const currentProperties = [...state.savedProperties];
+    
+    // Optimistic update
+    dispatch({ type: 'CLEAR_ALL' });
+
+    const operation = async () => {
+      if (isAuthenticated) {
+        await clearAllSavedPropertiesFromApi();
+      } else {
+        clearLocalStorageProperties();
+      }
+    };
+
+    lastOperationRef.current = operation;
+
+    try {
+      await retryApiOperation(operation);
+      return true;
+    } catch (error) {
+      // Revert optimistic update
+      dispatch({ type: 'SET_SAVED_PROPERTIES', payload: currentProperties });
+      handleError(error, 'clear all saved properties');
+      return false;
+    }
+  }, [isAuthenticated, state.savedProperties, handleError]);
+
+  // Get saved count
+  const getSavedCount = useCallback((): number => {
+    return state.savedProperties.length;
+  }, [state.savedProperties]);
+
+  // Get property loading state
+  const getPropertyLoadingState = useCallback((propertyId: string): boolean => {
+    return propertyLoadingStates[propertyId] || false;
+  }, [propertyLoadingStates]);
+
+  // Clear error
+  const clearError = useCallback(() => {
+    dispatch({ type: 'SET_ERROR', payload: null });
+  }, []);
+
+  // Retry last operation
+  const retryLastOperation = useCallback(async (): Promise<void> => {
+    if (lastOperationRef.current) {
+      try {
+        await retryApiOperation(lastOperationRef.current);
+        dispatch({ type: 'SET_ERROR', payload: null });
+      } catch (error) {
+        handleError(error, 'retry operation');
+      }
+    }
+  }, [handleError]);
+
+  // Initialize on mount and auth changes
+  useEffect(() => {
+    initializationRef.current = false;
+    initializeSavedProperties();
+  }, [initializeSavedProperties]);
+
+  // Listen for storage events (cross-tab synchronization)
+  useEffect(() => {
+    if (typeof window === 'undefined' || isAuthenticated) {
+      return;
+    }
+
+    const handleStorageChange = (event: StorageEvent | CustomEvent) => {
+      if (event instanceof StorageEvent && event.key === 'gm_saved_properties') {
+        // Handle localStorage changes from other tabs
+        try {
+          const properties = getLocalStorageProperties();
+          dispatch({ type: 'SET_SAVED_PROPERTIES', payload: properties });
+        } catch (error) {
+          console.warn('Failed to sync localStorage changes:', error);
+        }
+      } else if (event instanceof CustomEvent && event.type === 'savedPropertiesUpdated') {
+        // Handle custom events from our localStorage utilities
+        const properties = event.detail?.properties || [];
+        dispatch({ type: 'SET_SAVED_PROPERTIES', payload: properties });
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('savedPropertiesUpdated', handleStorageChange as EventListener);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('savedPropertiesUpdated', handleStorageChange as EventListener);
+    };
+  }, [isAuthenticated]);
+
+  // Context value
+  const contextValue: SavedPropertiesContextType = {
+    // State
+    savedProperties: state.savedProperties,
+    isLoading: state.isLoading,
+    error: state.error,
+    isInitialized: state.isInitialized,
+    
+    // Methods
+    saveProperty,
+    unsaveProperty,
+    isSaved,
+    clearAllSaved,
+    getSavedCount,
+    getPropertyLoadingState,
+    clearError,
+    retryLastOperation,
+  };
 
   return (
-    <SavedPropertiesContext.Provider
-      value={{
-        savedProperties,
-        isSaved,
-        saveProperty,
-        removeProperty,
-        getSavedCount,
-        isLoading,
-      }}
-    >
+    <SavedPropertiesContext.Provider value={contextValue}>
       {children}
     </SavedPropertiesContext.Provider>
   );
-};
+}
 
-// Create a custom hook for using the saved properties context
-export const useSavedProperties = () => useContext(SavedPropertiesContext);
+// Hook to use the context
+export function useSavedProperties(): SavedPropertiesContextType {
+  const context = useContext(SavedPropertiesContext);
+  
+  if (context === undefined) {
+    throw new Error('useSavedProperties must be used within a SavedPropertiesProvider');
+  }
+  
+  return context;
+}
+
+// Error boundary component
+interface SavedPropertiesErrorBoundaryState {
+  hasError: boolean;
+  error?: Error;
+}
+
+export class SavedPropertiesErrorBoundary extends React.Component<
+  { children: React.ReactNode; fallback?: React.ComponentType<{ error?: Error; retry: () => void }> },
+  SavedPropertiesErrorBoundaryState
+> {
+  constructor(props: any) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error: Error): SavedPropertiesErrorBoundaryState {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error('SavedProperties Error Boundary caught an error:', error, errorInfo);
+  }
+
+  retry = () => {
+    this.setState({ hasError: false, error: undefined });
+  };
+
+  render() {
+    if (this.state.hasError) {
+      const FallbackComponent = this.props.fallback;
+      
+      if (FallbackComponent) {
+        return <FallbackComponent error={this.state.error} retry={this.retry} />;
+      }
+
+      return (
+        <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+          <h3 className="text-red-800 font-medium mb-2">Something went wrong with saved properties</h3>
+          <p className="text-red-600 text-sm mb-3">
+            {this.state.error?.message || 'An unexpected error occurred'}
+          </p>
+          <button
+            onClick={this.retry}
+            className="px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
 
