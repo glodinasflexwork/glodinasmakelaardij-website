@@ -251,7 +251,7 @@ const MarktrapportagesPage = () => {
                 
                 <Button className="bg-emerald-600 hover:bg-emerald-700 text-lg px-8 py-3">
                   <Download className="w-5 h-5 mr-2" />
-                  <a href="/Jaaroverzicht-2024-Professional-GM.pdf" download="Jaaroverzicht-2024-Vastgoedmarkt-Den-Haag.pdf" className="text-white no-underline">
+                  <a href="/Marktrapport-Q2-2025-Den-Haag.pdf" download="Marktrapport-Q2-2025-Den-Haag.pdf" className="text-white no-underline">
                     Download Gratis
                   </a>
                 </Button>

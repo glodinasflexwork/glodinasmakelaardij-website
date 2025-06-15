@@ -403,7 +403,7 @@ const KoopgidsPage = () => {
           </div>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="/Koopgids-2025-GM.pdf" download="Koopgids-2025-Glodinas-Makelaardij.pdf">
+            <a href="/Koopgids-2025-GM-Updated.pdf" download="Koopgids-2025-Glodinas-Makelaardij.pdf">
               <Button size="lg" className="bg-white text-indigo-700 hover:bg-gray-100 px-8 py-4 text-lg">
                 <Download className="w-5 h-5 mr-2" />
                 Download Gratis Koopgids
@@ -418,7 +418,7 @@ const KoopgidsPage = () => {
             <Link href="/schedule">
               <Button size="lg" className="bg-white text-indigo-700 hover:bg-gray-100 px-8 py-4 text-lg">
                 <Phone className="w-5 h-5 mr-2" />
-                Bel: (6) 81 34 85 51
+                Bel: (06) 81 34 85 51
               </Button>
             </Link>
           </div>
