@@ -514,14 +514,6 @@ export default function PropertyManagement() {
       .trim();
   };
 
-  const commonFeatures = [
-    'Tuin', 'Balkon', 'Terras', 'Garage', 'Parkeerplaats', 'Lift', 
-    'Airconditioning', 'Vloerverwarming', 'Open Keuken', 'Moderne Keuken',
-    'Inbouwkeuken', 'Serre', 'Zolder', 'Kelder', 'Zwembad', 'Sauna',
-    'Jacuzzi', 'Alarm', 'Videofoon', 'Dubbel Glas', 'HR++ Glas',
-    'Zonnepanelen', 'Energiezuinig', 'Monumentaal', 'Nieuwbouw'
-  ];
-
   const steps = [
     { number: 1, title: 'Basic Info', icon: Home },
     { number: 2, title: 'Details', icon: Square },
