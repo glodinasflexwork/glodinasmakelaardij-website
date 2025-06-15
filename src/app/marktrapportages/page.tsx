@@ -45,11 +45,11 @@ const MarktrapportagesPage = () => {
       downloads: 890
     },
     {
-      title: "Wijkanalyse Benoordenhout 2025",
-      description: "Diepgaande analyse van de vastgoedmarkt in Benoordenhout",
-      date: "Maart 2025",
+      title: "Wijkrapport Benoordenhout 2025",
+      description: "Uitgebreide analyse van de vastgoedmarkt in Benoordenhout met prijsontwikkelingen, demografische trends en marktvooruitzichten",
+      date: "Juni 2025",
       type: "Wijkrapport",
-      pages: 16,
+      pages: 28,
       downloads: 650
     },
     {
@@ -335,6 +335,10 @@ const MarktrapportagesPage = () => {
                     <Download className="w-4 h-4 mr-2" />
                     {report.title === "Jaaroverzicht 2024 - Vastgoedmarkt Den Haag" ? (
                       <a href="/Jaaroverzicht-2024-Professional-GM.pdf" download="Jaaroverzicht-2024-Vastgoedmarkt-Den-Haag.pdf" className="text-inherit no-underline">
+                        Download
+                      </a>
+                    ) : report.title === "Wijkrapport Benoordenhout 2025" ? (
+                      <a href="/Wijkrapport-Benoordenhout-2025-GM.pdf" download="Wijkrapport-Benoordenhout-2025.pdf" className="text-inherit no-underline">
                         Download
                       </a>
                     ) : (
