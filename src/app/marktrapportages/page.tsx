@@ -50,7 +50,7 @@ const MarktrapportagesPage = () => {
       date: "Juni 2025",
       type: "Wijkrapport",
       pages: 28,
-      downloads: 650
+      downloads: 750
     },
     {
       title: "Huurmarkt Rapport Den Haag 2024",
