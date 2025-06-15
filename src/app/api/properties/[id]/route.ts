@@ -75,6 +75,11 @@ export async function PUT(
         heating: data.heating || null,
         parking: data.parking || null,
         garden: data.garden || null,
+        additionalInfo: data.additionalInfo || null,
+        // New rental fields
+        isRented: data.isRented !== undefined ? data.isRented : undefined,
+        monthlyRent: data.monthlyRent ? parseInt(data.monthlyRent) : undefined,
+        tenantStatus: data.tenantStatus || null,
         updatedAt: new Date()
       }
     });

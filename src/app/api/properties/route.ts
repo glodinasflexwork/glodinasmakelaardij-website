@@ -126,7 +126,12 @@ export async function POST(request: NextRequest) {
         plotSize: parseInt(data.plotSize) || 0,
         heating: data.heating || null,
         parking: data.parking || null,
-        garden: data.garden || null
+        garden: data.garden || null,
+        additionalInfo: data.additionalInfo || null,
+        // New rental fields
+        isRented: data.isRented || false,
+        monthlyRent: parseInt(data.monthlyRent) || 0,
+        tenantStatus: data.tenantStatus || null
       }
     });
 

@@ -70,6 +70,10 @@ model Property {
   parking       String?
   garden        String?
   additionalInfo String? // New field for investment/rental information
+  // New rental fields
+  isRented      Boolean  @default(false)
+  monthlyRent   Int      @default(0)
+  tenantStatus  String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 

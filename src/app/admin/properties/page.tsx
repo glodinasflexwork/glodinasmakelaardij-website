@@ -32,6 +32,10 @@ interface Property {
   parking?: string;
   garden?: string;
   additionalInfo?: string;
+  // New rental fields
+  isRented?: boolean;
+  monthlyRent?: number;
+  tenantStatus?: string;
 }
 
 export default function PropertyManagement() {
@@ -61,7 +65,11 @@ export default function PropertyManagement() {
     heating: '',
     parking: '',
     garden: '',
-    additionalInfo: ''
+    additionalInfo: '',
+    // New rental fields
+    isRented: false,
+    monthlyRent: 0,
+    tenantStatus: ''
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isDirty, setIsDirty] = useState(false);
@@ -184,6 +192,74 @@ export default function PropertyManagement() {
     // None
     'Geen parkeermogelijkheid'
   ];
+
+  // Tenant status options
+  const tenantStatusOptions = [
+    'Vacant',
+    'Occupied - Long-term lease',
+    'Occupied - Short-term lease', 
+    'Lease ending soon',
+    'Month-to-month',
+    'Corporate tenant',
+    'Student housing'
+  ];
+
+  // Categorized property features for better organization
+  const featureCategories = {
+    'Interior Features': [
+      'Airconditioning',
+      'Alarm systeem',
+      'Balkon',
+      'Dakterras',
+      'Ensuite badkamer',
+      'Inbouwkeuken',
+      'Inloopkast',
+      'Jacuzzi',
+      'Open haard',
+      'Sauna',
+      'Vloerverwarming',
+      'Zolder'
+    ],
+    'Exterior Features': [
+      'Achtertuin',
+      'Garage',
+      'Parkeerplaats',
+      'Terras',
+      'Tuin',
+      'Voortuin',
+      'Zwembad'
+    ],
+    'Energy & Sustainability': [
+      'Dubbel glas',
+      'HR++ Glas',
+      'Isolatie',
+      'Zonnepanelen',
+      'Energielabel A',
+      'Energielabel B',
+      'Warmtepomp'
+    ],
+    'Amenities': [
+      'Berging',
+      'Bijkeuken',
+      'Fietsenstalling',
+      'Lift',
+      'Portier',
+      'Wasruimte'
+    ],
+    'Special Features': [
+      'Monumentaal',
+      'Nieuwbouw',
+      'Gerenoveerd',
+      'Karakteristiek',
+      'Luxe afwerking',
+      'Smart home',
+      'Uitzicht op water',
+      'Uitzicht op park'
+    ]
+  };
+
+  // All features combined for backward compatibility
+  const commonFeatures = Object.values(featureCategories).flat();
 
   // Garden options
   const gardenOptions = [
@@ -872,6 +948,64 @@ export default function PropertyManagement() {
                             ))}
                           </select>
                         </div>
+
+                        {/* Rental Information Section */}
+                        <div className="md:col-span-2 border-t pt-6">
+                          <h3 className="text-lg font-semibold text-gray-900 mb-4">Rental Information</h3>
+                          
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                              <label className="flex items-center space-x-2 cursor-pointer">
+                                <input
+                                  type="checkbox"
+                                  checked={formData.isRented || false}
+                                  onChange={(e) => handleInputChange('isRented', e.target.checked)}
+                                  className="rounded border-gray-300 text-orange-600 focus:ring-orange-500"
+                                />
+                                <span className="text-sm font-medium text-gray-900">Currently Rented</span>
+                              </label>
+                              <p className="text-xs text-gray-500 mt-1">Check if property has tenants</p>
+                            </div>
+
+                            {formData.isRented && (
+                              <>
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-900 mb-2">
+                                    <Euro className="w-4 h-4 inline mr-2" />
+                                    Monthly Rent
+                                  </label>
+                                  <input
+                                    type="number"
+                                    min="0"
+                                    value={formData.monthlyRent || ''}
+                                    onChange={(e) => handleInputChange('monthlyRent', parseInt(e.target.value) || 0)}
+                                    placeholder="1400"
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors text-gray-900"
+                                  />
+                                  <p className="text-xs text-gray-500 mt-1">Amount in euros per month</p>
+                                </div>
+
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-900 mb-2">
+                                    Tenant Status
+                                  </label>
+                                  <select
+                                    value={formData.tenantStatus || ''}
+                                    onChange={(e) => handleInputChange('tenantStatus', e.target.value)}
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors text-gray-900"
+                                  >
+                                    <option value="">Select tenant status</option>
+                                    {tenantStatusOptions.map((status) => (
+                                      <option key={status} value={status}>
+                                        {status}
+                                      </option>
+                                    ))}
+                                  </select>
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        </div>
                       </div>
                     </div>
                   )}
@@ -1055,24 +1189,71 @@ export default function PropertyManagement() {
                         </p>
                       </div>
 
-                      {/* Features Section */}
+                      {/* Enhanced Features Section with Categories */}
                       <div>
                         <label className="block text-sm font-medium text-gray-900 mb-4">
                           Property Features
                         </label>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                          {commonFeatures.map((feature) => (
-                            <label key={feature} className="flex items-center space-x-2 cursor-pointer">
-                              <input
-                                type="checkbox"
-                                checked={formData.features?.includes(feature) || false}
-                                onChange={() => handleFeatureToggle(feature)}
-                                className="rounded border-gray-300 text-orange-600 focus:ring-orange-500"
-                              />
-                              <span className="text-sm text-gray-900">{feature}</span>
-                            </label>
+                        
+                        {/* Feature Search */}
+                        <div className="mb-4">
+                          <input
+                            type="text"
+                            placeholder="Search features..."
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors text-gray-900"
+                            onChange={(e) => {
+                              const searchTerm = e.target.value.toLowerCase();
+                              // Filter features based on search term
+                              // This would require additional state management for filtered features
+                            }}
+                          />
+                        </div>
+
+                        {/* Categorized Features */}
+                        <div className="space-y-6">
+                          {Object.entries(featureCategories).map(([category, features]) => (
+                            <div key={category} className="border border-gray-200 rounded-lg p-4">
+                              <h4 className="font-medium text-gray-900 mb-3 flex items-center">
+                                <span className="w-2 h-2 bg-orange-500 rounded-full mr-2"></span>
+                                {category}
+                              </h4>
+                              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                                {features.map((feature) => (
+                                  <label key={feature} className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
+                                    <input
+                                      type="checkbox"
+                                      checked={formData.features?.includes(feature) || false}
+                                      onChange={() => handleFeatureToggle(feature)}
+                                      className="rounded border-gray-300 text-orange-600 focus:ring-orange-500"
+                                    />
+                                    <span className="text-sm text-gray-900">{feature}</span>
+                                  </label>
+                                ))}
+                              </div>
+                            </div>
                           ))}
                         </div>
+
+                        {/* Selected Features Summary */}
+                        {formData.features && formData.features.length > 0 && (
+                          <div className="mt-4 p-3 bg-orange-50 border border-orange-200 rounded-lg">
+                            <h5 className="font-medium text-orange-900 mb-2">Selected Features ({formData.features.length})</h5>
+                            <div className="flex flex-wrap gap-2">
+                              {formData.features.map((feature) => (
+                                <span key={feature} className="inline-flex items-center px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded-full">
+                                  {feature}
+                                  <button
+                                    type="button"
+                                    onClick={() => handleFeatureToggle(feature)}
+                                    className="ml-1 text-orange-600 hover:text-orange-800"
+                                  >
+                                    ×
+                                  </button>
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
                   )}

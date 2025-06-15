@@ -52,6 +52,10 @@ interface Property {
   parking?: string;
   garden?: string;
   additionalInfo?: string;
+  // New rental fields
+  isRented?: boolean;
+  monthlyRent?: number;
+  tenantStatus?: string;
 }
 
 type Props = {
@@ -454,6 +458,30 @@ export default function PropertyDetailPage({ params }: Props) {
                   </div>
                 )}
               </div>
+              
+              {/* Rental Information Display */}
+              {property.isRented && (
+                <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <h3 className="text-lg font-semibold text-blue-900 mb-3 flex items-center">
+                    <Euro className="w-5 h-5 mr-2" />
+                    Huurinformatie
+                  </h3>
+                  <div className="space-y-2">
+                    {property.monthlyRent && property.monthlyRent > 0 && (
+                      <div className="flex justify-between">
+                        <span className="text-blue-800">Maandelijkse huur:</span>
+                        <span className="font-semibold text-blue-900">€{property.monthlyRent.toLocaleString()}</span>
+                      </div>
+                    )}
+                    {property.tenantStatus && (
+                      <div className="flex justify-between">
+                        <span className="text-blue-800">Huurder status:</span>
+                        <span className="font-semibold text-blue-900">{property.tenantStatus}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
               
               {/* Custom Additional Information */}
               {property.additionalInfo && (
