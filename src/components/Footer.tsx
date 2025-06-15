@@ -42,11 +42,6 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link href="/over-ons" className="text-gray-300 hover:text-white transition-colors">
-                  Over Ons
-                </Link>
-              </li>
-              <li>
                 <Link href="/woningen" className="text-gray-300 hover:text-white transition-colors">
                   Woningen
                 </Link>
@@ -54,6 +49,11 @@ const Footer = () => {
               <li>
                 <Link href="/diensten" className="text-gray-300 hover:text-white transition-colors">
                   Diensten
+                </Link>
+              </li>
+              <li>
+                <Link href="/informatie" className="text-gray-300 hover:text-white transition-colors">
+                  Informatie
                 </Link>
               </li>
               <li>
@@ -68,28 +68,38 @@ const Footer = () => {
             <h3 className="text-xl font-bold mb-4">Diensten</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/diensten/woning-kopen" className="text-gray-300 hover:text-white transition-colors">
-                  Woning Kopen
+                <Link href="/woningen/kopen" className="text-gray-300 hover:text-white transition-colors">
+                  Woningen Kopen
                 </Link>
               </li>
               <li>
-                <Link href="/diensten/woning-verkopen" className="text-gray-300 hover:text-white transition-colors">
-                  Woning Verkopen
+                <Link href="/woningen/verkopen" className="text-gray-300 hover:text-white transition-colors">
+                  Woningen Verkopen
                 </Link>
               </li>
               <li>
-                <Link href="/diensten/waardebepaling" className="text-gray-300 hover:text-white transition-colors">
-                  Waardebepaling
+                <Link href="/woningen/huren" className="text-gray-300 hover:text-white transition-colors">
+                  Woningen Huren
                 </Link>
               </li>
               <li>
-                <Link href="/diensten/marktanalyse" className="text-gray-300 hover:text-white transition-colors">
+                <Link href="/taxatie" className="text-gray-300 hover:text-white transition-colors">
+                  Taxatie
+                </Link>
+              </li>
+              <li>
+                <Link href="/verhuur-beheer" className="text-gray-300 hover:text-white transition-colors">
+                  Verhuur Beheer
+                </Link>
+              </li>
+              <li>
+                <Link href="/marktanalyse" className="text-gray-300 hover:text-white transition-colors">
                   Marktanalyse
                 </Link>
               </li>
               <li>
-                <Link href="/diensten/onderhandeling" className="text-gray-300 hover:text-white transition-colors">
-                  Onderhandeling
+                <Link href="/hypotheek" className="text-gray-300 hover:text-white transition-colors">
+                  Hypotheekadvies
                 </Link>
               </li>
             </ul>
@@ -100,15 +110,15 @@ const Footer = () => {
             <ul className="space-y-4">
               <li className="flex items-start">
                 <MapPin className="w-5 h-5 mr-3 mt-1 text-primary" />
-                <span>Laan van Meerdervoort 123<br />2517 AA Den Haag</span>
+                <span>Den Haag, Nederland</span>
               </li>
               <li className="flex items-center">
                 <Phone className="w-5 h-5 mr-3 text-primary" />
-                <span>+31 70 123 4567</span>
+                <span>(6) 81 34 85 51</span>
               </li>
               <li className="flex items-center">
                 <Mail className="w-5 h-5 mr-3 text-primary" />
-                <span>info@glodinas.nl</span>
+                <span>cihat@glodinasmakelaardij.nl</span>
               </li>
             </ul>
           </div>
