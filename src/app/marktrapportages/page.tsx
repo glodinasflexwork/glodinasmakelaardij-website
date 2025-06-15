@@ -341,6 +341,10 @@ const MarktrapportagesPage = () => {
                       <a href="/Wijkrapport-Benoordenhout-2025-GM.pdf" download="Wijkrapport-Benoordenhout-2025.pdf" className="text-inherit no-underline">
                         Download
                       </a>
+                    ) : report.title === "Nieuwbouw Monitor Q4 2024" ? (
+                      <a href="/Nieuwbouw_Monitor_Q4_2024.pdf" download="Nieuwbouw-Monitor-Q4-2024.pdf" className="text-inherit no-underline">
+                        Download
+                      </a>
                     ) : (
                       "Download"
                     )}
